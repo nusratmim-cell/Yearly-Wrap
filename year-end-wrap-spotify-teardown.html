@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spotify Wrapped → Shikho Wrapped — Teardown</title>
+<style>
+  :root{
+    color-scheme: light;
+    --ground:#F9F8F5; --paper:#FFFFFF; --sunken:#F1EFEA;
+    --ink:#1A1D26; --ink-2:#4B5060; --ink-3:#7C8090;
+    --line:#E3E0D8; --line-2:#EEECE6;
+    --navy:#354894; --magenta:#C2257F;
+    --navy-soft:#ECEEF8; --magenta-soft:#FBE8F2;
+    --spot:#1DB954; --spot-soft:#E4F4E9;
+    --have-fg:#2C7A4B; --have-bg:#E3F1E8;
+    --build-fg:#2457A7; --build-bg:#E7EEF9;
+    --get-fg:#9A6A06; --get-bg:#FAEFD3;
+    --gap-fg:#B8304B; --gap-bg:#FAE3E8;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--ground);color:var(--ink);margin:0;
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1060px;margin:0 auto;padding:40px 24px 120px}
+  header.top{border-bottom:2px solid var(--navy);padding-bottom:22px}
+  .kicker{color:var(--magenta);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12.5px}
+  h1{font-size:34px;line-height:1.14;margin:.3em 0 .25em;letter-spacing:-.02em}
+  .sub{color:var(--ink-2);font-size:17px;max-width:74ch}
+  .meta{color:var(--ink-3);font-size:13px;margin-top:14px}.meta b{color:var(--ink-2);font-weight:600}
+  h2{font-size:25px;margin:54px 0 14px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h2 .n{color:var(--magenta);font-weight:700;margin-right:10px}
+  h3{font-size:19px;margin:28px 0 10px}
+  h4{font-size:13px;margin:18px 0 6px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  p{margin:10px 0}a{color:var(--navy)}
+  ul,ol{margin:10px 0;padding-left:22px}li{margin:6px 0}
+  code{background:var(--sunken);padding:1.5px 6px;border-radius:5px;font-size:13px;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;color:#3a3f4d}
+  .lead{font-size:17px;color:var(--ink-2)}
+  .bn{font-family:"Noto Sans Bengali","Hind Siliguri",system-ui}
+  nav.toc{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:26px 0 8px}
+  nav.toc h4{margin:0 0 10px}
+  nav.toc ol{columns:2;column-gap:36px;margin:0;padding-left:20px}
+  nav.toc a{text-decoration:none}nav.toc a:hover{text-decoration:underline}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin:16px 0}
+  .card.navy{border-left:4px solid var(--navy)}.card.mag{border-left:4px solid var(--magenta)}
+  blockquote{margin:18px 0;padding:18px 24px;background:var(--navy-soft);border-left:5px solid var(--navy);border-radius:12px;color:#20264a;font-size:16px;line-height:1.6}
+  blockquote em{color:var(--magenta);font-style:normal;font-weight:600;background:#fff;padding:0 3px;border-radius:3px}
+  blockquote .who{display:block;margin-top:8px;font-size:13px;color:var(--ink-2);font-weight:600}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13.5px;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line-2);vertical-align:top}
+  th{background:var(--sunken);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2);font-weight:700}
+  tr:last-child td{border-bottom:none}td code{font-size:12px}
+  .grp td{background:var(--navy-soft);font-weight:700;color:var(--navy);font-size:12.5px}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
+  .have{background:var(--have-bg);color:var(--have-fg)}.build{background:var(--build-bg);color:var(--build-fg)}
+  .get{background:var(--get-bg);color:var(--get-fg)}.gap{background:var(--gap-bg);color:var(--gap-fg)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px 18px;margin:14px 0 4px;font-size:13px;color:var(--ink-2)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.two{grid-template-columns:1fr}nav.toc ol{columns:1}}
+  .principle{display:grid;grid-template-columns:40px 1fr;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:10px 0}
+  .principle .pnum{font-size:22px;font-weight:800;color:var(--magenta);line-height:1}
+  .principle b{color:var(--navy)}
+  .yr{display:inline-flex;align-items:center;gap:8px;background:var(--spot-soft);color:#0f6b31;border:1px solid #BEE0CB;border-radius:999px;padding:3px 12px;font-weight:700;font-size:13px}
+  .feat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:4px 20px 16px;margin:16px 0}
+  .feat > .hd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line-2);padding:14px 0 10px;margin-bottom:4px}
+  .feat > .hd .sp{font-weight:700;font-size:16px;color:var(--ink)}
+  .feat > .hd .tagspot{background:var(--spot-soft);color:#0f6b31;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px}
+  .feat .row{display:grid;grid-template-columns:72px 1fr;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line-2)}
+  .feat .row:last-child{border-bottom:none}
+  .feat .row .lab{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);padding-top:2px}
+  .feat .row.why .lab{color:var(--magenta)}
+  .feat .row.map .lab{color:var(--navy)}
+  .feat .row .val{font-size:14.5px}
+  .feat .map .val b{color:var(--navy)}
+  .warn{background:var(--get-bg);border:1px solid #EAD9A6;border-radius:10px;padding:12px 16px;font-size:14px;margin:12px 0;color:#6e4f08}
+  .warn b{color:#5a3f05}
+  .ok{background:var(--have-bg);border:1px solid #BEE0CB;border-radius:10px;padding:12px 16px;font-size:14px;margin:12px 0;color:#245c3a}
+  .note{font-size:13px;color:var(--ink-3);margin-top:6px}
+  hr{border:none;border-top:1px solid var(--line);margin:40px 0}
+  footer{color:var(--ink-3);font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:18px}
+  .wow{color:var(--magenta);font-weight:600}
+  .tag{display:inline-block;background:var(--magenta-soft);color:var(--magenta);font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;margin-left:6px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">Shikho · Year-End Wrap 2026 · Team teardown</div>
+  <h1>Spotify Wrapped, taken apart — and rebuilt for Shikho</h1>
+  <p class="sub">The CEO asked us to study how Wrapped tailored itself to each user over the last few years, and map that to our data. This is that teardown, written for the whole team. If you've never thought hard about why Wrapped works, start here — by the end you'll know what we're copying, what we're skipping, and exactly which Shikho card replaces each Spotify slide.</p>
+  <div class="meta">
+    For <b>nusrat.mim@shikho.com</b> and the Wrap 2026 team · 28 Oct 2026 · Reads with: the insight-engine plan (<code>year-end-wrap-2026-plan.html</code>) and the data spec (SC-1737). Feature facts verified against Spotify Newsroom + press; see Sources.
+  </div>
+</header>
+
+<nav class="toc">
+  <h4>Contents</h4>
+  <ol>
+    <li><a href="#thesis">0 · Read this first: what Wrapped really is</a></li>
+    <li><a href="#principles">1 · The 7 principles (our lens)</a></li>
+    <li><a href="#y2021">2 · 2021 — the year it got personal</a></li>
+    <li><a href="#y2022">3 · 2022 — the identity engine</a></li>
+    <li><a href="#y2023">4 · 2023 — characters &amp; belonging</a></li>
+    <li><a href="#y2024">5 · 2024 — AI, and the warning</a></li>
+    <li><a href="#map">6 · The full Spotify → Shikho map</a></li>
+    <li><a href="#signature">7 · Our five signature features</a></li>
+    <li><a href="#dont">8 · What NOT to copy</a></li>
+    <li><a href="#next">9 · What we do next</a></li>
+  </ol>
+</nav>
+
+<!-- 0 -->
+<section id="thesis">
+<h2><span class="n">00</span>Read this first: what Wrapped actually is</h2>
+<p class="lead">Most people think Spotify Wrapped is "a summary of your year in music." That's the surface. If we build from that belief, we'll ship a prettier stats screen and miss — which is exactly the trap the CEO called out.</p>
+<blockquote>
+  The designs look initially nice but <em>we are mostly representing user data attractively</em>. Let's go a step deeper… Spotify Wrapped <em>generates insights based on the individual</em>… My experience would be — <em>wow, I learned something new about myself</em>.
+  <span class="who">— Ishmam Ahmed Chowdhury, CEO</span>
+</blockquote>
+<p>Here's the real definition the team should hold: <b>Wrapped is an identity product with a growth engine attached.</b> It takes raw behaviour, <i>derives</i> something that feels like a truth about <i>you</i>, gives you a <i>word</i> for it, and hands you a <i>card built to be shared</i>. The stats are just the raw material. Spotify has spent four years moving <b>away</b> from "here are your numbers" and <b>toward</b> "here is who you are." That direction of travel is the whole lesson.</p>
+<div class="ok"><b>Our one-line north star:</b> a student should finish the Shikho Wrap and think "that's <i>so</i> me" — then send it to a friend to prove it. Every decision below serves that sentence.</div>
+</section>
+
+<!-- 1 -->
+<section id="principles">
+<h2><span class="n">01</span>The 7 principles — the lens we'll reuse all doc</h2>
+<p class="lead">Before the year-by-year teardown, here's the framework underneath all of it. When you look at any Wrapped slide, ask which of these it's doing. We'll tag the teardown against them.</p>
+
+<div class="principle"><div class="pnum">1</div><div><b>Stats are the floor; identity is the ceiling.</b> Nobody screenshots "142 hours." They screenshot "I'm a Night-Owl Specialist." The numbers earn trust; the <i>label</i> gets shared. Build up from stats toward identity.</div></div>
+<div class="principle"><div class="pnum">2</div><div><b>Derive, don't display.</b> Every memorable feature — Aura, Listening Personality, Sound Town — is <i>computed</i>, not shown. The magic is in the function that turns 5 numbers into 1 meaning.</div></div>
+<div class="principle"><div class="pnum">3</div><div><b>Variable slides create uniqueness.</b> Your Wrapped ≠ your friend's Wrapped because slides are <i>gated by eligibility</i>. The engine picks a subset. This is the single biggest thing our fixed-slide prototype is missing.</div></div>
+<div class="principle"><div class="pnum">4</div><div><b>Give people a word for themselves.</b> An archetype ("The Adventurer", "Shapeshifter") is a gift: it's identity, it's language, it's inherently social. Humans love a category that flatters.</div></div>
+<div class="principle"><div class="pnum">5</div><div><b>Engineer one "how did it know that?" moment.</b> Cross two signals into a revelation the user never stated. This is the CEO's "learned something about myself." It's usually a <i>combination</i>, not a single metric.</div></div>
+<div class="principle"><div class="pnum">6</div><div><b>Design the share, not just the screen.</b> The share card <i>is</i> the growth loop. For a brand chasing 20–30k students' friends, the card is the cheapest acquisition channel we have.</div></div>
+<div class="principle"><div class="pnum">7</div><div><b>Close with forward motion.</b> Spotify ends on playlists you'll keep playing. We must end by pulling the student <i>back in January</i> — that's literally our success metric (return rate). Celebration → next step.</div></div>
+</section>
+
+<!-- 2021 -->
+<section id="y2021">
+<h2><span class="n">02</span><span class="yr">2021</span> &nbsp;The year Wrapped stopped being a list</h2>
+<p class="lead">Until 2021, Wrapped was mostly leaderboards: top songs, artists, genres, minutes. In 2021 Spotify added <b>interpretation and play</b>. This is where the template we're copying was born.</p>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Core stats</span> <span class="tagspot">carried over</span> <span class="note" style="margin:0">top artists · top songs · top genres · minutes listened · top podcasts</span></div>
+  <div class="row why"><div class="lab">Why</div><div class="val">The floor (Principle 1). Trust + "oh yeah, that's true." Necessary, not memorable.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b>Core cards:</b> active days, total hours, top subject, favourite teacher, quizzes done, most-consumed content. <span class="pill have">HAVE</span> — all in the warehouse.</div></div>
+</div>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Audio Aura</span> <span class="tagspot">signature 2021</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">Your top two <i>moods</i> rendered as a two-colour aura (built with an aura reader for flavour). A vibe, not a number.</div></div>
+  <div class="row why"><div class="lab">Why</div><div class="val">Principle 2 + 6. It converts abstract data into a <i>sharable visual identity</i>. Nothing to read — pure screenshot bait.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"স্টাডি অরা"</b> — two dominant signals (e.g. top subject + study-timing) → a two-tone aura/gradient per student. Cheap to compute, maximally shareable. <span class="pill build">BUILD</span> (visual rule over data we have).</div></div>
+</div>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Playing Cards — "2 Truths &amp; a Lie"</span> <span class="tagspot">signature 2021</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">A mini-game: three "facts" about your listening, one is false — you guess.</div></div>
+  <div class="row why"><div class="lab">Why</div><div class="val">Principle 5, as <i>interaction</i>. Guessing makes you <i>study your own data</i>. Dwell time + delight, almost free to build.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"দুটো সত্যি, একটা মিথ্যা"</b> — pull 3 real facts from the student's year + generate 1 plausible-but-false one; they tap to guess. Perfect for a student audience. <span class="pill build">BUILD</span>.</div></div>
+</div>
+
+<div class="feat">
+  <div class="hd"><span class="sp">2021: The Movie &nbsp;·&nbsp; Wrapped Blend</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">"The Movie" narrated your year as film scenes. "Blend" compared your taste with a friend's.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b>Narrative framing</b> (your year as acts: slow start → exam-season climax) and a <b class="bn">"স্টাডি ব্লেন্ড"</b> friend-compare via the share link. Both are <span class="pill build">BUILD</span>, and Blend is a <b>growth loop</b> — tag for v2.</div></div>
+</div>
+<p class="note">Takeaway from 2021: the leap from "list" to "interpretation + play" is the same leap we need to make from our current fixed-slide prototype.</p>
+</section>
+
+<!-- 2022 -->
+<section id="y2022">
+<h2><span class="n">03</span><span class="yr">2022</span> &nbsp;The identity engine — the year we're copying most</h2>
+<p class="lead">If you read only one section, read this. 2022 is where Wrapped became a <b>personality product</b>, and it maps almost one-to-one onto Shikho.</p>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Listening Personality</span> <span class="tagspot">signature 2022 · THE one to copy</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">16 personality types (The Replayer, The Specialist, The Adventurer, The Fanclubber…), each a <b>4-letter code</b> from four binary axes: <i>familiarity↔exploration, loyalty↔variety, timeliness↔newness, commonality↔uniqueness</i>. Deliberately Myers-Briggs-flavoured.</div></div>
+  <div class="row why"><div class="lab">Why</div><div class="val">Principles 1→4 in one slide. Four simple axes → a 4-bit code → 16 identities that feel <i>scientific</i> and <i>flattering</i> and <i>ownable</i>. "I'm an ADVE" is a flex. This is the engine, not a gimmick.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"শিখো Learner Personality"</b> — our direct equivalent. Use 4 binary axes we can measure: <b>Consistency</b> (sporadic↔regular), <b>Timing</b> (early↔night), <b>Mode</b> (video↔quiz/live), <b>Depth</b> (all-rounder↔specialist) → a 4-bit code → <b>16 named Bangla types</b>. The finale card. <span class="pill build">BUILD</span>; all four axes come from data we <span class="pill have">HAVE</span>.</div></div>
+</div>
+<div class="ok"><b>Design note for the team:</b> don't invent 16 vague labels first. Define the <b>4 axes</b> first (each a clean threshold on real data), and the 16 types fall out of the combinations. That's how Spotify kept it rigorous — and how we keep it tunable as settings.</div>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Audio Day</span> <span class="tagspot">signature 2022</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">How your listening (and its moods) shifts across morning / midday / evening.</div></div>
+  <div class="row why"><div class="lab">Why</div><div class="val">Principle 5. A time-of-day cut feels intimate — it's about your <i>habits</i>, not your taste.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"তোমার পড়ার দিন"</b> — morning/afternoon/night/after-midnight study split, and <b>which subject you study in each band</b> ("Physics at night, Math in the morning"). We added subject×time-of-day to the spec for exactly this. <span class="pill build">BUILD</span> over <code>user_activity_agg</code> + subject logs.</div></div>
+</div>
+</section>
+
+<!-- 2023 -->
+<section id="y2023">
+<h2><span class="n">04</span><span class="yr">2023</span> &nbsp;Characters &amp; belonging</h2>
+<p class="lead">2023 doubled down on identity and added <b>belonging</b> — tying the individual to something bigger.</p>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Me in 2023 — 12 characters</span> <span class="tagspot">signature 2023</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">Each listener assigned one of 12 "characters" (Shapeshifter, Luminary, Alchemist, Hypnotist, Hunter…), revealed by <b>flipping a card</b>.</div></div>
+  <div class="row why"><div class="lab">Why</div><div class="val">Principle 4 again — but note the <b>flip-to-reveal</b> interaction: anticipation before payoff. The <i>reveal</i> is as important as the label.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val">Reuse the <b>reveal mechanic</b> for our personality finale — our C3 prototype already ends on a <b>door that opens</b>. Keep personality as one system (don't ship two overlapping archetype features). <span class="pill build">BUILD</span> (interaction).</div></div>
+</div>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Sound Town</span> <span class="tagspot">signature 2023</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">Matches you to a <b>real city</b> whose listeners share your taste (e.g. a Dave fan → London). Belonging + a surprising external anchor.</div></div>
+  <div class="row why"><div class="lab">Why</div><div class="val">Principle 5 at its most magical — "a whole town listens like me?" It externalises identity into something relatable and shareable.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"তোমার স্টাডি টুইন"</b> — match the student to an <b>archetype cohort</b> they resemble (a study-pattern "town"/tribe), or the month/season they peaked with. <b>Ambitious</b> — needs a clustering model and careful, truthful framing (no fake rankings). <span class="pill gap">STRETCH</span>; park for v2 unless we can back it honestly.</div></div>
+</div>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Top-5 artists with peak month &nbsp;·&nbsp; genre graphic</span></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b>Top subjects, each with the month it peaked</b>, and a <b>subject-mix visual</b>. Directly supported by our per-month, per-subject splits. <span class="pill have">HAVE</span> / light <span class="pill build">BUILD</span>.</div></div>
+</div>
+</section>
+
+<!-- 2024 -->
+<section id="y2024">
+<h2><span class="n">05</span><span class="yr">2024</span> &nbsp;AI — and the warning that comes with it</h2>
+<p class="lead">2024 pushed into AI and "evolution." Some of it is genuinely for us; some of it is a cautionary tale. Both matter.</p>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Your Music Evolution</span> <span class="tagspot">signature 2024 · strong for us</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">Splits your year into <b>3 "phases"</b> with quirky names and playlists (e.g. "Pumpkin Spice Hollywood Indie").</div></div>
+  <div class="row why"><div class="lab">Why</div><div class="val">Principle 5 over <i>time</i>. A year has a shape; naming its chapters makes it a story, not a stat.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"তোমার ২০২৬ এর অধ্যায়"</b> — cluster the year into phases from monthly data: e.g. "slow start", "the grind", "exam sprint", each with its dominant subject &amp; behaviour. Rich, personal, and we have the monthly series. <span class="pill build">BUILD</span>.</div></div>
+</div>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Wrapped AI Podcast</span> <span class="tagspot">signature 2024 · stretch</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">An AI-hosted audio episode (built on Google's NotebookLM) narrating your year. Time-limited, English-only, a handful of countries.</div></div>
+  <div class="row why"><div class="lab">Why</div><div class="val">Meets users in a new format — and is very on-brand for <i>us</i>: we already run Gen-AI, transcription and Bangla LLM pipelines (<code>gen-ai</code>, <code>anubadok</code>, <code>transcriptor</code>).</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"তোমার ২০২৬, অডিওতে"</b> — an AI Bangla voice recap of the student's year. Genuinely differentiating, but <b>v2</b>: substance first. <span class="pill gap">STRETCH</span> (Gen-AI + TTS).</div></div>
+</div>
+
+<div class="feat">
+  <div class="hd"><span class="sp">AI Playlist &nbsp;·&nbsp; Longest Streak</span></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b>AI Playlist → the retention play:</b> <b class="bn">"২০২৭ স্টাডি প্ল্যান"</b> — generate a personalised next-step plan from their 2026 data. This is Principle 7 made concrete: celebration → <b>come back in January</b>. <span class="pill build">BUILD</span> (Gen-AI). <b>Longest streak</b> we already <span class="pill have">HAVE</span>.</div></div>
+</div>
+
+<div class="warn"><b>The 2024 warning (important):</b> 2024 Wrapped got real backlash — fans felt it leaned on AI novelty while <b>cutting the substantive stats</b> (no "top genres" the usual way, thinner data). Lesson for us: <b>AI is garnish, not the meal.</b> Earn the "wow" with real derived insight first; add AI formats only once the core is strong. If we ship an AI podcast over a hollow core, we'll get the same reaction — from a student base that's far less forgiving of a flex that doesn't deliver.</div>
+</section>
+
+<!-- 6 MAP -->
+<section id="map">
+<h2><span class="n">06</span>The full Spotify → Shikho map (the payoff)</h2>
+<p class="lead">Everything above in one table. This is the artifact to pin in the ticket: each Spotify feature, the principle it serves, our card, and whether the data is ready.</p>
+<div class="legend">
+  <span><span class="pill have">HAVE</span></span><span><span class="pill build">BUILD</span></span><span><span class="pill get">GET</span></span><span><span class="pill gap">STRETCH / GAP</span></span>
+</div>
+<table>
+  <tr><th>Spotify feature</th><th>Yr</th><th>Principle</th><th>Shikho card</th><th>Status</th></tr>
+  <tr><td>Top artists / songs / minutes</td><td>pre</td><td>1 Floor</td><td class="bn">top subject, favourite teacher, total hours, active days</td><td><span class="pill have">HAVE</span></td></tr>
+  <tr><td>Audio Aura</td><td>'21</td><td>2 · 6</td><td class="bn">স্টাডি অরা (2-signal gradient)</td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Playing Cards (2 truths &amp; a lie)</td><td>'21</td><td>5 play</td><td class="bn">দুটো সত্যি, একটা মিথ্যা (game)</td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>2021: The Movie</td><td>'21</td><td>7 narrative</td><td class="bn">বছরের গল্প (acts framing)</td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Wrapped Blend</td><td>'21</td><td>6 loop</td><td class="bn">স্টাডি ব্লেন্ড (friend compare) <span class="tag">v2</span></td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td><b>Listening Personality (16)</b></td><td>'22</td><td>1·2·3·4</td><td class="bn"><b>শিখো Learner Personality (4 axes → 16)</b></td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Audio Day</td><td>'22</td><td>5</td><td class="bn">তোমার পড়ার দিন (subject × time-of-day)</td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Me in 2023 — characters (flip)</td><td>'23</td><td>4 reveal</td><td>reveal mechanic for personality finale (C3 door)</td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Sound Town</td><td>'23</td><td>5 belonging</td><td class="bn">স্টাডি টুইন (archetype cohort) <span class="tag">v2</span></td><td><span class="pill gap">STRETCH</span></td></tr>
+  <tr><td>Top-5 with peak month</td><td>'23</td><td>5 time</td><td class="bn">top subjects + peak month</td><td><span class="pill have">HAVE</span></td></tr>
+  <tr><td>Your Music Evolution (phases)</td><td>'24</td><td>5·7</td><td class="bn">তোমার ২০২৬ এর অধ্যায় (year phases)</td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Wrapped AI Podcast</td><td>'24</td><td>format</td><td class="bn">তোমার ২০২৬ অডিওতে (AI Bangla recap) <span class="tag">v2</span></td><td><span class="pill gap">STRETCH</span></td></tr>
+  <tr><td>AI Playlist</td><td>'24</td><td>7 forward</td><td class="bn">২০২৭ স্টাডি প্ল্যান (retention hook)</td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>CEO ask: favourite teacher</td><td>—</td><td>1</td><td class="bn">প্রিয় শিক্ষক (by live-class attendance)</td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>CEO ask: best subject on exams</td><td>—</td><td>1·5</td><td class="bn">পরীক্ষায় সেরা বিষয় (exam marks)</td><td><span class="pill get">GET</span></td></tr>
+</table>
+</section>
+
+<!-- 7 SIGNATURE -->
+<section id="signature">
+<h2><span class="n">07</span>Our five signature features for v1</h2>
+<p class="lead">Spotify is remembered for 2–3 signature slides a year, not 20. Here's the focused set I'd commit to — enough to feel like Wrapped, few enough to ship well, every one backed by data we have.</p>
+<div class="two">
+  <div class="card navy"><h4>1 · শিখো Learner Personality</h4><p>The finale. 4 measurable axes → 16 Bangla types. <i>This is the feature people will share.</i> (≈ Listening Personality)</p></div>
+  <div class="card navy"><h4>2 · তোমার পড়ার দিন</h4><p>Subject × time-of-day — the intimate "you study Physics at night" revelation. (≈ Audio Day)</p></div>
+  <div class="card navy"><h4>3 · তোমার ২০২৬ এর অধ্যায়</h4><p>Your year in named phases, each with its subject &amp; mood. The story spine. (≈ Music Evolution)</p></div>
+  <div class="card mag"><h4>4 · দুটো সত্যি, একটা মিথ্যা</h4><p>The interactive game that makes them <i>study their own year</i>. Cheap, delightful, sticky. (≈ Playing Cards)</p></div>
+  <div class="card mag"><h4>5 · ২০২৭ স্টাডি প্ল্যান</h4><p>The close that pulls them back in January — our actual success metric. (≈ AI Playlist)</p></div>
+</div>
+<p class="note">Plus the core stat cards and the two CEO asks (favourite teacher, best exam subject) as the floor. Everything else (Aura, Study Twin, AI podcast, Blend) is a <b>v2 backlog</b> — real, but not what we prove the concept on.</p>
+</section>
+
+<!-- 8 DONT -->
+<section id="dont">
+<h2><span class="n">08</span>What NOT to copy</h2>
+<ul>
+  <li><b>Don't lead with AI.</b> The 2024 backlash is the proof. Substance first; AI formats are a v2 garnish.</li>
+  <li><b>Don't fabricate comparisons.</b> "Top 5% in your class" is fine (we compute it); a made-up "study twin city" is not. Truthful or cut.</li>
+  <li><b>Don't ship 20 slides.</b> Wrapped feels tight because it's curated. Our engine's job is to <i>cut</i> to 9–12 per student, not to show everything.</li>
+  <li><b>Don't ignore the low-data student.</b> Spotify's users all listen a lot; <i>many</i> of our 30k won't have rich data. The gate + gentle fallback matters more for us than it ever did for Spotify — a hollow wrap for a light user is worse than none.</li>
+  <li><b>Don't forget the phone.</b> Cheap Android, patchy data. The web-story + light assets approach (C3) is a feature, not a compromise.</li>
+  <li><b>Don't copy the vibe, copy the method.</b> Bangla copy, exam-student psychology, teacher respect — the <i>tone</i> is ours; only the <i>engine</i> is Spotify's.</li>
+</ul>
+</section>
+
+<!-- 9 NEXT -->
+<section id="next">
+<h2><span class="n">09</span>What we do next</h2>
+<div class="two">
+  <div class="card">
+    <h4>Immediate (this week)</h4>
+    <ul>
+      <li>Align the team on the <b>5 signature features</b> + the floor, as v1 scope.</li>
+      <li>Define the <b>4 personality axes</b> and their thresholds with Product + Brand (names follow the axes, not the reverse).</li>
+      <li>Hand BI the <b>distribution asks</b> (so "top 5%" and "how surprising" are real).</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>I can produce next</h4>
+    <ul>
+      <li>The <b>16-type personality grid</b> fully written out (axis logic + Bangla names + the copy for each).</li>
+      <li>The per-student <b>JSON contract</b> for engineering (option a).</li>
+      <li>The <b>insight-engine spec</b> (gate/score/order) for SC-1737 (option c).</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<hr>
+<footer>
+  <b>Sources (feature facts verified):</b>
+  <a href="https://newsroom.spotify.com/2022-11-30/everything-you-need-to-know-about-2022-wrapped/">Spotify Newsroom — 2022 Wrapped</a> ·
+  <a href="https://www.engadget.com/spotify-wrapped-2022-130037719.html">Engadget — Listening Personality</a> ·
+  <a href="https://malaysia.news.yahoo.com/spotify-wrapped-2023-features-130317509.html">Yahoo — 2023 Me in 2023 / Sound Town</a> ·
+  <a href="https://techcrunch.com/2023/11/29/spotify-wrapped-2023-adds-ai-dj-and-blend-to-spotifys-annual-personalized-insights">TechCrunch — 2023 Wrapped</a> ·
+  <a href="https://techcrunch.com/2024/12/04/spotify-wrapped-2024-adds-an-ai-podcast-powered-by-googles-notebooklm">TechCrunch — 2024 AI podcast</a> ·
+  <a href="https://www.techradar.com/audio/spotify/spotify-wrapped-2024-is-here">TechRadar — 2024 Music Evolution</a> ·
+  <a href="https://campaignlive.com/article/spotifys-2021-wrapped-campaign-includes-games-videos-interactive-features/1734624">Campaign — 2021 Aura / Playing Cards</a>.
+  <br>Shikho mappings, principles and status are my own analysis, grounded in SC-1737, the 2025 PRD, the C3 prototype, and the shikho-spec warehouse. Illustrative Bangla names are placeholders for Brand to finalise.
+</footer>
+
+</div>
+</body>
+</html>

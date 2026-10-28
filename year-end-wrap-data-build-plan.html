@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Year-End Wrap 2026 — Data & Build Plan</title>
+<style>
+  :root{
+    color-scheme: light;
+    --ground:#F9F8F5; --paper:#FFFFFF; --sunken:#F1EFEA;
+    --ink:#1A1D26; --ink-2:#4B5060; --ink-3:#7C8090;
+    --line:#E3E0D8; --line-2:#EEECE6;
+    --navy:#354894; --magenta:#C2257F;
+    --navy-soft:#ECEEF8; --magenta-soft:#FBE8F2;
+    --have-fg:#2C7A4B; --have-bg:#E3F1E8;
+    --build-fg:#2457A7; --build-bg:#E7EEF9;
+    --get-fg:#9A6A06; --get-bg:#FAEFD3;
+    --gap-fg:#B8304B; --gap-bg:#FAE3E8;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ground); color:var(--ink); margin:0;
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:40px 24px 120px}
+  header.top{border-bottom:2px solid var(--navy);padding-bottom:22px;margin-bottom:8px}
+  .kicker{color:var(--magenta);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12.5px}
+  h1{font-size:34px;line-height:1.15;margin:.3em 0 .25em;letter-spacing:-.02em}
+  .sub{color:var(--ink-2);font-size:17px;max-width:70ch}
+  .meta{color:var(--ink-3);font-size:13px;margin-top:14px}
+  .meta b{color:var(--ink-2);font-weight:600}
+  h2{font-size:24px;margin:52px 0 14px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h2 .n{color:var(--magenta);font-weight:700;margin-right:10px}
+  h3{font-size:18px;margin:30px 0 10px}
+  h4{font-size:15px;margin:20px 0 6px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+  p{margin:10px 0}
+  a{color:var(--navy)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--sunken);padding:1.5px 6px;border-radius:5px;font-size:13.5px;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;color:#3a3f4d}
+  .lead{font-size:17px;color:var(--ink-2)}
+
+  nav.toc{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:26px 0 8px}
+  nav.toc h4{margin:0 0 10px;color:var(--ink-3)}
+  nav.toc ol{columns:2;column-gap:36px;margin:0;padding-left:20px}
+  nav.toc a{text-decoration:none}
+  nav.toc a:hover{text-decoration:underline}
+
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin:16px 0}
+  .card.navy{border-left:4px solid var(--navy)}
+  .card.mag{border-left:4px solid var(--magenta)}
+  .tldr{background:var(--navy-soft);border:1px solid #D4D9F0;border-radius:14px;padding:22px 26px;margin:22px 0}
+  .tldr h3{margin-top:0;color:var(--navy)}
+  .tldr ul{margin:8px 0}
+
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line-2);vertical-align:top}
+  th{background:var(--sunken);font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td code{font-size:12.5px}
+  .grp td{background:var(--navy-soft);font-weight:700;color:var(--navy);font-size:13px}
+
+  .pill{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap;letter-spacing:.02em}
+  .have{background:var(--have-bg);color:var(--have-fg)}
+  .build{background:var(--build-bg);color:var(--build-fg)}
+  .get{background:var(--get-bg);color:var(--get-fg)}
+  .gap{background:var(--gap-bg);color:var(--gap-fg)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:10px 18px;margin:14px 0 4px;font-size:13px;color:var(--ink-2)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.two{grid-template-columns:1fr}nav.toc ol{columns:1}}
+
+  .statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+  .statgrid .s{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .statgrid .s b{display:block;font-size:24px;color:var(--navy);line-height:1.1}
+  .statgrid .s small{color:var(--ink-3);font-size:12px}
+  @media(max-width:720px){.statgrid{grid-template-columns:repeat(2,1fr)}}
+
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+  .flow .b{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-size:13px;font-weight:600}
+  .flow .ar{color:var(--magenta);font-weight:800}
+
+  .note{font-size:13px;color:var(--ink-3);margin-top:6px}
+  .warn{background:var(--get-bg);border:1px solid #EAD9A6;border-radius:10px;padding:12px 16px;font-size:14px;margin:12px 0;color:#6e4f08}
+  .warn b{color:#5a3f05}
+  hr{border:none;border-top:1px solid var(--line);margin:40px 0}
+  footer{color:var(--ink-3);font-size:13px;margin-top:40px;border-top:1px solid var(--line);padding-top:18px}
+  .src{font-size:13px;color:var(--ink-2)}
+  .src b{color:var(--ink)}
+  .tag{display:inline-block;background:var(--magenta-soft);color:var(--magenta);font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:6px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">Shikho · Product + Data</div>
+  <h1>Year-End Wrap 2026 — what it is, what data it needs, and what to build</h1>
+  <p class="sub">A single read that pulls together the live 2025 review, the new 2026 Wrap spec, the prototype, and the actual warehouse tables — and turns them into a clear "have / build / get" plan.</p>
+  <div class="meta">
+    Prepared for <b>nusrat.mim@shikho.com</b> · 28 Oct 2026 · Sources: ClickUp <b>SC-1737</b> (2026 data spec) &amp; <b>ST-25781</b> + its PRD (2025 live feature), the <b>shikho-year-end-wrap</b> prototype repo, and the <b>shikho-spec</b> warehouse docs.
+  </div>
+</header>
+
+<nav class="toc">
+  <h4>On this page</h4>
+  <ol>
+    <li><a href="#tldr">The short version</a></li>
+    <li><a href="#current">What exists today (2025 review)</a></li>
+    <li><a href="#vision">The 2026 Wrap &amp; what's new</a></li>
+    <li><a href="#catalogue">Full data catalogue (have / build / get)</a></li>
+    <li><a href="#status">Data we have vs. data to get</a></li>
+    <li><a href="#build">What needs to be built</a></li>
+    <li><a href="#decisions">Open decisions &amp; risks</a></li>
+    <li><a href="#inputs">Inputs I still need from you</a></li>
+  </ol>
+</nav>
+
+<!-- ============ TLDR ============ -->
+<section id="tldr">
+<div class="tldr">
+  <h3>The short version</h3>
+  <ul>
+    <li><b>We already shipped a yearly review once.</b> Last December (<a href="https://app.clickup.com/t/86evu43u3">ST-25781</a>) we deployed a dual-mode <b>"2025 Year Wrapped" + "Q4 Review"</b> — 8 swipeable native cards, a rank, engagement text, and a native share sheet. That is the thing the new Wrap replaces.</li>
+    <li><b>The 2026 Wrap is a bigger, more personal story</b> (Spotify-Wrapped style), paid students only in release 1, built on a <b>tiered data layer</b> so Product can re-tune messaging without an engineering release.</li>
+    <li><b>Most of the numbers already exist</b> in the <code>datafuse</code> Postgres warehouse (<code>user_activity_duration_agg</code>, the <code>mcq_user_*</code> tables, <code>student_attendees</code>, <code>lessons</code>, <code>programs</code>, <code>user_activities</code>). The gaps are: <b>Shikho AI, QR scans, eBook opens, badges, and best-exam detail</b> — these live in service databases and need piping into the yearly job.</li>
+    <li><b>The main build is a data layer, not a UI.</b> One nightly/one-shot batch job → one Wrap record (JSON) per paid student → one API → a web story screen the Android app opens, plus share images and public links.</li>
+    <li><b>Direction C3 "Journey" is the recommended look;</b> the prototype is live at <a href="https://shikho-year-end-wrap.vercel.app/">shikho-year-end-wrap.vercel.app</a>.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ============ CURRENT ============ -->
+<section id="current">
+<h2><span class="n">01</span>What the yearly review is today</h2>
+<p class="lead">The "current yearly review" is the <b>Q4 &amp; Year-End User Review Report</b> (ST-25781), deployed Dec 2025–Jan 2026. It is a <b>dual-mode</b> feature driven by purchase history, and it is the direct predecessor of the 2026 Wrap.</p>
+
+<div class="two">
+  <div class="card navy">
+    <h4>Segment A — "Year Wrapped"</h4>
+    <p style="margin:4px 0">Students who bought the <b>full-year</b> syllabus. Stats aggregated <b>Jan–Dec</b>. Festive pink-gradient theme, confetti, "2025 Unlocked".</p>
+  </div>
+  <div class="card mag">
+    <h4>Segment B — "Q4 Review"</h4>
+    <p style="margin:4px 0">Students who bought <b>only Q4</b>. Stats for <b>Oct–Dec only</b>, with a <b>Q4-vs-Q3</b> comparison. Reuses the Q3 "beige" theme.</p>
+  </div>
+</div>
+
+<h3>How it works (mechanics worth reusing)</h3>
+<ul>
+  <li><b>Entry:</b> a home-screen banner — "তোমার ২০২৫ কেমন গেলো?" (yearly) / "এই তিন মাসে তুমি কেমন করলে?" (Q4) — shown when <code>is_report_available = true</code>.</li>
+  <li><b>Backend switch:</b> API takes <code>user_id</code>, <code>program_id</code>, <code>phase_id</code>, decides <code>report_type</code>, and returns all slide data incl. calculated fields (engagement level, streak, final score, rank).</li>
+  <li><b>Presentation:</b> swipeable <b>native</b> cards, per-slide gradients, header/footer text that changes by engagement tier (High / Moderate / Low).</li>
+  <li><b>Rank:</b> per-program cohort rank, shown only for <b>top 50</b>, with Bangla ordinals; ties take consecutive numbers.</li>
+  <li><b>Share:</b> native Android button captures a clean screenshot → Android share sheet; fallback PNG <b>1080×1920</b>.</li>
+</ul>
+
+<h3>The 8 slides it shows today</h3>
+<table>
+  <tr><th>#</th><th>Slide</th><th>Quarterly (Q4) user</th><th>Yearly (Wrapped) user</th></tr>
+  <tr><td>1</td><td>Overview</td><td colspan="2">3 stat cards: Class attendance %, Live-exam avg score %, Longest streak (days)</td></tr>
+  <tr><td>2</td><td>Live Class</td><td>Q4 attendance % + Q3 comparison (donut)</td><td>Yearly attendance %, quarter-wise bar chart (Q1–Q4)</td></tr>
+  <tr><td>3</td><td>Live Exam</td><td>Q4 avg score, total tests</td><td>Yearly exam stats + "best subject"</td></tr>
+  <tr><td>4</td><td>Top 3 Subjects <span class="tag">yearly only</span></td><td>—</td><td>Podium of top 3 subjects by live-exam score (skipped if &lt;3 subjects)</td></tr>
+  <tr><td>5</td><td>Weekday Activity</td><td colspan="2">Sun–Sat activity bars, busiest day highlighted</td></tr>
+  <tr><td>6</td><td>Streak</td><td>Longest streak in Q4</td><td>Longest streak in 2025</td></tr>
+  <tr><td>7</td><td>Study Time</td><td>Total (Oct/Nov/Dec), donut</td><td>Year total on a winding "roadmap", quarter pins</td></tr>
+  <tr><td>8</td><td>Final Score + Rank</td><td>Q4 composite /100, cohort rank (top 50)</td><td>Yearly composite /100, cohort rank (top 50)</td></tr>
+</table>
+<p class="note">So today's review is essentially <b>attendance + exams + streak + weekday + study time + score + rank</b>, built on live-class and live-exam data. The 2026 Wrap keeps all of this and goes much wider and more personal.</p>
+</section>
+
+<!-- ============ VISION ============ -->
+<section id="vision">
+<h2><span class="n">02</span>The 2026 Wrap, and what's new</h2>
+<p class="lead">Per SC-1737: at year end, <b>every paid student</b> gets a short, personal, shareable story of their 2026 on Shikho (1 Jan → a December cut-off). The spec deliberately defines <b>only the data layer</b> — Product/design build any wrap idea on top, tuned by tiers, with no new engineering request.</p>
+
+<h3>Design principles baked into the spec</h3>
+<ul>
+  <li><b>Tiers &amp; thresholds are settings.</b> Every metric can be split into tiers (High/Moderate/Low, cut-offs configurable) and has a <b>minimum</b> below which the frontend may hide it — changeable with <b>no app release</b>.</li>
+  <li><b>Per-subject and per-month splits are kept</b> so "personal insights" (e.g. "your accuracy rose in the months you joined more live classes") can be derived later without new data work.</li>
+  <li><b>Success metrics:</b> open rate, finish rate, share rate, and January-2027 return rate vs. non-openers.</li>
+</ul>
+
+<h3>Illustrative student (from the C3 prototype)</h3>
+<div class="statgrid">
+  <div class="s"><b>187</b><small>active days</small></div>
+  <div class="s"><b>23</b><small>longest streak</small></div>
+  <div class="s"><b>142h</b><small>study time</small></div>
+  <div class="s"><b>63/72</b><small>live classes</small></div>
+  <div class="s"><b>148</b><small>quizzes</small></div>
+  <div class="s"><b>2,860m</b><small>video watched</small></div>
+  <div class="s"><b>Physics</b><small>top subject (41h)</small></div>
+  <div class="s"><b>Regular</b><small>learner personality</small></div>
+</div>
+<p class="note">Prototype flow (C3 "Journey"): home banner → intro → active days → streak → night-owl % → live classes → quizzes → video → top subject → learner personality → shareable card. Tap right to go forward, left to go back.</p>
+
+<h3>New in 2026 vs. the 2025 review</h3>
+<table>
+  <tr><th>Area</th><th>2025 review</th><th>2026 Wrap — new</th></tr>
+  <tr><td>Audience</td><td>Yearly + Q4 buyers</td><td>All paid students (tiered messaging instead of two hard modes)</td></tr>
+  <tr><td>Breadth</td><td>Attendance, exams, streak, weekday, study time, score</td><td>+ Active days &amp; calendar, video, quizzes/questions/accuracy, <b>top subject/chapter</b>, <b>time-of-day (night owl)</b>, <b>favourite teacher</b>, <b>Shikho AI</b>, <b>badges</b>, <b>years with Shikho / lifetime history</b></td></tr>
+  <tr><td>Personality</td><td>Engagement tier text only</td><td>A derived <b>"learner personality"</b> + many per-student insights</td></tr>
+  <tr><td>Flexibility</td><td>Logic largely in code</td><td>Tiers/cut-offs/minimums as <b>settings</b>, no release to retune</td></tr>
+  <tr><td>Delivery</td><td>Native cards</td><td>Recommended: <b>web story</b> opened by the app (C3), easier to iterate; share images + <b>public share links</b></td></tr>
+  <tr><td>Rank</td><td>Per-program cohort rank, top 50</td><td>Candidate new slides: <b>percentile</b>, most-improved subject, topics that got stronger</td></tr>
+</table>
+</section>
+
+<!-- ============ CATALOGUE ============ -->
+<section id="catalogue">
+<h2><span class="n">03</span>Full data catalogue — every metric, its source, and its status</h2>
+<p class="lead">From the SC-1737 spec, grouped. The status column answers your question directly: do we <b>have</b> it, must we <b>build/derive</b> it from data we hold, or must we <b>get</b> it (pipe a service DB into the warehouse)?</p>
+<div class="legend">
+  <span><span class="pill have">HAVE</span> in <code>datafuse</code> warehouse now</span>
+  <span><span class="pill build">BUILD</span> derive from tables we have</span>
+  <span><span class="pill get">GET</span> source exists, pipe into the job</span>
+  <span><span class="pill gap">GAP</span> source unconfirmed / to locate</span>
+</div>
+
+<table>
+  <tr><th>Metric</th><th>Source (per spec)</th><th>Status</th><th>Note</th></tr>
+
+  <tr class="grp"><td colspan="4">Profile</td></tr>
+  <tr><td>First name, class, group, joining class, date joined</td><td><code>Students</code></td><td><span class="pill have">HAVE</span></td><td>Confirm <code>Students.class</code> is refreshed yearly (BI: Mahizebin/Novera).</td></tr>
+  <tr><td>Years with Shikho</td><td><code>Transactions</code> (distinct program years)</td><td><span class="pill build">BUILD</span></td><td>Cross-check against buying season; limited by how far history goes.</td></tr>
+
+  <tr class="grp"><td colspan="4">Active days &amp; streak</td></tr>
+  <tr><td>Active days, active dates, per-month, longest streak</td><td><code>user_activity_duration_agg.activity_date</code></td><td><span class="pill have">HAVE</span></td><td>Table live since 2024-11-03. Covers video, live class, quiz, live exam, model test, smart notes.</td></tr>
+  <tr><td>+ Shikho AI day counts as active</td><td><code>gen_ai_conversations.created_at</code></td><td><span class="pill get">GET</span></td><td>Gen-AI service (Mongo); not in <code>datafuse</code> warehouse docs — pipe in.</td></tr>
+  <tr><td>+ QR scan day counts as active</td><td><code>qr_scan_logs.created_at</code></td><td><span class="pill get">GET</span></td><td>FutureBook QR; confirm location + pipe in.</td></tr>
+  <tr><td>+ eBook open day counts as active</td><td>not found yet (<code>attachment_view_logs</code>?)</td><td><span class="pill gap">GAP</span></td><td>Engineering to locate where eBook opens are logged.</td></tr>
+
+  <tr class="grp"><td colspan="4">Study time</td></tr>
+  <tr><td>Total time, by content type, per active day, per month, content-type×month</td><td><code>user_activity_duration_agg</code> (<code>*_duration</code>, seconds)</td><td><span class="pill have">HAVE</span></td><td>7 activity types already aggregated.</td></tr>
+  <tr><td>Study time <b>by subject</b></td><td><code>watch_logs</code>, <code>program_video_watch_logs</code>, <code>student_attendees</code>↔<code>lessons</code>, <code>mcq_user_chapter_daily</code></td><td><span class="pill build">BUILD</span></td><td>The agg table has <b>no subject column</b> — must reconstruct from subject-carrying logs; verify it reconciles with the agg total.</td></tr>
+
+  <tr class="grp"><td colspan="4">Live class attendance</td></tr>
+  <tr><td>Classes joined, time per class, class length, attendance rate, live-class time, by subject</td><td><code>student_attendees</code>, <code>teacher_attendees</code>, <code>lessons</code>, <code>user_activity_duration_agg.live_class_duration</code></td><td><span class="pill have">HAVE</span></td><td>Join <code>student_attendees</code>↔<code>teacher_attendees</code> on <code>content_id</code> (or <code>room_id</code>), BI's method.</td></tr>
+  <tr><td>Attendance rule (≥X min or ≥Y% of class)</td><td>derived</td><td><span class="pill build">BUILD</span></td><td>Type &amp; value are settings. Check <code>duration</code> sums across rejoins (<code>join_count</code>/<code>session_count</code>).</td></tr>
+  <tr><td>Most-attended ("favourite") teacher</td><td><code>teacher_attendees.teacher_id</code>↔<code>Teachers</code></td><td><span class="pill build">BUILD</span></td><td>Live-class attendance only.</td></tr>
+  <tr><td>Classes held (denominator)</td><td><code>lessons</code> (LiveClass) by <code>academic_program_id</code></td><td><span class="pill build">BUILD</span></td><td>Confirm <code>lessons</code> holds pre-new-program-system classes.</td></tr>
+
+  <tr class="grp"><td colspan="4">Quizzes</td></tr>
+  <tr><td>Quizzes taken, questions answered/right, hard-right, by subject</td><td><code>mcq_user_quiz_daily</code>, <code>mcq_user_chapter_daily</code></td><td><span class="pill have">HAVE</span></td><td>Fed by <code>mcq_session_agg_to_kpi_dag</code>. Reconcile the two quiz sources.</td></tr>
+
+  <tr class="grp"><td colspan="4">Video</td></tr>
+  <tr><td>Video time, videos watched (recorded + animated)</td><td><code>user_activity_duration_agg</code> (<code>recorded_*</code>, <code>animated_*</code>)</td><td><span class="pill have">HAVE</span></td><td>—</td></tr>
+
+  <tr class="grp"><td colspan="4">Daily pattern</td></tr>
+  <tr><td>Biggest day, study by weekday</td><td><code>user_activity_duration_agg</code> summed by day</td><td><span class="pill have">HAVE</span></td><td>—</td></tr>
+  <tr><td>Time-of-day split (morning/afternoon/night/after-midnight)</td><td><code>datafuse.user_activity_agg</code></td><td><span class="pill build">BUILD</span></td><td>Confirm which hours each band covers &amp; whether it's daily rows or a snapshot.</td></tr>
+
+  <tr class="grp"><td colspan="4">Subjects, chapters, improvement</td></tr>
+  <tr><td>Questions by subject/chapter, accuracy by month</td><td><code>mcq_user_chapter_daily</code></td><td><span class="pill have">HAVE</span></td><td>Filter out "orientation" subjects; apply min-questions threshold (setting).</td></tr>
+
+  <tr class="grp"><td colspan="4">Exam results</td></tr>
+  <tr><td>Model tests / live exams taken</td><td><code>user_activity_duration_agg</code> (<code>model_test_count</code>, <code>live_exam_count</code>)</td><td><span class="pill have">HAVE</span></td><td>Counts only.</td></tr>
+  <tr><td>Best model test (grade/score/subject)</td><td><code>model_test_session</code></td><td><span class="pill get">GET</span></td><td>Live-exam service; confirm result detail is in warehouse or pipe in.</td></tr>
+  <tr><td>Best live exam + by-subject results</td><td><code>user_activities</code> (LiveExam: <code>score</code>, <code>total_score</code>)</td><td><span class="pill have">HAVE</span></td><td>Same min-count threshold as quiz accuracy.</td></tr>
+
+  <tr class="grp"><td colspan="4">Other products</td></tr>
+  <tr><td>Shikho AI questions, top subject, by subject×month</td><td><code>gen_ai_conversations</code>, <code>gen_ai_sessions.subject_name</code></td><td><span class="pill get">GET</span></td><td>Pipe gen-AI into the job (also used for active-day above).</td></tr>
+  <tr><td>Badges earned (count + names)</td><td><code>StudentBadges</code>↔<code>GamificationBadges</code></td><td><span class="pill get">GET</span></td><td>Gamification service; confirm warehouse coverage.</td></tr>
+
+  <tr class="grp"><td colspan="4">History since joining (returning students)</td></tr>
+  <tr><td>Lifetime study time / questions / live classes, per-year study, class per year</td><td><code>user_activity_duration_agg</code>, <code>mcq_user_chapter_daily</code>, <code>Transactions</code>, <code>programs</code></td><td><span class="pill gap">GAP</span></td><td>Limited by table history depth — <code>user_activity_duration_agg</code> only since late 2024, so pre-2024 lifetime totals will under-count.</td></tr>
+
+  <tr class="grp"><td colspan="4">Course &amp; rank</td></tr>
+  <tr><td>Course name, upcoming live classes</td><td><code>programs</code> via <code>Transactions.course_id</code>, <code>lessons</code></td><td><span class="pill build">BUILD</span></td><td>Confirm 2027 schedule is in <code>lessons</code> by cut-off.</td></tr>
+  <tr><td>Rank / percentile (candidate new slide)</td><td>Leaderboard service + composite score (as in 2025 review)</td><td><span class="pill build">BUILD</span></td><td>Leaderboard already ranks yearly/monthly/per-school; 2025 review already computed per-program cohort rank.</td></tr>
+</table>
+</section>
+
+<!-- ============ STATUS ============ -->
+<section id="status">
+<h2><span class="n">04</span>Data we have vs. data we need to get</h2>
+
+<div class="two">
+  <div class="card navy">
+    <h4 style="color:var(--have-fg)">Already have (warehouse)</h4>
+    <ul style="margin:6px 0">
+      <li>Active days, dates, streaks — <code>user_activity_duration_agg</code></li>
+      <li>Study time &amp; durations by 7 content types, per day/month</li>
+      <li>Video time &amp; counts</li>
+      <li>Quizzes, questions, correct, accuracy, by subject/chapter — <code>mcq_user_*</code></li>
+      <li>Live class attendance &amp; teachers — <code>student_attendees</code>, <code>teacher_attendees</code>, <code>lessons</code></li>
+      <li>Live-exam scores — <code>user_activities</code></li>
+      <li>Profile &amp; purchases — <code>Students</code>, <code>Transactions</code>, <code>programs</code></li>
+    </ul>
+  </div>
+  <div class="card mag">
+    <h4 style="color:var(--get-fg)">Need to get / build</h4>
+    <ul style="margin:6px 0">
+      <li><b>GET</b> Shikho AI usage → warehouse (<code>gen_ai_*</code>)</li>
+      <li><b>GET</b> QR scans (<code>qr_scan_logs</code>)</li>
+      <li><b>GET</b> badges (<code>StudentBadges</code>)</li>
+      <li><b>GET</b> best model-test detail (<code>model_test_session</code>)</li>
+      <li><b>GAP</b> eBook opens — locate the log first</li>
+      <li><b>BUILD</b> study-time-by-subject (no subject column in agg)</li>
+      <li><b>BUILD</b> time-of-day bands, attendance rule, favourite teacher</li>
+      <li><b>GAP</b> deep lifetime history (tables start ~late 2024)</li>
+    </ul>
+  </div>
+</div>
+
+<div class="warn">
+  <b>One structural gap to flag early:</b> the main aggregate table has <b>no subject dimension</b>, yet "top subject", "strongest/weakest subject" and "subject × time-of-day" are the most <i>personal</i> parts of the Wrap. Reconstructing subject-level study time from the per-log tables is the single biggest derivation task — worth validating with BI before committing the subject slides.
+</div>
+</section>
+
+<!-- ============ BUILD ============ -->
+<section id="build">
+<h2><span class="n">05</span>What needs to be built</h2>
+
+<h3>Data layer — the core of the work</h3>
+<div class="flow">
+  <span class="b">Warehouse tables</span><span class="ar">→</span>
+  <span class="b">Piped service data (AI, QR, badges, exams)</span><span class="ar">→</span>
+  <span class="b">Yearly Wrap batch job</span><span class="ar">→</span>
+  <span class="b">One Wrap record / student (JSON)</span><span class="ar">→</span>
+  <span class="b">Tier settings applied</span>
+</div>
+<ul>
+  <li><b>Yearly aggregation job</b> — one run that, per paid student, rolls up every metric above into a single record for 1 Jan → cut-off. Natural home: a new DAG in <code>data_pipeline_bronze</code> alongside the existing <code>user_activity_*</code> and <code>mcq_session_agg</code> DAGs.</li>
+  <li><b>Pipe the gap sources</b> into that job: Shikho AI (<code>gen_ai_*</code>), QR scans, badges, best model-test; locate eBook opens.</li>
+  <li><b>Subject-level reconstruction</b> join (video + live class + quiz logs) with a reconciliation check vs. the agg totals.</li>
+  <li><b>Tier/threshold config</b> — a settings store (tiers, cut-offs, minimums per metric) read at record build or read time, changeable with no release.</li>
+  <li><b>Paid-student eligibility + minimum-activity rule</b> (decision pending) and the <code>is_report_available</code> flag, as in 2025.</li>
+</ul>
+
+<h3>API</h3>
+<ul>
+  <li>A Wrap endpoint (gateway) returning the per-student record, like the 2025 review API (<code>user_id</code>, <code>program_id</code>, <code>phase_id</code> → data points + calculated fields). Reuse its rank and composite-score logic.</li>
+</ul>
+
+<h3>Frontend &amp; app</h3>
+<ul>
+  <li><b>Web story screen</b> (recommended C3 "Journey") the Android app opens — faster to iterate than native cards.</li>
+  <li><b>JS ↔ Android bridge</b> for the share action (reuse 2025's native screenshot → share sheet), <b>PNG 1080×1920</b> share images, and <b>public share links</b> so a friend can open a shared card.</li>
+  <li><b>Entry points:</b> home banner "তোমার ২০২৬", launch-day push notification, shared-link landing. (The home-banner slot is the same one the 2025 review used.)</li>
+  <li><b>Share privacy:</b> option to hide the student's name on the public card; agree what may appear + whether to attach a referral code.</li>
+</ul>
+
+<h3>What we can reuse from 2025 (don't rebuild)</h3>
+<p class="src">Native share sheet + screenshot capture · engagement-tier header/footer text pattern · per-program cohort rank (top 50, Bangla ordinals, tie handling) · the report-availability flag &amp; home-banner entry · the by-user/program/phase API shape · composite-score calculation.</p>
+</section>
+
+<!-- ============ DECISIONS ============ -->
+<section id="decisions">
+<h2><span class="n">06</span>Open decisions &amp; risks</h2>
+<div class="two">
+  <div class="card">
+    <h4>Decisions (Product / leadership)</h4>
+    <ul style="margin:6px 0">
+      <li><b>Direction:</b> confirm C3 Journey (recommended) — borrow B3's marksheet share card.</li>
+      <li><b>Who gets it:</b> paid only vs. trial too; minimum activity to qualify.</li>
+      <li><b>Definitions:</b> a "study day", live attendance (live only vs. live+recording), a "quiz".</li>
+      <li><b>Cut-off date</b> in December; launch window 26–31 Dec.</li>
+      <li><b>Which new slides:</b> percentile, most-improved subject, topics that got stronger.</li>
+      <li><b>Sharing rules</b> + referral code; web screen vs. native.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Risks / to verify with BI &amp; Eng</h4>
+    <ul style="margin:6px 0">
+      <li>No subject column in the agg table → subject slides depend on a reconstruction that must reconcile.</li>
+      <li>History depth: lifetime totals under-count for pre-2024 students.</li>
+      <li>Gap sources (AI, QR, eBook, badges, model-test) not confirmed in the warehouse.</li>
+      <li><code>student_attendees.duration</code> across rejoins; multiple teacher rows per class.</li>
+      <li>Does <code>lessons</code> hold every 2026 live class (incl. pre-new-program)?</li>
+      <li>Spec tables are generated from code and can be stale — verify against production before building.</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- ============ INPUTS ============ -->
+<section id="inputs">
+<h2><span class="n">07</span>Inputs I still need from you</h2>
+<p class="lead">I pulled everything reachable through ClickUp, GitHub, the prototype and the spec server. Three sources I could not open myself — they'd sharpen this further:</p>
+<ul>
+  <li><b>CEO's email thread</b> — Gmail isn't reachable from here. Paste the key points (or forward the text) and I'll fold his direction into the plan and flag anything it changes.</li>
+  <li><b>Figma — current app UI</b> (<a href="https://www.figma.com/design/3FJ26FGdggztsXrkPsqqtJ/Homepage-Redesign-2026--DH-">Homepage Redesign 2026</a>): to place the Wrap banner in the real 2026 home, I need the frame (export a PNG or grant Figma MCP access).</li>
+  <li><b>Figma — last year's placement</b> (<a href="https://www.figma.com/design/sjBitwjRfU3FGOJJ2jguQF/App-Homepage-Revamp--DH-?node-id=6407-3645">App Homepage Revamp</a>, node 6407-3645): confirms where the 2025 review banner sat.</li>
+  <li><b>BI confirmation</b> on the "not checked yet" items (Mahizebin / Novera) and whether the gap sources are already mirrored anywhere.</li>
+</ul>
+<p class="note">Say the word and I can: (a) turn the data catalogue into the actual "one JSON" record shape for engineering, (b) write the BI verification checklist as a ClickUp checklist on SC-1737, or (c) draft the C3 confirmation + build-ticket breakdown.</p>
+</section>
+
+<hr>
+<footer>
+  Built from: ClickUp SC-1737 (2026 data spec, Tasmeet) · ST-25781 + PRD "Q4 &amp; Year-End User Review Report" (2025 live feature) · ShikhoTech/shikho-year-end-wrap prototype (commit d6b2e9d, C3 recommended) · shikho-spec warehouse docs (data_pipeline_bronze, kpi, gen-ai, gamification, leaderboard). Spec docs are generated from code and may lag production — verify table names before building.
+</footer>
+
+</div>
+</body>
+</html>

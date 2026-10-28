@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrap 2026 — Direction B</title>
+<style>
+:root{
+  color-scheme: light;
+  --ground:#F9F8F5; --paper:#FFFFFF; --sunken:#F1EFEA;
+  --ink:#1A1D26; --ink-2:#4B5060; --ink-3:#7C8090;
+  --line:#E3E0D8; --line-2:#EEECE6;
+  --navy:#354894; --magenta:#C2257F;
+  --code-bg:#1E2230; --code-ink:#E7E9F0;
+  --red:#B8304B; --red-bg:#FAE3E8;
+  --green:#2C7A4B; --green-bg:#E3F1E8;
+  --amber:#9A6A06; --amber-bg:#FAEFD3;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font:15.5px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1040px;margin:0 auto;padding:30px 20px 90px}
+.kick{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:700}
+h1{font-size:30px;margin:6px 0 6px;letter-spacing:-.01em}
+.sub{color:var(--ink-2);font-size:15px;margin:0;max-width:70ch}
+.src{font-size:12.5px;color:var(--ink-3);margin:10px 0 0}
+.src code{background:var(--sunken);padding:1px 5px;border-radius:4px;color:var(--navy)}
+nav.toc{position:sticky;top:0;background:var(--ground);border-bottom:1px solid var(--line);
+  display:flex;gap:8px;flex-wrap:wrap;padding:12px 0;margin:16px 0 0;z-index:9}
+nav.toc a{font-size:13px;font-weight:600;color:var(--navy);text-decoration:none;
+  background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 13px}
+h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--navy);
+  display:inline-block;padding:6px 14px;border-radius:7px;margin:44px 0 6px}
+h3{font-size:20px;margin:22px 0 2px;color:var(--navy)}
+.part-intro{color:var(--ink-2);max-width:72ch;margin:6px 0 10px}
+
+.slide{display:flex;gap:26px;align-items:flex-start;background:var(--paper);border:1px solid var(--line);
+  border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 1px 0 rgba(53,72,148,.03)}
+.slide .shot{flex:0 0 250px}
+.slide .shot img{width:250px;border-radius:14px;border:1px solid var(--line);display:block;background:#2a2550}
+.slide .shot .cap{font-size:12px;color:var(--ink-3);text-align:center;margin-top:6px}
+.slide .body{flex:1 1 auto;min-width:0}
+.slide .step{font-size:12px;font-weight:700;color:var(--magenta);letter-spacing:.05em;text-transform:uppercase}
+.slide h4{font-size:19px;margin:3px 0 8px}
+.slide h4 .bn{color:var(--navy)}
+.slide p{margin:7px 0}
+.kv{margin:12px 0 0;border-top:1px dashed var(--line);padding-top:10px;font-size:13.5px}
+.kv div{margin:4px 0}
+.kv b{color:var(--navy)}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:4px}
+.p-have{background:var(--green-bg);color:var(--green)}
+.p-build{background:var(--amber-bg);color:var(--amber)}
+.p-gap{background:var(--red-bg);color:var(--red)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;
+  background:var(--sunken);padding:1px 5px;border-radius:4px;color:#2b2f3a}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13px;background:var(--paper);
+  border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line-2);vertical-align:top}
+th{background:#EEF0F7;color:var(--navy);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+tr:last-child td{border-bottom:0}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:9px;padding:13px 15px;overflow-x:auto;
+  font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:8px 0}
+pre .c{color:#8A93A8}
+.note{font-size:13.5px;background:var(--sunken);border:1px solid var(--line);border-left:3px solid var(--amber);
+  border-radius:7px;padding:11px 14px;margin:14px 0}
+.note b{color:var(--amber)}
+.gapbox{background:var(--red-bg);border:1px solid #e9bcc6;border-radius:9px;padding:12px 15px;margin:16px 0;font-size:14px}
+.gapbox b{color:var(--red)}
+ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
+@media(max-width:720px){.slide{flex-direction:column}.slide .shot{flex-basis:auto;align-self:center}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="kick">Shikho Year-End Wrap 2026 · Productization</div>
+<h1>Direction B — “Marksheet”: the product &amp; the build</h1>
+<p class="sub">The idea we are productizing is the prototype at <b>shikho-year-end-wrap.vercel.app/?v=b</b> — the year rendered as a Shikho notebook (খাতা) that ends in a shareable marksheet. This document is in two halves: <b>Part 1</b> walks every screen of the real prototype and says where each number comes from; <b>Part 2</b> is the build spec — APIs, database columns, states, and the gaps to close.</p>
+<p class="src">Screens captured live from <code>?v=b</code> on 28 Oct 2026 · example student “নিশাত, Class 9 Science” (the prototype states all numbers are examples) · data mapping from <code>SC-1737</code> · backend from <code>ST-25781</code> + shikho-spec <code>analytics</code>/<code>kpi</code>/<code>data_pipeline_bronze</code>.</p>
+
+<nav class="toc">
+  <a href="#part1">Part 1 · The product (walkthrough)</a>
+  <a href="#part2">Part 2 · The build (spec)</a>
+  <a href="#gaps">Open gaps</a>
+</nav>
+
+<!-- ======================= PART 1 ======================= -->
+<h2 id="part1">Part 1 · The product</h2>
+<h3>What Direction B is</h3>
+<p class="part-intro">Three directions were prototyped (A Poster, B Marksheet, C Journey). <b>B is the Marksheet</b>: the year as a Shikho notebook (খাতা), a rubber-stamp for the learner type, and a marksheet share card at the end. It lives inside the real app home and opens from a banner. Tap the right half of the phone to advance, left half to go back, press-and-hold to pause.</p>
+
+<!-- 0 entry -->
+<div class="slide">
+  <div class="shot"><img src="shots/b_00_home_full.jpg" alt="Home with Wrap banner"><div class="cap">Home · entry point</div></div>
+  <div class="body">
+    <div class="step">Entry · on the real home screen</div>
+    <h4><span class="bn">তোমার ২০২৬ খাতা</span> — the banner that opens the story</h4>
+    <p>The Wrap is not a separate app. It sits on the paid student’s home as a banner card — <b>“তোমার ২০২৬ খাতা / সারা বছরের পড়ার হিসাব এক খাতায়”</b> with a <b>খাতা খোলা</b> button. Tapping it opens the full-screen story.</p>
+    <div class="kv">
+      <div><b>Placement:</b> prime home slot, above the lesson cards, under the greeting (হ্যালো, নিশাত).</div>
+      <div><b>Who sees it:</b> paid students only, first release (<code>SC-1737</code>).</div>
+      <div><b>Build note:</b> in the current app, this slot is occupied by the profile card + a 6-step collapsing hero — the banner must be designed to live inside that scroll behaviour <span class="pill p-build">design</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 1-2 cover -->
+<div class="slide">
+  <div class="shot"><img src="shots/b_02_cover_filled.png" alt="Notebook cover filled"><div class="cap">Slide 1 · cover (fills in on open)</div></div>
+  <div class="body">
+    <div class="step">Slide 1 · profile</div>
+    <h4>The notebook cover — <span class="bn">নাম · শ্রেণি · বিভাগ</span></h4>
+    <p>The story opens on a “বার্ষিক খাতা” cover that writes the student’s identity in by hand: <b>নাম নিশাত · শ্রেণি নবম · বিভাগ বিজ্ঞান</b>. Pure personalisation, zero computation — it just makes the notebook theirs.</p>
+    <div class="kv">
+      <div><b>Data:</b> <code>Students.fist_name</code> (sic), <code>Students.class</code>, <code>Students.study_group</code> <span class="pill p-have">have</span></div>
+      <div><b>Window:</b> current profile.</div>
+      <div><b>Check:</b> <code>Students.class</code> may not update yearly — BI (Mahizebin/Novera) to confirm it reflects the 2026 class.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 study time -->
+<div class="slide">
+  <div class="shot"><img src="shots/b_03_studytime.png" alt="Study time 142 hours"><div class="cap">মোট পড়ার সময়</div></div>
+  <div class="body">
+    <div class="step">Slide 2 · study time</div>
+    <h4><span class="bn">মোট পড়ার সময় — ১৪২ ঘণ্টা</span></h4>
+    <p>Total time studied, made concrete: <b>১৪২ ঘণ্টা ÷ ৬ = ২৩.৭ → প্রায় ২৪টা পুরো স্কুল দিনের সমান</b> (each notebook mark = one 6-hour school day). Turning a raw number into something a 15-year-old feels.</p>
+    <div class="kv">
+      <div><b>Data:</b> sum of all <code>*_duration</code> columns in <code>user_activity_duration_agg</code> (seconds) <span class="pill p-have">have</span></div>
+      <div><b>Framing:</b> “school days” = total_seconds ÷ (6×3600). A presentation setting, not a new column.</div>
+      <div><b>Window:</b> 2026-01-01 → cut-off date in December.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 attendance -->
+<div class="slide">
+  <div class="shot"><img src="shots/b_04_attendance.png" alt="Attendance 63 of 72"><div class="cap">লাইভ ক্লাসের হাজিরা</div></div>
+  <div class="body">
+    <div class="step">Slide 3 · live-class attendance</div>
+    <h4><span class="bn">লাইভ ক্লাসের হাজিরা — ৬৩ / ৭২</span></h4>
+    <p>An attendance register (হাজিরা খাতা) that ticks off every class: <b>তুমি ৭২টার মধ্যে ৬৩টা লাইভ ক্লাসে ছিলে</b>. High attendance earns a title stamp — <b>ফার্স্ট বেঞ্চার</b> (এই বছরের খেতাব).</p>
+    <div class="kv">
+      <div><b>Joined:</b> <code>student_attendees</code>, counting a class only when the student stayed ≥ a minimum (e.g. 10 min or 30% of class length) <span class="pill p-have">have</span></div>
+      <div><b>Held:</b> <code>lessons</code> where <code>content_type = LiveClass</code>, by <code>academic_program_id</code>, from enrolment date.</div>
+      <div><b>Rate:</b> joined ÷ held. Join on <code>content_id</code> (or <code>room_id</code> when empty) to <code>teacher_attendees</code> for class length.</div>
+      <div><b>Badge:</b> “ফার্স্ট বেঞ্চার” = a <b>tier</b> on attendance rate (thresholds are settings, not code) <span class="pill p-build">tier config</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5 quiz -->
+<div class="slide">
+  <div class="shot"><img src="shots/b_05_quiz.png" alt="Quizzes 148"><div class="cap">কুইজের হিসাব</div></div>
+  <div class="body">
+    <div class="step">Slide 4 · quizzes</div>
+    <h4><span class="bn">কুইজের হিসাব — ১৪৮টা কুইজ</span></h4>
+    <p>Quizzes done across the year, drawn as a cumulative graph (প্রতি মাস শেষে মোট কুইজ, মার্চ → ডিসেম্বর), with a nudge — <b>আর ২টা হলেই কুইজ চ্যাম্পিয়ন</b> — and a <b>কুইজ যোদ্ধা</b> badge.</p>
+    <div class="kv">
+      <div><b>Count:</b> <code>mcq_user_quiz_daily.quiz_completed</code>, cross-checked with <code>user_activity_duration_agg.quiz_count</code> <span class="pill p-have">have</span></div>
+      <div><b>Monthly curve:</b> quizzes aggregated per month (12 points).</div>
+      <div><b>Check:</b> SC-1737 flags the two quiz sources may not match — reconcile which is authoritative.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 6 video -->
+<div class="slide">
+  <div class="shot"><img src="shots/b_06_video.png" alt="Video 2860 minutes"><div class="cap">ভিডিও দেখা</div></div>
+  <div class="body">
+    <div class="step">Slide 5 · video</div>
+    <h4><span class="bn">ভিডিও দেখা — ২,৮৬০ মিনিট</span></h4>
+    <p>Minutes of video watched, told as film strips: <b>প্রায় ২৪টা সিনেমার সমান</b> (each cell = one 2-hour movie). Badge: <b>ভিডিও ম্যারাথনার</b>.</p>
+    <div class="kv">
+      <div><b>Data:</b> <code>recorded_videos_duration</code> + <code>animated_videos_duration</code> (seconds); counts <code>recorded_videos_count</code> + <code>animated_videos_count</code> <span class="pill p-have">have</span></div>
+      <div><b>Framing:</b> “movies” = total_minutes ÷ 120.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 7-8 learner type -->
+<div class="slide">
+  <div class="shot">
+    <img src="shots/b_07_stamp_prompt.png" alt="Stamp prompt">
+    <div class="cap">Tap → stamp falls</div>
+    <img src="shots/b_08_learnertype.png" alt="Regular Studier stamp" style="margin-top:10px">
+    <div class="cap">নিয়মিত পড়ুয়া · ১৮৭ দিন</div>
+  </div>
+  <div class="body">
+    <div class="step">Slide 6 · learner type (the signature moment)</div>
+    <h4><span class="bn">তোমার পড়ার ধরন → নিয়মিত পড়ুয়া</span></h4>
+    <p>This is the “learned something about myself” beat the CEO asked for. The student <b>taps to drop a rubber stamp</b>, and the year’s habit is named: <b>নিয়মিত পড়ুয়া</b> (Regular Studier). Under it: <b>তুমি ১৮৭ দিন পড়তে এসেছ — সপ্তাহে গড়ে প্রায় ৫ দিন</b>, on a GitHub-style activity grid, with the longest streak called out: <b>২ থেকে ২৪ আগস্ট, টানা ২৩ দিন!</b></p>
+    <div class="kv">
+      <div><b>Active days (১৮৭):</b> distinct <code>user_activity_duration_agg.activity_date</code> — plus, per SC-1737, days where the only activity was Shikho AI (<code>gen_ai_conversations</code>), a QR scan (<code>qr_scan_logs</code>) or an eBook open <span class="pill p-build">GET-source</span></div>
+      <div><b>Streak (২৩):</b> longest run of back-to-back active dates, with start/end.</div>
+      <div><b>Grid:</b> the full list of active dates (one cell per day).</div>
+      <div><b>The stamp itself:</b> the learner “type” — here the <b>Rhythm</b> axis (≥ ~5 active days/week → নিয়মিত). This is the one page that needs a <b>type-assignment rule</b> defined and, critically, a BI check that the types actually split across students <span class="pill p-gap">define + verify</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 9 marksheet -->
+<div class="slide">
+  <div class="shot"><img src="shots/b_09_marksheet.png" alt="Marksheet share card"><div class="cap">মার্কশিট ২০২৬ · share card</div></div>
+  <div class="body">
+    <div class="step">Slide 7 · the share card (the point of the whole thing)</div>
+    <h4><span class="bn">মার্কশিট ২০২৬</span> — the shareable climax</h4>
+    <p>Everything collapses into one Shikho-branded marksheet — <b>নিশাতের এক বছরের পড়ার হিসাব</b> — with a serial no., date, name/class/dept, and every stat as a result row:</p>
+    <table>
+      <tr><th>বিবরণ</th><th>ফলাফল</th><th>Source</th></tr>
+      <tr><td>পড়ার দিন</td><td>১৮৭ দিন</td><td>active days</td></tr>
+      <tr><td>মোট পড়ার সময়</td><td>১৪২ ঘণ্টা</td><td><code>*_duration</code> sum</td></tr>
+      <tr><td>টানা সর্বোচ্চ</td><td>২৩ দিন</td><td>longest streak</td></tr>
+      <tr><td>লাইভ ক্লাস</td><td>ফার্স্ট বেঞ্চার</td><td>attendance tier</td></tr>
+      <tr><td>কুইজ</td><td>কুইজ যোদ্ধা</td><td>quiz tier</td></tr>
+      <tr><td>ভিডিও</td><td>ভিডিও ম্যারাথনার</td><td>video tier</td></tr>
+      <tr><td>বছরের বিষয়</td><td>পদার্থবিজ্ঞান</td><td>top subject by time <span class="pill p-gap">rebuild</span></td></tr>
+      <tr><td>পড়ার ধরন</td><td>নিয়মিত পড়ুয়া</td><td>learner type</td></tr>
+    </table>
+    <div class="kv">
+      <div><b>Privacy:</b> a <b>কার্ডে নাম লুকাও</b> toggle — “স্কুল, ঠিকানা, ছবি বা কোনো র‍্যাংক থাকে না”. Default to the privacy-preserving view.</div>
+      <div><b>Share backend:</b> <code>POST /api/public/v1/report-card/share {prospect_id, program_id}</code> → <code>{report_id, short_url}</code> via the Mask shortener; if Mask is down the card returns <b>without</b> a short link (silent) — surface a fallback <span class="pill p-build">have + harden</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="gapbox"><b>What Direction B does NOT yet show (but the CEO named):</b> a <b>favourite teacher</b> page. The data exists — <code>teacher_attendees.teacher_id</code> ⋈ <code>Teachers</code>, “most attended teacher” — but there is no slide for it in <code>?v=b</code>. Decision needed: add a teacher slide, or fold it into the marksheet.</div>
+
+<!-- ======================= PART 2 ======================= -->
+<h2 id="part2">Part 2 · The build</h2>
+<p class="part-intro">The data each slide needs, the backend that already exists from last year (<code>ST-25781</code>), the real database columns, and the app states to design. Facts cited; unverified items labelled.</p>
+
+<h3>2.1 Per-slide data contract</h3>
+<table>
+<tr><th>Slide</th><th>Metric</th><th>Source (table.column)</th><th>Status</th></tr>
+<tr><td>Cover</td><td>name / class / dept</td><td><code>Students.fist_name</code>, <code>.class</code>, <code>.study_group</code></td><td>have</td></tr>
+<tr><td>Study time</td><td>total seconds + by type + by month</td><td><code>user_activity_duration_agg.*_duration</code></td><td>have</td></tr>
+<tr><td>Attendance</td><td>joined / held / rate</td><td><code>student_attendees</code> ⋈ <code>lessons</code>(LiveClass) ⋈ <code>teacher_attendees</code></td><td>have</td></tr>
+<tr><td>Quizzes</td><td>completed + monthly</td><td><code>mcq_user_quiz_daily.quiz_completed</code></td><td>have</td></tr>
+<tr><td>Video</td><td>minutes + count</td><td><code>recorded_/animated_videos_duration|count</code></td><td>have</td></tr>
+<tr><td>Active days + streak</td><td>distinct dates, longest run</td><td><code>user_activity_duration_agg.activity_date</code> (+ AI/QR/eBook)</td><td>have + GET-source</td></tr>
+<tr><td>Best subject</td><td>top subject by time</td><td>rebuild from <code>watch_logs</code>/<code>program_video_watch_logs.subject_id</code> + <code>student_attendees</code>⋈<code>lessons.subject_id</code> + <code>mcq_user_chapter_daily.subject_name</code></td><td class="">rebuild</td></tr>
+<tr><td>Learner type</td><td>stamp label</td><td>derived rule over active-days / time-of-day / method / focus</td><td>define</td></tr>
+<tr><td>Marksheet share</td><td>card + short URL</td><td><code>public-report-card</code> + Mask</td><td>have</td></tr>
+</table>
+
+<h3>2.2 Backend from last year (ST-25781, status: deployed)</h3>
+<p class="src">Served by the <code>analytics</code> service. The share card already shipped — reuse it, don’t rebuild.</p>
+<table>
+<tr><th>Endpoint</th><th>Purpose</th><th>Source</th></tr>
+<tr><td><code>GET /api/v1/results/{result_type}/quarter/{identifier}</code></td><td>quarter/year report</td><td>result_handler.go:12</td></tr>
+<tr><td><code>GET …/performance/trend/{identifier}</code></td><td>week-over-week trend</td><td>result_handler.go:35</td></tr>
+<tr><td><code>POST /api/public/v1/report-card/share</code></td><td>create shareable card + short URL</td><td>public_result_handler.go:337</td></tr>
+<tr><td><code>GET /api/public/v1/report-card/{report_id}</code></td><td>open a shared card (no login)</td><td>public_result_handler.go:296</td></tr>
+</table>
+<pre><span class="c">// share — request / success</span>
+POST /api/public/v1/report-card/share  { "prospect_id": str, "program_id": str }
+201 { "report_id": str, "short_url": str, "short_code": str, "created_at": ts }
+<span class="c">// Mask (shortener) down → 201 WITHOUT short_url, no error raised (public_report.go:104)</span></pre>
+<p><b>Scoring rules already in code</b> (reuse for any score/tier): overall <code>class%×0.5 + exam%×0.5</code>; class/exam clamp to 100; levels <code>≥80 good / ≥60 moderate / else needs_improvement</code>; grades <code>A+/A/A-/B/C/D/F</code> at <code>80/70/60/50/40/33</code>. <b>Known bugs to avoid inheriting:</b> <code>AnimatedLessonsWatched</code> and <code>PracticeQuizzesParticipated</code> are hardcoded <code>0</code>; last-week rank equals current rank.</p>
+<p><b>Config:</b> <code>PUBLIC_API_CACHE_TTL 24h</code> · <code>PUBLIC_API_RATE_LIMIT 100/min</code> · <code>PUBLIC_REPORT_REDIRECT_URL https://report.shikho.com/report/view</code>. <b>Errors:</b> <code>401 user_id not found in context</code> · <code>400 MISSING_FIELDS</code> · <code>404 NOT_FOUND</code> · <code>500 SERVICE_ERROR</code>.</p>
+
+<h3>2.3 Database column types</h3>
+<div class="note"><b>Source truth:</b> only <code>migrations/teachmint.sql</code> ships real DDL (the attendance tables below). For every warehouse aggregate, <b>column names are verified from source but Postgres types are inferred</b> — confirm with <code>datafuse.information_schema.columns</code>.</div>
+<table>
+<tr><th>Table</th><th>Columns the Wrap uses</th><th>Types</th></tr>
+<tr><td><code>student_attendees</code> / <code>teacher_attendees</code></td><td>id, room_id, user_id/teacher_id, <code>duration</code>, join_count, session_count, join_time, leave_time, (content_id)</td><td><b>real:</b> varchar PK, integer, timestamptz</td></tr>
+<tr><td><code>user_activity_duration_agg</code> <span class="src">(datafuse; live 2024-11-03; DAG 40 6 * * *)</span></td><td>activity_date, live_class_duration, recorded_/animated_videos_duration, recorded_/animated_videos_count, quiz_count (+ model-test / live-exam / smart-note durations)</td><td>inferred: date, int (sec), int</td></tr>
+<tr><td><code>mcq_user_quiz_daily</code> / <code>mcq_user_chapter_daily</code></td><td>quiz_completed · total_questions, total_correct, hard_question_correct, total_time_spend, subject_name</td><td>inferred int/text · <b>APPEND mode → dedupe</b></td></tr>
+<tr><td><code>lessons</code></td><td>content_type, content_id, academic_program_id, subject_id, subject_name, chapter_id, start_time, end_time</td><td>inferred</td></tr>
+<tr><td><code>Students</code> / <code>Transactions</code> / <code>Teachers</code></td><td>profile, paid-cohort, teacher names</td><td>inferred</td></tr>
+</table>
+<p class="src">Platform notes: no foreign keys anywhere; soft-delete via <code>is_active</code>/<code>is_deleted</code>; server timestamps are BD-local (UTC+6) — matters for any time-of-day cut.</p>
+
+<h3>2.4 App states to design (current app Figma: Homepage Redesign 2026)</h3>
+<p class="part-intro">The current app expresses states as discrete frames (no Figma variant component sets). The Wrap must supply the equivalents:</p>
+<table>
+<tr><th>State</th><th>Precedent in app</th><th>Wrap needs</th></tr>
+<tr><td>Loading</td><td><code>Home (Skeleton)</code>, <code>Routine (Skeleton)</code></td><td>skeleton for the banner + each slide while the record loads</td></tr>
+<tr><td>Empty / low-data</td><td><code>Empty State 412</code>, <code>Routine Empty State</code></td><td>the “Fresh Start” fallback for students below the minimum — <b>size it from BI</b></td></tr>
+<tr><td>Not available</td><td><code>If previous quarter is not purchased</code></td><td>non-paid or <code>is_report_available=false</code> → banner hidden</td></tr>
+<tr><td>Disabled / toggle</td><td><code>Disabled</code>, <code>radio / active</code></td><td>the “নাম লুকাও” privacy toggle states</td></tr>
+<tr><td>Scroll host</td><td>6-step collapsing hero</td><td>banner behaviour across the home hero collapse</td></tr>
+</table>
+
+<!-- GAPS -->
+<h2 id="gaps">Open gaps — close before committing the date</h2>
+<div class="gapbox">
+<b>1 · Best subject can’t be read directly.</b> <code>user_activity_duration_agg</code> has no subject column; the “বছরের বিষয়” marksheet row must be rebuilt from three subject-carrying logs, and SC-1737 says it’s “not checked yet” whether they sum to the agg total. <b>This gates the marksheet.</b>
+</div>
+<div class="gapbox">
+<b>2 · The learner-type stamp needs a rule AND a distribution check.</b> The stamp is the signature beat, but nothing defines how the label is assigned, and no one has confirmed the types actually split across 20–30k students. If most students get the same stamp, the moment dies. <b>Run the BI distribution before writing copy.</b>
+</div>
+<div class="gapbox">
+<b>3 · AI / QR / eBook “active days” are GET-sources.</b> They live in service DBs, not <code>datafuse</code>. The ১৮৭-days count and the streak depend on them. Confirm they can be piped by ~10 Dec, or the active-day number is video/quiz/class-only.
+</div>
+<div class="gapbox">
+<b>4 · Favourite teacher is designed-out.</b> Data exists; no slide in B. Product decision: add it or drop it.
+</div>
+
+<p class="src" style="margin-top:28px">Screens: <code>shots/b_00</code>…<code>b_09</code> (captured from <code>?v=b</code>, 28 Oct 2026). Example numbers are the prototype’s own placeholders. Everything in Part 2 is cited to <code>ST-25781</code>, <code>SC-1737</code> or the shikho-spec source; inferred items are marked.</p>
+
+</div>
+</body>
+</html>

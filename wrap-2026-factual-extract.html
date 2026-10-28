@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrap 2026 — Factual Extract</title>
+<style>
+:root{
+  color-scheme: light;
+  --ground:#F9F8F5; --paper:#FFFFFF; --sunken:#F1EFEA;
+  --ink:#1A1D26; --ink-2:#4B5060; --ink-3:#7C8090;
+  --line:#E3E0D8; --line-2:#EEECE6;
+  --navy:#354894; --magenta:#C2257F;
+  --code-bg:#1E2230; --code-ink:#E7E9F0;
+  --red:#B8304B; --red-bg:#FAE3E8;
+  --green:#2C7A4B; --green-bg:#E3F1E8;
+  --amber:#9A6A06; --amber-bg:#FAEFD3;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1000px;margin:0 auto;padding:32px 20px 80px}
+h1{font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
+.kick{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:700}
+.src{font-size:12px;color:var(--ink-3);margin:8px 0 0}
+.src code{background:var(--sunken);padding:1px 5px;border-radius:4px;color:var(--navy)}
+nav.toc{position:sticky;top:0;background:var(--ground);border-bottom:1px solid var(--line);
+  display:flex;gap:6px;flex-wrap:wrap;padding:12px 0;margin:18px 0 0;z-index:5}
+nav.toc a{font-size:13px;font-weight:600;color:var(--navy);text-decoration:none;
+  background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+h2{font-size:20px;margin:40px 0 4px;padding-top:10px;border-top:2px solid var(--navy)}
+h3{font-size:16px;margin:26px 0 6px;color:var(--navy)}
+h4{font-size:14px;margin:18px 0 4px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+p{margin:6px 0}
+.note{font-size:13px;color:var(--ink-2);background:var(--sunken);border:1px solid var(--line);
+  border-left:3px solid var(--amber);border-radius:7px;padding:10px 13px;margin:12px 0}
+.note b{color:var(--amber)}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13px;background:var(--paper);
+  border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line-2);vertical-align:top}
+th{background:#EEF0F7;color:var(--navy);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+tr:last-child td{border-bottom:0}
+td code,th code,p code,li code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;
+  background:var(--sunken);padding:1px 5px;border-radius:4px;color:#2b2f3a}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:9px;padding:14px 16px;overflow-x:auto;
+  font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:8px 0}
+pre .c{color:#8A93A8}.pre .k{color:#C78BE0}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;vertical-align:middle}
+.t-dep{background:var(--green-bg);color:var(--green)}
+.t-idea{background:var(--red-bg);color:var(--red)}
+.t-inf{background:var(--amber-bg);color:var(--amber)}
+.t-real{background:#E7ECFB;color:var(--navy)}
+ul{margin:6px 0;padding-left:20px}li{margin:2px 0}
+.legend{font-size:12.5px;color:var(--ink-2);margin:8px 0 0}
+.legend .tag{margin-right:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="kick">Shikho Year-End Wrap 2026</div>
+<h1>Factual extract — exact schemas, column types, Figma states</h1>
+<p class="src">Sources: <code>ST-25781</code> (deployed) · <code>SC-1737</code> (new idea / WIP data spec) · shikho-spec <code>analytics</code>, <code>kpi</code>, <code>data_pipeline_bronze</code> · Figma <code>bmdzVcebk7jAivLdPtAOba</code> + <code>3FJ26FGdggztsXrkPsqqtJ</code>. Every row is cited. Nothing invented.</p>
+<p class="legend">
+  <span class="tag t-real">verified</span> from in-repo DDL or source file:line &nbsp;
+  <span class="tag t-inf">inferred</span> column name verified, Postgres type not in any repo &nbsp;
+  <span class="tag t-dep">deployed</span> &nbsp; <span class="tag t-idea">not built</span>
+</p>
+
+<nav class="toc">
+  <a href="#p1">1 · Previous review (API + flow)</a>
+  <a href="#p2">2 · Database column types</a>
+  <a href="#p3">3 · Figma component states</a>
+</nav>
+
+<!-- ================= PART 1 ================= -->
+<h2 id="p1">1 · Previous Yearly Review — ST-25781 <span class="tag t-dep">deployed</span></h2>
+
+<table>
+<tr><th>Attribute</th><th>Value (verbatim)</th></tr>
+<tr><td>Ticket</td><td><code>ST-25781</code> "[Mother Ticket] Q4 & Year-End User Review Report", status <b>deployed</b>, Sprint 69 (22/12/25–4/1/26), priority high</td></tr>
+<tr><td>PRD</td><td><code>qdqbt-53978</code> (doc.clickup.com/d/h/qdqbt-23578/…)</td></tr>
+<tr><td>Mode</td><td><b>Segment A</b> — Yearly users: full year Jan–Dec. <b>Segment B</b> — Quarterly users: Q4 only, "Standard Beige UI", compared with Q3</td></tr>
+<tr><td>Figma (placement)</td><td><code>sjBitwjRfU3FGOJJ2jguQF</code> App-Homepage-Revamp, node <code>6407-3645</code></td></tr>
+<tr><td>Figma (screens)</td><td><code>bmdzVcebk7jAivLdPtAOba</code> Quarterly-Yearly-Review</td></tr>
+<tr><td>Prototype</td><td><code>q4-yearly-report.vercel.app</code></td></tr>
+<tr><td>Backend</td><td><code>analytics</code> service (Go + go-chi + bun/Postgres), features <code>results-reporting</code> + <code>public-report-card</code> + <code>leaderboard</code></td></tr>
+</table>
+
+<h3>1.1 API endpoints <span class="tag t-real">verified · file:line</span></h3>
+<table>
+<tr><th>Method / Path</th><th>Handler</th><th>Auth</th><th>Source</th></tr>
+<tr><td><code>GET /api/v1/results/{result_type}/quarter/{identifier}</code></td><td>GetQuarterResult</td><td>JWT</td><td><code>result_handler.go:12</code></td></tr>
+<tr><td><code>GET /api/v1/results/{result_type}/performance/trend/{identifier}</code></td><td>GetPerformanceTrend</td><td>JWT</td><td><code>result_handler.go:35</code></td></tr>
+<tr><td><code>GET /api/v1/results/{result_type}/subject/{identifier}/{subject_id}</code></td><td>GetSubjectResult</td><td>JWT</td><td><code>result_handler.go:64</code></td></tr>
+<tr><td><code>GET /api/v1/results/{result_type}/chapter/{identifier}/{chapter_id}</code></td><td>GetChapterResult</td><td>JWT</td><td><code>result_handler.go:88</code></td></tr>
+<tr><td><code>POST /api/public/v1/results/...</code> (same four)</td><td>body carries <code>user_id</code></td><td>API-key</td><td><code>public_result_handler.go:29,86,145,200</code></td></tr>
+<tr><td><code>GET /api/public/v1/report-card/{report_id}</code></td><td>GetReportByID</td><td>API-key</td><td><code>public_result_handler.go:296</code></td></tr>
+<tr><td><code>POST /api/public/v1/report-card/share</code></td><td>CreateReportWithShortURL</td><td>API-key + prospect rate-limit</td><td><code>public_result_handler.go:337</code></td></tr>
+</table>
+
+<h3>1.2 Request / response JSON <span class="tag t-real">verified</span> <span class="tag t-inf">response struct not fully enumerated in spec</span></h3>
+<pre><span class="c">// SHARE — request (public_result_handler.go:337)</span>
+POST /api/public/v1/report-card/share
+{ "prospect_id": string, "program_id": string }     <span class="c">// both required (public_result_handler.go:346)</span>
+
+<span class="c">// SHARE — success 201 (public_result_handler.go:364)</span>
+{ "report_id": string, "short_url": string, "short_code": string, "created_at": timestamp }
+
+<span class="c">// SHARE — degraded path: Mask (URL shortener) down → 201 WITHOUT short_url, no error</span>
+<span class="c">//   (public_report.go:104-110) — silent degradation</span>
+
+<span class="c">// RESULT — public request body (public_result_handler.go:39)</span>
+{ "user_id": string }                               <span class="c">// required; manual check</span></pre>
+
+<p>Response fields <b>evidenced in code</b> (full struct / <code>Meta</code> fields are marked Unknown in the spec's own evidence section):</p>
+<table>
+<tr><th>Field / value</th><th>Rule</th><th>Source</th></tr>
+<tr><td>overall score</td><td><code>classPct*0.5 + examPct*0.5</code></td><td><code>quarter_report.go:619</code>, <code>subject_report.go:100</code></td></tr>
+<tr><td>class %, exam %</td><td>clamp to 100 if &gt;100</td><td><code>quarter_report.go:611</code>, <code>subject_report.go:94</code></td></tr>
+<tr><td>subject/quarter level</td><td><code>≥80 good</code> / <code>≥60 moderate</code> / else <code>needs_improvement</code></td><td><code>quarter_report.go:468-477</code></td></tr>
+<tr><td>chapter level</td><td><code>≥80 good</code> / <code>≥60 moderate</code> / else <code>weak</code></td><td><code>chapter_report.go:91-100</code></td></tr>
+<tr><td>chapter grade</td><td><code>A+/A/A-/B/C/D/F</code> at <code>80/70/60/50/40/33</code></td><td><code>chapter_report.go:66-81</code></td></tr>
+<tr><td>rank, total, subject toppers</td><td>Redis ZSET (<code>PhaseRank_*</code>/<code>SubjectRank_*</code>)</td><td><code>repository/leaderboard.go</code></td></tr>
+<tr><td>trend metric</td><td><code>class_completion</code> (default) / <code>chapter_exam_score</code>; else error</td><td><code>result.go:129-168</code></td></tr>
+<tr><td>week comparison</td><td>current Sunday→now vs prior week</td><td><code>quarter_report.go:326</code></td></tr>
+<tr><td><code>AnimatedLessonsWatched</code></td><td>hardcoded <code>0</code> (quarter V2)</td><td><code>quarter_report.go:651</code></td></tr>
+<tr><td><code>PracticeQuizzesParticipated</code></td><td>hardcoded <code>0</code> (program path)</td><td><code>chapter_report.go:230</code>, <code>subject_report.go:216</code></td></tr>
+<tr><td>last-week rank</td><td>= current rank (not date-filtered — known TODO)</td><td><code>quarter_report.go:377-379</code></td></tr>
+</table>
+
+<h3>1.3 Error responses <span class="tag t-real">verified</span></h3>
+<table>
+<tr><th>Code</th><th>Body / message (verbatim)</th><th>Trigger</th><th>Source</th></tr>
+<tr><td>401</td><td><code>user_id not found in context</code></td><td>JWT, no user</td><td><code>result_handler.go:15</code></td></tr>
+<tr><td>400</td><td><code>INVALID_REQUEST</code> "Invalid request body"</td><td>bad JSON (public)</td><td><code>public_result_handler.go:33</code></td></tr>
+<tr><td>400</td><td><code>MISSING_FIELDS</code> "Missing required field: user_id"</td><td>no user_id (public)</td><td><code>public_result_handler.go:39</code></td></tr>
+<tr><td>400</td><td><code>INVALID_PROSPECT_ID</code> "Invalid prospect_id"</td><td>unresolvable prospect (share)</td><td><code>public_result_handler.go:356</code></td></tr>
+<tr><td>404</td><td><code>NOT_FOUND</code></td><td>report id absent</td><td><code>public_result_handler.go:322</code></td></tr>
+<tr><td>500</td><td><code>SERVICE_ERROR</code></td><td>service error</td><td><code>result_handler.go:24</code></td></tr>
+<tr><td>—</td><td><code>metric_type %q is not supported</code></td><td>unknown trend metric</td><td><code>result.go:168</code></td></tr>
+<tr><td>header</td><td><code>X-Cache: HIT|MISS</code></td><td>public cache</td><td><code>public_result_handler.go</code></td></tr>
+</table>
+
+<h3>1.4 Config <span class="tag t-real">verified · config/loader.go</span></h3>
+<table>
+<tr><th>Key</th><th>Default</th></tr>
+<tr><td><code>PUBLIC_API_ENABLED</code></td><td>true (loader.go:72)</td></tr>
+<tr><td><code>PUBLIC_API_CACHE_TTL</code></td><td>24h (loader.go:71)</td></tr>
+<tr><td><code>PUBLIC_API_RATE_LIMIT</code></td><td>100/min (loader.go:70)</td></tr>
+<tr><td><code>MASK_SERVICE_URL</code></td><td><code>http://localhost:8024</code> (loader.go:75)</td></tr>
+<tr><td><code>PUBLIC_REPORT_REDIRECT_URL</code></td><td><code>https://report.shikho.com/report/view</code> (loader.go:76)</td></tr>
+</table>
+
+<!-- ================= PART 2 ================= -->
+<h2 id="p2">2 · Database column types (Postgres warehouse)</h2>
+<div class="note"><b>Source caveat (kpi/06_DATA_MODEL.md, verbatim):</b> only <code>migrations/teachmint.sql</code> ships DDL in-repo — those 5 tables have <b>real types</b>. For every other table, <b>column names are verified from INSERT/UPDATE source, types are inferred</b>; the authoritative warehouse schema (types, constraints, indexes) is migrated outside the repos. Confirm exact types with <code>information_schema.columns</code>.</div>
+
+<h3>2.1 Tables with real in-repo DDL <span class="tag t-real">verified types · migrations/teachmint.sql</span></h3>
+<h4>student_attendees / teacher_attendees</h4>
+<table>
+<tr><th>Column</th><th>Type</th><th>Notes</th></tr>
+<tr><td>id</td><td><code>varchar</code> PK</td><td>attendee event id</td></tr>
+<tr><td>room_id</td><td><code>varchar</code> NOT NULL</td><td></td></tr>
+<tr><td>user_id / teacher_id</td><td><code>varchar</code> NOT NULL</td><td>participant id</td></tr>
+<tr><td>session_count</td><td><code>integer</code></td><td></td></tr>
+<tr><td>duration</td><td><code>integer</code></td><td>seconds — student time / class length</td></tr>
+<tr><td>user_type</td><td><code>integer</code></td><td>1=teacher, 2/3=student</td></tr>
+<tr><td>join_count</td><td><code>integer</code></td><td></td></tr>
+<tr><td>join_time / leave_time</td><td><code>timestamptz</code></td><td></td></tr>
+<tr><td colspan="3"><code>UNIQUE(room_id, user_id|teacher_id)</code>. <b>Drift:</b> handler INSERTs a <code>content_id</code> column (attendees.go:36,70) that is <b>not</b> in the shipped DDL — join is on <code>content_id</code>, or <code>room_id</code> when empty.</td></tr>
+</table>
+<p class="src">Also real DDL: <code>poll_submissions</code>, <code>polls</code>, <code>sessions</code> (<code>correctness_rate float8</code>, <code>response_rate float8</code>, <code>teaching_duration int</code>, …). Omitted — not used by the wrap.</p>
+
+<h3>2.2 Aggregation tables (built by Airflow DAGs) <span class="tag t-inf">types inferred</span></h3>
+<h4>datafuse.user_activity_duration_agg — the wrap's spine</h4>
+<p class="src">DAG <code>user_activity_duration_agg_dag_v1_0</code> @ cron <code>40 6 * * *</code>; live since <b>2024-11-03</b>; aggregates <b>7 activity types</b> (model test, recorded video, animated video, quiz, live exam, smart note, live class) per user/day. <b>No subject column.</b></p>
+<table>
+<tr><th>Column (verified name)</th><th>Inferred type</th><th>Source</th></tr>
+<tr><td><code>activity_date</code></td><td><code>date</code></td><td>SC-1737 (active days)</td></tr>
+<tr><td><code>live_class_duration</code></td><td><code>int</code> (sec)</td><td>SC-1737 (live class time)</td></tr>
+<tr><td><code>recorded_videos_duration</code>, <code>animated_videos_duration</code></td><td><code>int</code> (sec)</td><td>SC-1737 (video)</td></tr>
+<tr><td><code>recorded_videos_count</code>, <code>animated_videos_count</code></td><td><code>int</code></td><td>SC-1737 (videos watched)</td></tr>
+<tr><td><code>quiz_count</code></td><td><code>int</code></td><td>SC-1737 (quizzes cross-check)</td></tr>
+<tr><td>model-test / live-exam / smart-note duration cols</td><td><code>int</code> (sec)</td><td>exist per 7-type DAG; exact names not in spec — read from table</td></tr>
+</table>
+<div class="note"><b>Gaps SC-1737 itself flags:</b> this table has <b>no time-of-day</b> (time-of-day split comes from a separate <code>datafuse.user_activity_agg</code>) and <b>no subject</b> (subject-time must be rebuilt from <code>watch_logs</code>/<code>program_video_watch_logs.subject_id</code> + <code>student_attendees</code>⋈<code>lessons.subject_id</code> + <code>mcq_user_chapter_daily</code>). "Not checked yet whether these sum to the agg total."</div>
+
+<h4>MCQ KPI tables <span class="tag t-inf">types inferred · append-mode</span></h4>
+<p class="src">DAG <code>mcq_session_agg_to_kpi_dag_v1_0</code> @ <code>5 7 * * *</code>, source MongoDB. <b>APPEND not upsert → re-run duplicates rows.</b></p>
+<table>
+<tr><th>Table</th><th>Verified columns</th></tr>
+<tr><td><code>mcq_user_chapter_daily</code></td><td><code>total_questions</code>, <code>total_correct</code>, <code>hard_question_correct</code>, <code>total_time_spend</code>, <code>subject_name</code></td></tr>
+<tr><td><code>mcq_user_quiz_daily</code></td><td><code>quiz_completed</code></td></tr>
+<tr><td><code>mcq_user_topic_daily</code></td><td>topic-grain (same pipeline)</td></tr>
+</table>
+
+<h3>2.3 Source domain tables <span class="tag t-real">names verified</span> <span class="tag t-inf">types inferred</span></h3>
+<table>
+<tr><th>Table</th><th>Columns the wrap reads (verbatim from kpi/06)</th></tr>
+<tr><td><code>Students</code></td><td><code>fist_name</code> [sic in source], <code>class</code>, <code>study_group</code>, <code>created_at</code>, <code>joining_class</code>, id, phone</td></tr>
+<tr><td><code>Transactions</code></td><td>id, <code>tran_date</code>, <code>student_id</code>, <code>course_id</code>, <code>status</code>, <code>course_type</code>, <code>pricing_category</code>, amount, <code>installment_ids[]</code></td></tr>
+<tr><td><code>lessons</code></td><td><code>content_type</code>, <code>content_id</code>, <code>academic_program_id</code>, <code>subject_id</code>, <code>subject_name</code>, <code>chapter_id</code>, <code>start_time</code>, <code>end_time</code>, <code>topics</code> (jsonb)</td></tr>
+<tr><td><code>user_activities</code></td><td>id, <code>user_id</code>, <code>program_id</code>, <code>batch_id</code>, <code>lesson_id</code>, <code>subject_id</code>, <code>chapter_id</code>, <code>is_completed</code>, <code>score</code>, <code>total_score</code>, <code>submitted_at</code></td></tr>
+<tr><td><code>program_video_watch_logs</code></td><td><code>user_id</code>, <code>total_video_screen_time</code>, <code>video_duration</code>, <code>subject_id</code>, <code>chapter_id</code>, <code>event_name</code>, <code>content_type</code>, <code>video_paused</code>/<code>video_resumed</code> (jsonb)</td></tr>
+<tr><td><code>StudentBadges</code></td><td><code>badge_id</code>, <code>user_id</code>, <code>badge_type</code>, <code>given_time</code>, <code>number_of_times</code></td></tr>
+<tr><td><code>Teachers</code></td><td>id, <code>first_name</code>, <code>last_name</code> (favourite-teacher join target)</td></tr>
+</table>
+
+<h3>2.4 GET-sources — not in the warehouse <span class="tag t-idea">must be piped</span></h3>
+<table>
+<tr><th>Signal</th><th>Source (verbatim SC-1737)</th><th>Status</th></tr>
+<tr><td>Shikho AI active day</td><td><code>gen_ai_conversations.created_at</code></td><td>service DB (gen-ai)</td></tr>
+<tr><td>QR / FutureBook scan</td><td><code>qr_scan_logs.created_at</code></td><td>service DB</td></tr>
+<tr><td>eBook open</td><td><code>attachment_view_logs.resource_type</code> — "Not found yet / unconfirmed"</td><td>unconfirmed</td></tr>
+<tr><td>Model test</td><td><code>model_test_session</code> (source of duration DAG)</td><td>Mongo→agg only</td></tr>
+</table>
+
+<h3>2.5 Platform-wide gotchas <span class="tag t-real">verified</span></h3>
+<ul>
+<li><b>No foreign keys</b> declared anywhere — relations are by id/code columns only.</li>
+<li><b>Soft delete:</b> <code>is_active=false</code>; academic-program tables also <code>is_deleted=true</code>.</li>
+<li><b>Server timestamps are BD-local (UTC+6)</b> when payload omits them (<code>utility/date.go</code>) — time-of-day math must account for this.</li>
+<li>Warehouse DBs: <code>shikho_dev</code> (default), <code>shikho_ucc</code>; <code>sslmode=require</code>. Aggregates land in schema <code>datafuse</code>.</li>
+</ul>
+
+<!-- ================= PART 3 ================= -->
+<h2 id="p3">3 · Figma component states</h2>
+<div class="note"><b>Key fact:</b> <b>neither Figma file uses Figma variant Component Sets for states</b> (a <code>componentSet</code> scan on both returned none). States are expressed as <b>discrete frames/sections</b>. The previous review has <b>no state designs at all</b> — it is a Codia-AI import of the vercel prototype.</div>
+
+<h3>3.1 Previous review — <code>bmdzVcebk7jAivLdPtAOba</code> (Quarterly-Yearly-Review)</h3>
+<p class="src">3 sections: <b>Yearly Review</b> (<code>1:865</code>), <b>Quarterly Review</b> (<code>65:6797</code>), <b>Paid User – Yearly Review Button – 24/06/25</b> (<code>62:1259</code>, the entry-point placement). Screens generated by Codia AI from <code>q4-yearly-report.vercel.app</code>.</p>
+<table>
+<tr><th>Segment A — Yearly (route)</th><th>Segment B — Quarterly (route)</th></tr>
+<tr><td><code>/yearly</code> (overview)</td><td><code>/quarterly</code> (overview)</td></tr>
+<tr><td><code>/yearly/class</code></td><td><code>/quarterly/class</code></td></tr>
+<tr><td><code>/yearly/livetest</code></td><td><code>/quarterly/studytime</code></td></tr>
+<tr><td><code>/yearly/studytime</code></td><td><code>/quarterly/final</code></td></tr>
+<tr><td><code>/yearly/streak</code></td><td></td></tr>
+<tr><td><code>/yearly/weekday</code></td><td></td></tr>
+<tr><td><code>/yearly/podium</code> (rank)</td><td></td></tr>
+</table>
+<p>Reusable pieces present only as <b>instances</b> (not stateful components): <code>Button</code>, <code>Button S</code>, <code>Course Card With Banner</code>, <code>report_card</code>, <code>Section Title</code>, subject chips (<code>Biology</code>, <code>Physics</code>, <code>General Math</code>), <code>lock_24px</code>, <code>Play</code>, <code>chevron_right_24px</code>. <b>No Default / Loading / Empty / Error / Disabled variants exist</b> — those states were implementation-defined, not designed.</p>
+
+<h3>3.2 Current app — <code>3FJ26FGdggztsXrkPsqqtJ</code> (Homepage Redesign 2026), node <code>1-862</code></h3>
+<p>States ARE designed here, as named frames/sections:</p>
+<table>
+<tr><th>Surface</th><th>Designed states (verbatim frame/section names)</th></tr>
+<tr><td>Home</td><td><code>Ideal Home (Paid User)</code> · <code>Home (Skeleton)</code> (loading)</td></tr>
+<tr><td>Routine ("All Routine States")</td><td><code>Routine (All Class Completed)</code> · <code>Routine (Half Some Activity Completed)</code> · <code>Routine (No Activity)</code> · <code>Routine Empty State</code> · <code>Routine (Skeleton)</code></td></tr>
+<tr><td>Empty / icon</td><td><code>Empty State 412</code> · <code>Empty State Icon 412</code></td></tr>
+<tr><td>Controls</td><td><code>Disabled</code> · <code>radio / active</code> · <code>radio / in active</code> · <code>active_up_arrow</code></td></tr>
+<tr><td>Chapter exam</td><td><code>Chapter exam attending</code> · <code>View Result if attended</code> · <code>Chapter exam upcoming</code></td></tr>
+<tr><td>Courses progress</td><td><code>Courses Progress all States</code> · <code>If previous quarter is not purchased</code> · <code>Not Purchased Quarter Details</code></td></tr>
+<tr><td>Hero scroll (state machine)</td><td><code>Step 1 Initial State (On Screen Load)</code> → <code>Step 2 On Scroll Up</code> → <code>Step 3 Collapsed State</code> → <code>Step 4 Collapsed (More Scroll)</code> → <code>Step 5 Reverse Scroll (Reveal Hero)</code> → <code>Step 6 Scroll Up Again</code></td></tr>
+<tr><td>Other sections</td><td><code>Menu</code> · <code>Live Class Access</code> · <code>Priority Set (From Home)</code> · <code>Report Card</code> · <code>Shikho Ai</code> · <code>Animated Lesson</code> · <code>Practice Quiz</code> · resource access from Subject & Chapter screens (Animated Lesson / Practice Quiz / Ebook)</td></tr>
+</table>
+<p class="src">Node <code>1-862</code> metadata = 1.24M chars; states extracted by scanning section/frame names. The home hero uses a 6-step scroll collapse — a Wrap entry card placed in the hero must define its own behaviour across these 6 steps.</p>
+
+<p class="src" style="margin-top:30px">End of extract. Unconfirmed items are labelled; the two things with no authoritative in-repo answer are (a) exact Postgres <b>types</b> for all non-teachmint tables and (b) the exact names of the model-test/live-exam/smart-note duration columns on <code>user_activity_duration_agg</code> — both resolvable only by querying <code>datafuse.information_schema.columns</code> directly.</p>
+
+</div>
+</body>
+</html>

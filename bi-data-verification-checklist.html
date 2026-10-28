@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrap 2026 — BI Verification</title>
+<style>
+:root{
+  color-scheme: light;
+  --ground:#F9F8F5; --paper:#FFFFFF; --sunken:#F1EFEA;
+  --ink:#1A1D26; --ink-2:#4B5060; --ink-3:#7C8090;
+  --line:#E3E0D8; --line-2:#EEECE6;
+  --navy:#354894; --magenta:#C2257F;
+  --code-bg:#1E2230; --code-ink:#E7E9F0;
+  --red:#B8304B; --red-bg:#FAE3E8;
+  --green:#2C7A4B; --green-bg:#E3F1E8;
+  --amber:#9A6A06; --amber-bg:#FAEFD3;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;}
+.wrap{max-width:900px;margin:0 auto;padding:40px 20px 80px;}
+header.top{border-bottom:2px solid var(--navy);padding-bottom:20px;margin-bottom:8px}
+.kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:700}
+h1{font-size:30px;line-height:1.2;margin:8px 0 6px;letter-spacing:-.01em}
+.sub{color:var(--ink-2);font-size:15px;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;font-size:13px;color:var(--ink-3)}
+.meta b{color:var(--ink-2);font-weight:600}
+.meta code{background:var(--sunken);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--navy)}
+
+.lead{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--magenta);
+  border-radius:10px;padding:16px 18px;margin:24px 0 10px}
+.lead p{margin:0 0 8px}.lead p:last-child{margin:0}
+.lead b{color:var(--navy)}
+
+.legend{font-size:13px;color:var(--ink-2);background:var(--sunken);border:1px solid var(--line);
+  border-radius:8px;padding:12px 14px;margin:18px 0 30px}
+.legend code{color:var(--magenta);font-weight:600}
+
+.grp{margin-top:38px}
+.grp-h{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:6px}
+.grp-h .tag{font-size:22px;font-weight:800;color:var(--navy)}
+.grp-h h2{font-size:20px;margin:0;letter-spacing:-.01em}
+.grp-note{color:var(--ink-2);font-size:14px;margin:6px 0 20px}
+
+.item{background:var(--paper);border:1px solid var(--line);border-radius:12px;
+  padding:18px 20px;margin:16px 0;box-shadow:0 1px 0 rgba(53,72,148,.03)}
+.item-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.id{font-weight:800;color:var(--navy);font-size:15px}
+.item-h h3{font-size:16px;margin:0;flex:1 1 220px}
+.chip{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  padding:3px 9px;border-radius:999px;white-space:nowrap}
+.c-kill{background:var(--red-bg);color:var(--red)}
+.c-prove{background:var(--amber-bg);color:var(--amber)}
+.c-eng{background:#E7ECFB;color:var(--navy)}
+.c-sanity{background:var(--green-bg);color:var(--green)}
+.breaks{font-size:14px;color:var(--ink-2);margin:8px 0 12px}
+.breaks b{color:var(--red)}
+.ask{font-size:13px;color:var(--ink-2);margin:12px 0 0;padding-top:12px;border-top:1px dashed var(--line)}
+.ask b{color:var(--navy)}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:9px;padding:14px 16px;
+  overflow-x:auto;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:4px 0 0}
+pre .c{color:#8A93A8}       /* comment */
+pre .k{color:#C78BE0}       /* keyword */
+pre .s{color:#8FD18B}       /* string  */
+pre .f{color:#6FB3E6}       /* function/col */
+.callout{background:var(--amber-bg);border:1px solid #EBD79A;border-radius:9px;padding:12px 15px;
+  font-size:14px;color:#6b4a06;margin:26px 0}
+.callout b{color:var(--amber)}
+footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3)}
+footer code{background:var(--sunken);padding:1px 5px;border-radius:4px;color:var(--navy)}
+@media(max-width:560px){h1{font-size:24px}.wrap{padding:28px 16px 60px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">Shikho Year-End Wrap 2026 · Data gate</div>
+  <h1>BI verification checklist — run before we commit the build</h1>
+  <p class="sub">Every query below runs against <b>datafuse</b> (Postgres). Nothing here needs a new pipeline except Group&nbsp;C. Groups A and B are reads on data that already exists — turn them fast.</p>
+  <div class="meta">
+    <span><b>DB:</b> <code>datafuse</code></span>
+    <span><b>Year under review:</b> 2026-01-01 → 2026-12-31</span>
+    <span><b>Launch:</b> 26–31 Dec 2026</span>
+    <span><b>Predecessor:</b> ST-25781</span>
+    <span><b>Data spec:</b> SC-1737</span>
+  </div>
+</header>
+
+<div class="lead">
+  <p>The Wrap claims one thing: <b>a different year-in-review for each of ~20–30k paid students.</b> That claim is only true if the data underneath it actually varies. These queries test exactly that — and surface the holes while we can still cut features, not after the 26 Dec launch.</p>
+  <p>Do them <b>top to bottom.</b> Group A can reshape the whole design; <b>B2 is the single number that decides whether this is personalisation or last year's review with a horoscope on top.</b></p>
+</div>
+
+<div class="legend">
+  <b>Reading the SQL.</b> Anything in <code>«guillemets»</code> is a column name I have <u>not</u> confirmed — A1 prints the real names; substitute them before running B–D. <code>«student_id»</code>, <code>«activity_date»</code>, <code>«duration_sec»</code> recur throughout. Build the <code>wrap_cohort</code> view in <b>A4</b> once and reuse it everywhere below.
+</div>
+
+<!-- ============ GROUP A ============ -->
+<section class="grp">
+  <div class="grp-h"><span class="tag">A</span><h2>Gating checks — these decide if the architecture survives</h2></div>
+  <p class="grp-note">If any of A1–A3 comes back wrong, stop and tell me — the personality model changes shape, it isn't a matter of tuning.</p>
+
+  <div class="item">
+    <div class="item-h"><span class="id">A1</span><h3>Print the real columns of <code>user_activity_duration_agg</code></h3><span class="chip c-kill">can kill a feature</span></div>
+    <p class="breaks">This table is the spine of the whole Wrap. Three columns decide three features. <b>If a column is missing, the feature it feeds is dead</b> — not degraded.</p>
+<pre><span class="c">-- 1a. Every column + type. This answers A1 with zero guessing.</span>
+<span class="k">SELECT</span> ordinal_position, column_name, data_type, is_nullable
+<span class="k">FROM</span> information_schema.columns
+<span class="k">WHERE</span> table_name = <span class="s">'user_activity_duration_agg'</span>
+<span class="k">ORDER BY</span> ordinal_position;
+
+<span class="c">-- 1b. 20 real rows so we see shape, units, and what the enums look like.</span>
+<span class="k">SELECT</span> * <span class="k">FROM</span> user_activity_duration_agg
+<span class="k">WHERE</span> «activity_date» >= <span class="s">'2026-06-01'</span>
+<span class="k">ORDER BY</span> random() <span class="k">LIMIT</span> 20;</pre>
+    <p class="ask"><b>Confirm the presence of, and tell me the exact name of:</b> &nbsp;① a column with <b>time-of-day</b> (a timestamp or an hour integer — a plain date is not enough) → feeds <b>তোমার পড়ার সময়</b> (night-owl / early-bird, the Clock axis). &nbsp;② an <b>activity-type / content-type</b> column that separates <b>watching video</b> from <b>doing MCQ / practice</b> → feeds the Doer-vs-Viewer axis. &nbsp;③ a <b>lesson / course / program / subject</b> id → see A2.</p>
+  </div>
+
+  <div class="item">
+    <div class="item-h"><span class="id">A2</span><h3>Can time be split by subject?</h3><span class="chip c-kill">CEO's headline ask</span></div>
+    <p class="breaks">"Best subject / favourite subject" is the <b>one feature the CEO named explicitly.</b> <code>user_activity_duration_agg</code> has no subject column — so the only route is a join out to <code>lessons → programs</code>. <b>If that join doesn't resolve to a subject, we lose the headline feature and the Focus axis with it.</b></p>
+<pre><span class="c">-- 2a. Which join keys even exist on the agg table?</span>
+<span class="k">SELECT</span> column_name <span class="k">FROM</span> information_schema.columns
+<span class="k">WHERE</span> table_name=<span class="s">'user_activity_duration_agg'</span>
+  <span class="k">AND</span> (column_name <span class="k">ILIKE</span> <span class="s">'%lesson%'</span> <span class="k">OR</span> column_name <span class="k">ILIKE</span> <span class="s">'%course%'</span>
+    <span class="k">OR</span> column_name <span class="k">ILIKE</span> <span class="s">'%program%'</span> <span class="k">OR</span> column_name <span class="k">ILIKE</span> <span class="s">'%subject%'</span>
+    <span class="k">OR</span> column_name <span class="k">ILIKE</span> <span class="s">'%content%'</span>);
+
+<span class="c">-- 2b. One real student, time rolled up to subject via the join you find above.</span>
+<span class="c">--     Adjust the join path to the keys 2a returns. This is the proof-of-concept.</span>
+<span class="k">SELECT</span> p.«subject_name», round(sum(a.«duration_sec»)/3600.0, 1) <span class="k">AS</span> hours
+<span class="k">FROM</span> user_activity_duration_agg a
+<span class="k">JOIN</span> lessons  l <span class="k">ON</span> l.«lesson_id»  = a.«lesson_id»
+<span class="k">JOIN</span> programs p <span class="k">ON</span> p.«program_id» = l.«program_id»
+<span class="k">WHERE</span> a.«student_id» = <span class="s">'&lt;pick one active student&gt;'</span>
+  <span class="k">AND</span> a.«activity_date» >= <span class="s">'2026-01-01'</span>
+<span class="k">GROUP BY</span> 1 <span class="k">ORDER BY</span> hours <span class="k">DESC</span>;</pre>
+    <p class="ask"><b>Return:</b> that one student's hours-by-subject table, and tell me the <b>exact join path</b> that worked. If no path reaches a subject, say so plainly — that single sentence rewrites the spec.</p>
+  </div>
+
+  <div class="item">
+    <div class="item-h"><span class="id">A3</span><h3>2026 coverage — is the full year actually there?</h3><span class="chip c-kill">silent-gap check</span></div>
+    <p class="breaks">The table went live 2024-11-03, so 2026 should be complete. But <b>a 3-week pipeline outage in, say, April would make every streak and every total wrong</b> for whoever studied then — and nobody would notice until a student screenshots a broken number.</p>
+<pre><span class="c">-- Rows, distinct students, and days-present per month. days_present must</span>
+<span class="c">-- equal the number of days in that month (28/30/31). A short month = a gap.</span>
+<span class="k">SELECT</span> date_trunc(<span class="s">'month'</span>, «activity_date») <span class="k">AS</span> mon,
+       count(*) <span class="k">AS</span> rows,
+       count(<span class="k">DISTINCT</span> «student_id») <span class="k">AS</span> students,
+       count(<span class="k">DISTINCT</span> «activity_date») <span class="k">AS</span> days_present
+<span class="k">FROM</span> user_activity_duration_agg
+<span class="k">WHERE</span> «activity_date» >= <span class="s">'2026-01-01'</span> <span class="k">AND</span> «activity_date» &lt; <span class="s">'2027-01-01'</span>
+<span class="k">GROUP BY</span> 1 <span class="k">ORDER BY</span> 1;</pre>
+    <p class="ask"><b>Return:</b> the 12-row table. Flag any month where <code>days_present</code> &lt; calendar days, or where rows/students drop off a cliff versus neighbours.</p>
+  </div>
+
+  <div class="item">
+    <div class="item-h"><span class="id">A4</span><h3>How many of the paid cohort can even get a real Wrap?</h3><span class="chip c-kill">sizes the fallback</span></div>
+    <p class="breaks">If 28k are targeted but only 11k studied enough to fill a Wrap, we're really building two products: the full Wrap, and a <b>"Fresh Start" fallback</b> for the quiet 17k. We need the real split <b>now</b> to know which one carries the launch.</p>
+<pre><span class="c">-- Define the cohort ONCE. Match ST-25781's paid scoping (by program/phase).</span>
+<span class="c">-- Confirm the paid definition with the ST-25781 author; adjust columns.</span>
+<span class="k">CREATE TEMP VIEW</span> wrap_cohort <span class="k">AS</span>
+<span class="k">SELECT DISTINCT</span> s.«student_id»
+<span class="k">FROM</span> <span class="s">"Students"</span> s
+<span class="k">JOIN</span> <span class="s">"Transactions"</span> t <span class="k">ON</span> t.«student_id» = s.«student_id»
+<span class="k">WHERE</span> t.«status» = <span class="s">'paid'</span>                      <span class="c">-- confirm enum value</span>
+  <span class="k">AND</span> t.«paid_at» >= <span class="s">'2026-01-01'</span> <span class="k">AND</span> t.«paid_at» &lt; <span class="s">'2027-01-01'</span>;
+
+<span class="c">-- Histogram: active days in 2026 per paid student.</span>
+<span class="k">WITH</span> per_student <span class="k">AS</span> (
+  <span class="k">SELECT</span> a.«student_id», count(<span class="k">DISTINCT</span> a.«activity_date») <span class="k">AS</span> active_days
+  <span class="k">FROM</span> user_activity_duration_agg a
+  <span class="k">JOIN</span> wrap_cohort c <span class="k">ON</span> c.«student_id» = a.«student_id»
+  <span class="k">WHERE</span> a.«activity_date» >= <span class="s">'2026-01-01'</span> <span class="k">AND</span> a.«activity_date» &lt; <span class="s">'2027-01-01'</span>
+  <span class="k">GROUP BY</span> 1)
+<span class="k">SELECT</span> <span class="k">CASE</span>
+         <span class="k">WHEN</span> active_days &lt; 5   <span class="k">THEN</span> <span class="s">'0–4 (Fresh Start)'</span>
+         <span class="k">WHEN</span> active_days &lt; 20  <span class="k">THEN</span> <span class="s">'5–19'</span>
+         <span class="k">WHEN</span> active_days &lt; 50  <span class="k">THEN</span> <span class="s">'20–49'</span>
+         <span class="k">WHEN</span> active_days &lt; 150 <span class="k">THEN</span> <span class="s">'50–149'</span>
+         <span class="k">ELSE</span> <span class="s">'150+'</span> <span class="k">END</span> <span class="k">AS</span> band,
+       count(*) <span class="k">AS</span> students
+<span class="k">FROM</span> per_student <span class="k">GROUP BY</span> 1 <span class="k">ORDER BY</span> 1;
+
+<span class="c">-- And the headline number: paid students with ZERO activity rows in 2026.</span>
+<span class="k">SELECT</span> count(*) <span class="k">FROM</span> wrap_cohort c
+<span class="k">WHERE NOT EXISTS</span> (<span class="k">SELECT</span> 1 <span class="k">FROM</span> user_activity_duration_agg a
+  <span class="k">WHERE</span> a.«student_id»=c.«student_id» <span class="k">AND</span> a.«activity_date» >= <span class="s">'2026-01-01'</span>);</pre>
+    <p class="ask"><b>Return:</b> the 5-band histogram + the total cohort size + the zero-activity count. That tells me the real denominator for everything below.</p>
+  </div>
+</section>
+
+<!-- ============ GROUP B ============ -->
+<section class="grp">
+  <div class="grp-h"><span class="tag">B</span><h2>Variety checks — prove each student really gets a different Wrap</h2></div>
+  <p class="grp-note">Run each axis on the <code>wrap_cohort</code> from A4. A column you need here comes from A1/A2 — if it wasn't there, mark the axis dead and skip it.</p>
+
+  <div class="item">
+    <div class="item-h"><span class="id">B1</span><h3>The four personality axes — run them, return the split</h3><span class="chip c-prove">kills dead axes</span></div>
+    <p class="breaks">An axis where everyone lands on one side is not an axis — it's a constant. <b>Any axis that comes back past ~85/15 gets dropped</b>, because it adds a slide that says the same thing to everyone.</p>
+<pre><span class="c">-- RHYTHM — Regular vs Sporadic. Regular = ≥3 active days per enrolled week.</span>
+<span class="c">-- weeks_enrolled = weeks between the student's first 2026 activity and 31 Dec.</span>
+<span class="k">WITH</span> s <span class="k">AS</span> (
+  <span class="k">SELECT</span> a.«student_id»,
+    count(<span class="k">DISTINCT</span> a.«activity_date») <span class="k">AS</span> active_days,
+    greatest(1, (<span class="s">'2026-12-31'</span>::date - min(a.«activity_date»)::date)/7.0) <span class="k">AS</span> weeks_enrolled
+  <span class="k">FROM</span> user_activity_duration_agg a <span class="k">JOIN</span> wrap_cohort c <span class="k">USING</span> («student_id»)
+  <span class="k">WHERE</span> a.«activity_date» >= <span class="s">'2026-01-01'</span> <span class="k">GROUP BY</span> 1)
+<span class="k">SELECT</span> (active_days/weeks_enrolled >= 3.0) <span class="k">AS</span> is_regular, count(*)
+<span class="k">FROM</span> s <span class="k">GROUP BY</span> 1;
+
+<span class="c">-- CLOCK — Owl vs Lark. Needs the time-of-day column from A1 («hour»).</span>
+<span class="c">-- Owl = ≥50% of study seconds in evening(18–23) + after-midnight(0–4).</span>
+<span class="k">WITH</span> s <span class="k">AS</span> (
+  <span class="k">SELECT</span> «student_id»,
+    sum(<span class="k">CASE WHEN</span> «hour» >= 18 <span class="k">OR</span> «hour» &lt; 5 <span class="k">THEN</span> «duration_sec» <span class="k">ELSE</span> 0 <span class="k">END</span>)::numeric
+      / nullif(sum(«duration_sec»),0) <span class="k">AS</span> night_share
+  <span class="k">FROM</span> user_activity_duration_agg a <span class="k">JOIN</span> wrap_cohort c <span class="k">USING</span> («student_id»)
+  <span class="k">WHERE</span> a.«activity_date» >= <span class="s">'2026-01-01'</span> <span class="k">GROUP BY</span> 1)
+<span class="k">SELECT</span> (night_share >= 0.50) <span class="k">AS</span> is_owl, count(*) <span class="k">FROM</span> s <span class="k">GROUP BY</span> 1;
+
+<span class="c">-- METHOD — Doer vs Viewer. Needs the activity-type column from A1.</span>
+<span class="c">-- Doer = ≥50% of seconds in active types (mcq/practice/quiz) vs video.</span>
+<span class="k">WITH</span> s <span class="k">AS</span> (
+  <span class="k">SELECT</span> «student_id»,
+    sum(<span class="k">CASE WHEN</span> «activity_type» <span class="k">IN</span> (<span class="s">'mcq'</span>,<span class="s">'practice'</span>,<span class="s">'quiz'</span>) <span class="k">THEN</span> «duration_sec» <span class="k">ELSE</span> 0 <span class="k">END</span>)::numeric
+      / nullif(sum(«duration_sec»),0) <span class="k">AS</span> active_share   <span class="c">-- confirm enum values!</span>
+  <span class="k">FROM</span> user_activity_duration_agg a <span class="k">JOIN</span> wrap_cohort c <span class="k">USING</span> («student_id»)
+  <span class="k">WHERE</span> a.«activity_date» >= <span class="s">'2026-01-01'</span> <span class="k">GROUP BY</span> 1)
+<span class="k">SELECT</span> (active_share >= 0.50) <span class="k">AS</span> is_doer, count(*) <span class="k">FROM</span> s <span class="k">GROUP BY</span> 1;
+
+<span class="c">-- FOCUS — Focused vs Explorer. Needs the A2 subject join.</span>
+<span class="c">-- Focused = top subject is ≥40% of total study time.</span>
+<span class="k">WITH</span> bysub <span class="k">AS</span> (
+  <span class="k">SELECT</span> a.«student_id», p.«subject_name», sum(a.«duration_sec») <span class="k">AS</span> sec
+  <span class="k">FROM</span> user_activity_duration_agg a <span class="k">JOIN</span> wrap_cohort c <span class="k">USING</span> («student_id»)
+  <span class="k">JOIN</span> lessons l <span class="k">ON</span> l.«lesson_id»=a.«lesson_id»
+  <span class="k">JOIN</span> programs p <span class="k">ON</span> p.«program_id»=l.«program_id»
+  <span class="k">WHERE</span> a.«activity_date» >= <span class="s">'2026-01-01'</span> <span class="k">GROUP BY</span> 1,2),
+s <span class="k">AS</span> (<span class="k">SELECT</span> «student_id», max(sec)::numeric/nullif(sum(sec),0) <span class="k">AS</span> top_share
+     <span class="k">FROM</span> bysub <span class="k">GROUP BY</span> 1)
+<span class="k">SELECT</span> (top_share >= 0.40) <span class="k">AS</span> is_focused, count(*) <span class="k">FROM</span> s <span class="k">GROUP BY</span> 1;</pre>
+    <p class="ask"><b>Return:</b> the four two-row splits. For any axis past 85/15, say so — I'll drop it rather than tune it.</p>
+  </div>
+
+  <div class="item">
+    <div class="item-h"><span class="id">B2</span><h3>The 16-type crosstab — the number that decides everything</h3><span class="chip c-prove">chase this first</span></div>
+    <p class="breaks">Cross all four axes. <b>If one of the 16 cells holds more than ~40% of students, the personality system is theatre</b> — we'd be handing most students the identical "type". That verdict reshapes the whole feature, so I need this one number before I write a single real Bangla string.</p>
+<pre><span class="c">-- Combine the four booleans from B1 into one flag per student, then count</span>
+<span class="c">-- the 16 combinations. (Fold B1's four CTEs into one SELECT per student first.)</span>
+<span class="k">SELECT</span> is_regular, is_owl, is_doer, is_focused, count(*) <span class="k">AS</span> students,
+       round(100.0*count(*)/sum(count(*)) <span class="k">OVER</span> (), 1) <span class="k">AS</span> pct
+<span class="k">FROM</span> personality_flags            <span class="c">-- the per-student join of B1's four axes</span>
+<span class="k">GROUP BY</span> 1,2,3,4
+<span class="k">ORDER BY</span> students <span class="k">DESC</span>;</pre>
+    <p class="ask"><b>Return:</b> all 16 rows with counts and %. I'm reading one thing: is the biggest cell under 40%, and are there at least ~6–8 cells with a meaningful population?</p>
+  </div>
+
+  <div class="item">
+    <div class="item-h"><span class="id">B3</span><h3>Fill rate per card — what % of students actually trigger each one</h3><span class="chip c-prove">prunes v1</span></div>
+    <p class="breaks">A card that fires for 4% of students is a lot of build for almost no one. <b>v1 keeps only cards that fire for a large share of the eligible cohort.</b></p>
+<pre><span class="c">-- Template — run once per candidate card, swapping the gate condition.</span>
+<span class="c">-- Example gates:</span>
+<span class="c">--   পড়ার সময় (Clock)   : night_share computable  (needs A1 «hour»)</span>
+<span class="c">--   সেরা বিষয় (subject) : has ≥1 subject with time (needs A2 join)</span>
+<span class="c">--   streak              : longest streak ≥ 7 days</span>
+<span class="c">--   লাইভ ক্লাস          : attended ≥ 1 live class (student_attendees)</span>
+<span class="k">SELECT</span> round(100.0 * count(*) <span class="k">FILTER</span> (<span class="k">WHERE</span> «gate_condition»)
+             / count(*), 1) <span class="k">AS</span> fill_pct
+<span class="k">FROM</span> wrap_cohort c
+<span class="k">LEFT JOIN</span> ... ;         <span class="c">-- join the table that card reads from</span></pre>
+    <p class="ask"><b>Return:</b> a one-line fill-% for each candidate card. I'll draw the v1 cut line once I see them.</p>
+  </div>
+</section>
+
+<!-- ============ GROUP C ============ -->
+<section class="grp">
+  <div class="grp-h"><span class="tag">C</span><h2>GET-source feasibility — can we even obtain this by December?</h2></div>
+  <p class="grp-note">These four live in <b>service DBs, not datafuse.</b> For each, I need two answers from data-eng: <b>(a)</b> can it land in datafuse by <b>~10 Dec 2026</b>, and at what effort; <b>(b)</b> its 2026 volume. Anything that can't land by the 10th is <b>out of v1</b> — I won't design around it.</p>
+
+  <div class="item">
+    <div class="item-h"><span class="id">C1</span><h3>Shikho AI usage</h3><span class="chip c-eng">needs pipeline</span></div>
+    <p class="breaks">Feeds "তুমি শিখো AI-কে এ বছর ___ বার জিজ্ঞেস করেছ". Source: <code>gen_ai_conversations</code> / <code>gen_ai_sessions</code>.</p>
+    <p class="ask"><b>Return:</b> pipe-by-10-Dec yes/no + effort; and 2026 row count + distinct students who used it. If few students used it, it's a niche card, not a core one.</p>
+  </div>
+  <div class="item">
+    <div class="item-h"><span class="id">C2</span><h3>Model tests / exams</h3><span class="chip c-eng">needs pipeline</span></div>
+    <p class="breaks">Feeds exam-performance cards + the "best subject by marks" angle the CEO asked for. Source: <code>model_test_session</code>.</p>
+    <p class="ask"><b>Return:</b> pipe-by-10-Dec yes/no + effort; 2026 sessions + distinct students; does it carry a subject/score we can rank on?</p>
+  </div>
+  <div class="item">
+    <div class="item-h"><span class="id">C3</span><h3>Badges</h3><span class="chip c-eng">needs pipeline</span></div>
+    <p class="breaks">Source: <code>StudentBadges</code> / <code>GamificationBadges</code>.</p>
+    <p class="ask"><b>Return:</b> pipe-by-10-Dec yes/no + effort; 2026 badges awarded + distinct students holding ≥1.</p>
+  </div>
+  <div class="item">
+    <div class="item-h"><span class="id">C4</span><h3>QR / book scans</h3><span class="chip c-eng">needs pipeline</span></div>
+    <p class="breaks">Source: <code>qr_scan_logs</code>. Likely the weakest-coverage of the four — confirm before counting on it.</p>
+    <p class="ask"><b>Return:</b> pipe-by-10-Dec yes/no + effort; 2026 scans + distinct students.</p>
+  </div>
+</section>
+
+<!-- ============ GROUP D ============ -->
+<section class="grp">
+  <div class="grp-h"><span class="tag">D</span><h2>Number sanity — catch the embarrassing outlier before a student screenshots it</h2></div>
+  <p class="grp-note">For every metric that survives A–C, return <b>min / median / p95 / max / null-rate</b> across <code>wrap_cohort</code>. This is the guardrail against a share card reading "তুমি এ বছর ৯,৯৯৯ ঘণ্টা পড়েছ".</p>
+
+  <div class="item">
+    <div class="item-h"><span class="id">D1</span><h3>Distribution + null-rate, per metric</h3><span class="chip c-sanity">guardrail</span></div>
+<pre><span class="c">-- Template — run per metric (total study hours, live-class count,</span>
+<span class="c">-- quiz accuracy, longest streak, final score). Swap the expression + source.</span>
+<span class="k">SELECT</span>
+  count(*)                                              <span class="k">AS</span> n,
+  round(100.0*count(*) <span class="k">FILTER</span> (<span class="k">WHERE</span> «metric» <span class="k">IS NULL</span>)/count(*),1) <span class="k">AS</span> null_pct,
+  min(«metric»),
+  percentile_cont(0.50) <span class="k">WITHIN GROUP</span> (<span class="k">ORDER BY</span> «metric») <span class="k">AS</span> median,
+  percentile_cont(0.95) <span class="k">WITHIN GROUP</span> (<span class="k">ORDER BY</span> «metric») <span class="k">AS</span> p95,
+  max(«metric»)
+<span class="k">FROM</span> ( <span class="c">/* per-student rollup of the metric, joined to wrap_cohort */</span> ) q;</pre>
+    <p class="ask"><b>Return:</b> one row per metric. I'm hunting for impossible maxes (negative time, &gt;24h/day, accuracy &gt;100%) and high null-rates that would blank a card.</p>
+  </div>
+  <div class="item">
+    <div class="item-h"><span class="id">D2</span><h3>Final score &amp; per-program top-50 rank — confirm, don't rebuild</h3><span class="chip c-sanity">already shipped</span></div>
+    <p class="breaks">This one already shipped in <b>ST-25781</b> (per-program top-50, Bangla ordinals). Not a new build — just confirm the 2026 source still populates and the rank query still runs for this cohort.</p>
+    <p class="ask"><b>Return:</b> a quick yes it still works for 2026 + a sample ranked slice for one program.</p>
+  </div>
+</section>
+
+<div class="callout">
+  <b>If BI can only run one thing this week, make it B2.</b> A1/A2 tell us what's <i>possible</i>; B2 tells us whether the Wrap is <i>worth building</i> — whether 28k students genuinely get different results or we've rebuilt last year's review with extra steps. Everything else can wait a few days. That cannot.
+</div>
+
+<footer>
+  Sources: predecessor <code>ST-25781</code> · data spec <code>SC-1737</code> · warehouse <code>datafuse</code> (Postgres). Column names in <code>«guillemets»</code> are unconfirmed until A1 prints them — substitute before running B–D.
+</footer>
+
+</div>
+</body>
+</html>

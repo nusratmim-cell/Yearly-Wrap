@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shikho Wrapped 2026 — Product &amp; Build Spec</title>
+<style>
+  :root{
+    color-scheme: light;
+    --ground:#F9F8F5; --paper:#FFFFFF; --sunken:#F1EFEA;
+    --ink:#1A1D26; --ink-2:#4B5060; --ink-3:#7C8090;
+    --line:#E3E0D8; --line-2:#EEECE6;
+    --navy:#354894; --magenta:#C2257F;
+    --navy-soft:#ECEEF8; --magenta-soft:#FBE8F2;
+    --spot:#1DB954; --spot-soft:#E4F4E9;
+    --have-fg:#2C7A4B; --have-bg:#E3F1E8;
+    --build-fg:#2457A7; --build-bg:#E7EEF9;
+    --get-fg:#9A6A06; --get-bg:#FAEFD3;
+    --gap-fg:#B8304B; --gap-bg:#FAE3E8;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--ground);color:var(--ink);margin:0;
+    font:15.5px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1100px;margin:0 auto;padding:40px 24px 140px}
+  header.top{border-bottom:2px solid var(--navy);padding-bottom:22px}
+  .kicker{color:var(--magenta);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12.5px}
+  h1{font-size:34px;line-height:1.14;margin:.3em 0 .2em;letter-spacing:-.02em}
+  .sub{color:var(--ink-2);font-size:16.5px;max-width:78ch}
+  .meta{color:var(--ink-3);font-size:13px;margin-top:14px}.meta b{color:var(--ink-2);font-weight:600}
+  h2{font-size:25px;margin:58px 0 8px;letter-spacing:-.01em;scroll-margin-top:16px;padding-top:10px;border-top:1px solid var(--line)}
+  h2 .n{color:var(--magenta);font-weight:700;margin-right:10px}
+  h3{font-size:19px;margin:30px 0 8px;color:#23283a}
+  h4{font-size:12.5px;margin:16px 0 6px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  p{margin:9px 0}a{color:var(--navy)}
+  ul,ol{margin:9px 0;padding-left:22px}li{margin:5px 0}
+  code{background:var(--sunken);padding:1.5px 6px;border-radius:5px;font-size:12.5px;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;color:#39506b}
+  pre{background:#1e2230;color:#e8eaf0;border-radius:12px;padding:16px 18px;overflow:auto;font-size:12.5px;line-height:1.55;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;margin:14px 0}
+  pre .c{color:#8b93a7}pre .k{color:#c2a0 f0}pre .k{color:#d3a4ff}pre .s{color:#9ee6a8}pre .n{color:#ffd59e}
+  .lead{font-size:16.5px;color:var(--ink-2)}
+  .bn{font-family:"Noto Sans Bengali","Hind Siliguri",system-ui}
+  nav.toc{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:26px 0 8px}
+  nav.toc h4{margin:0 0 10px}
+  nav.toc ol{columns:3;column-gap:30px;margin:0;padding-left:20px;font-size:14px}
+  nav.toc a{text-decoration:none}nav.toc a:hover{text-decoration:underline}
+  @media(max-width:860px){nav.toc ol{columns:1}}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:14px 0}
+  .card.navy{border-left:4px solid var(--navy)}.card.mag{border-left:4px solid var(--magenta)}
+  blockquote{margin:16px 0;padding:16px 22px;background:var(--navy-soft);border-left:5px solid var(--navy);border-radius:12px;color:#20264a;font-size:15.5px}
+  blockquote em{color:var(--magenta);font-style:normal;font-weight:600;background:#fff;padding:0 3px;border-radius:3px}
+  blockquote .who{display:block;margin-top:8px;font-size:12.5px;color:var(--ink-2);font-weight:600}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:8px 11px;border-bottom:1px solid var(--line-2);vertical-align:top}
+  th{background:var(--sunken);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2);font-weight:700}
+  tr:last-child td{border-bottom:none}td code{font-size:11.5px}
+  .grp td{background:var(--navy-soft);font-weight:700;color:var(--navy);font-size:12px}
+  .pill{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .have{background:var(--have-bg);color:var(--have-fg)}.build{background:var(--build-bg);color:var(--build-fg)}
+  .get{background:var(--get-bg);color:var(--get-fg)}.gap{background:var(--gap-bg);color:var(--gap-fg)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin:12px 0 4px;font-size:12.5px;color:var(--ink-2)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:820px){.two,.three{grid-template-columns:1fr}}
+  .principle{display:grid;grid-template-columns:34px 1fr;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:8px 0}
+  .principle .pnum{font-size:20px;font-weight:800;color:var(--magenta);line-height:1}
+  .principle b{color:var(--navy)}
+  .yr{display:inline-flex;align-items:center;gap:8px;background:var(--spot-soft);color:#0f6b31;border:1px solid #BEE0CB;border-radius:999px;padding:3px 12px;font-weight:700;font-size:13px}
+  .feat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:2px 20px 14px;margin:14px 0}
+  .feat > .hd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line-2);padding:13px 0 9px;margin-bottom:2px}
+  .feat > .hd .sp{font-weight:700;font-size:15.5px;color:var(--ink)}
+  .feat > .hd .tagspot{background:var(--spot-soft);color:#0f6b31;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px}
+  .feat .row{display:grid;grid-template-columns:86px 1fr;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line-2)}
+  .feat .row:last-child{border-bottom:none}
+  .feat .row .lab{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);padding-top:2px}
+  .feat .row.why .lab{color:var(--magenta)}.feat .row.map .lab{color:var(--navy)}
+  .feat .row .val{font-size:14px}.feat .map .val b{color:var(--navy)}
+  .warn{background:var(--get-bg);border:1px solid #EAD9A6;border-radius:10px;padding:11px 15px;font-size:13.5px;margin:12px 0;color:#6e4f08}.warn b{color:#5a3f05}
+  .ok{background:var(--have-bg);border:1px solid #BEE0CB;border-radius:10px;padding:11px 15px;font-size:13.5px;margin:12px 0;color:#245c3a}
+  .note{font-size:12.5px;color:var(--ink-3);margin-top:6px}
+  .ptype{border:1px solid var(--line);border-radius:12px;padding:12px 15px;margin:10px 0;background:var(--paper)}
+  .ptype .code{display:inline-block;font-family:ui-monospace,monospace;font-weight:700;color:#fff;background:var(--navy);border-radius:6px;padding:1px 8px;font-size:12px;letter-spacing:.08em}
+  .ptype .nm{font-weight:700;font-size:15.5px;color:#23283a;margin-left:8px}
+  .ptype .nm small{color:var(--ink-3);font-weight:500;font-size:12.5px}
+  .ptype .prev{float:right;font-size:11.5px;color:var(--ink-3)}
+  .ptype .def{font-size:13.5px;color:var(--ink-2);margin:6px 0}
+  .ptype .copy{background:var(--magenta-soft);border-radius:8px;padding:8px 12px;font-size:13.5px;margin-top:6px}
+  .ptype .copy b{color:var(--magenta)}
+  hr{border:none;border-top:1px solid var(--line);margin:34px 0}
+  footer{color:var(--ink-3);font-size:12px;margin-top:40px;border-top:1px solid var(--line);padding-top:18px}
+  .wow{color:var(--magenta);font-weight:600}
+  .tag{display:inline-block;background:var(--magenta-soft);color:var(--magenta);font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;margin-left:6px;vertical-align:middle}
+  .axis{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:10px 0;background:var(--paper)}
+  .axis .ax{font-weight:700;color:var(--navy)}
+  .axis .ax small{display:block;color:var(--ink-3);font-weight:500;font-size:11.5px}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+  .kpi .k{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .kpi .k b{display:block;font-size:20px;color:var(--navy)}.kpi .k small{color:var(--ink-3);font-size:11.5px}
+  @media(max-width:760px){.kpi{grid-template-columns:1fr 1fr}}
+  .phase{border-left:3px solid var(--magenta);padding:4px 0 4px 16px;margin:14px 0}
+  .phase b{color:var(--navy)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">Shikho · Product &amp; Build Spec · v1 draft</div>
+  <h1>Shikho Wrapped 2026</h1>
+  <p class="sub">A full specification to productize the Year-End Wrap: the complete Spotify teardown, the 16-type learner-personality system with real formulas, the insight-card library with trigger logic, the selection engine, the per-student data contract, metrics, and a phased build plan. This is the working document — detailed enough to split into tickets.</p>
+  <div class="meta">
+    Owner: nusrat.mim@shikho.com · Draft 28 Oct 2026 · Sources: CEO thread (Ishmam), SC-1737 data spec, ST-25781 + 2025 PRD, C3 prototype, shikho-spec warehouse, Spotify Newsroom/press (verified). Illustrative numbers &amp; Bangla copy are placeholders for BI/Brand to finalise. Companion files: <code>year-end-wrap-2026-plan.html</code> (engine overview), <code>year-end-wrap-data-build-plan.html</code> (field-level data mapping).
+  </div>
+</header>
+
+<nav class="toc">
+  <h4>Contents</h4>
+  <ol>
+    <li><a href="#thesis">0 · Thesis &amp; principles</a></li>
+    <li><a href="#teardown">1 · Spotify teardown (full)</a></li>
+    <li><a href="#personality">2 · Learner Personality system</a></li>
+    <li><a href="#grid">3 · The 16 types (full)</a></li>
+    <li><a href="#library">4 · Insight-card library</a></li>
+    <li><a href="#engine">5 · Selection &amp; ordering engine</a></li>
+    <li><a href="#signature">6 · Signature feature specs</a></li>
+    <li><a href="#contract">7 · Per-student JSON contract</a></li>
+    <li><a href="#data">8 · Data readiness</a></li>
+    <li><a href="#metrics">9 · Metrics &amp; experiments</a></li>
+    <li><a href="#build">10 · Build phasing &amp; effort</a></li>
+    <li><a href="#decisions">11 · Open decisions</a></li>
+  </ol>
+</nav>
+
+<!-- 0 -->
+<section id="thesis">
+<h2><span class="n">00</span>Thesis &amp; the principles we build against</h2>
+<p class="lead">Wrapped is not a stats screen — it's an <b>identity product with a growth loop attached</b>. It takes raw behaviour, derives something that feels like a truth about <i>you</i>, gives you a <i>word</i> for it, and hands you a <i>card built to be shared</i>. The numbers are raw material. Over four years Spotify moved steadily from "here are your numbers" to "here is who you are." That vector is the entire lesson.</p>
+<blockquote>The designs look initially nice but <em>we are mostly representing user data attractively</em>. Let's go a step deeper… Spotify Wrapped <em>generates insights based on the individual</em>… My experience would be — <em>wow, I learned something new about myself</em>… for 20 to 30 thousand students, make it as unique as possible for each.
+<span class="who">— Ishmam Ahmed Chowdhury, CEO</span></blockquote>
+<p><b>North-star sentence:</b> a student finishes the Wrap and thinks "that's <i>so</i> me" — then sends it to a friend to prove it. The seven principles below are the lens; every feature in this spec is tagged to them.</p>
+<div class="principle"><div class="pnum">1</div><div><b>Stats are the floor; identity is the ceiling.</b> Nobody shares "142 hours." They share "I'm a Night-Owl Specialist." Numbers earn trust; the label gets shared.</div></div>
+<div class="principle"><div class="pnum">2</div><div><b>Derive, don't display.</b> Every memorable feature is <i>computed</i>, not shown. The product <i>is</i> the function that turns 5 numbers into 1 meaning.</div></div>
+<div class="principle"><div class="pnum">3</div><div><b>Variable slides = uniqueness.</b> Slides are gated by eligibility; the <i>set</i> differs per student. Our current prototype's fixed order is the single biggest thing to fix.</div></div>
+<div class="principle"><div class="pnum">4</div><div><b>Give people a word for themselves.</b> Archetypes are identity + language + inherently social. People love a flattering category.</div></div>
+<div class="principle"><div class="pnum">5</div><div><b>Engineer one "how did it know that?" moment</b> — a cross-signal revelation the user never stated. This is the CEO's ask, literally.</div></div>
+<div class="principle"><div class="pnum">6</div><div><b>Design the share, not just the screen.</b> The share card is the cheapest acquisition channel to reach 30k students' friends.</div></div>
+<div class="principle"><div class="pnum">7</div><div><b>Close with forward motion.</b> End by pulling the student back in January — that's literally our return-rate metric.</div></div>
+</section>
+
+<!-- 1 TEARDOWN -->
+<section id="teardown">
+<h2><span class="n">01</span>Spotify Wrapped — the full teardown, year by year</h2>
+<p class="lead">Every signature feature, 2021→2024, with the mechanic, the data Spotify needed, the psychology, and the exact Shikho mapping with a data formula. Feature facts are web-verified (see footer).</p>
+
+<h3><span class="yr">2021</span> &nbsp;From list → interpretation + play</h3>
+<p>Pre-2021 Wrapped was leaderboards. 2021 added interpretation and games — the birth of the template we copy.</p>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Core stats</span><span class="tagspot">carried over</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">Top artists, top songs, top genres, minutes listened, top podcasts.</div></div>
+  <div class="row"><div class="lab">Data in</div><div class="val">Play events: per-track play counts, duration, artist/genre tags, timestamps.</div></div>
+  <div class="row why"><div class="lab">Why (P1)</div><div class="val">The floor. Builds trust ("yes, that's true") so the derived slides are believed. Necessary, not memorable.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b>Core cards:</b> active days, total hours, top subject (time), favourite teacher, quizzes done, most-consumed content type. <br><code>SELECT days, SUM(*_duration), argmax(subject_time), argmax(teacher_att)…</code> <span class="pill have">HAVE</span>.</div></div>
+</div>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Audio Aura</span><span class="tagspot">signature</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">Your top two moods rendered as a two-colour aura (built with an aura reader for flavour). A vibe, no numbers.</div></div>
+  <div class="row"><div class="lab">Data in</div><div class="val">Track-level mood/valence/energy features → top-2 moods → colour map.</div></div>
+  <div class="row why"><div class="lab">Why (P2,6)</div><div class="val">Turns abstract data into a shareable <i>visual identity</i>. Nothing to read = pure screenshot bait.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"স্টাডি অরা"</b> — map two dominant signals to a two-tone gradient. <br><b>Formula:</b> colour-A = f(top subject), colour-B = f(timing band); blend ratio = intensity (hours percentile). <span class="pill build">BUILD</span> — pure visual rule over data we have.</div></div>
+</div>
+
+<div class="feat">
+  <div class="hd"><span class="sp">Playing Cards — 2 Truths &amp; a Lie</span><span class="tagspot">signature</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">Three "facts" about your listening, one false; you guess.</div></div>
+  <div class="row why"><div class="lab">Why (P5)</div><div class="val">Interaction, not just display. Guessing forces you to <i>study your own data</i>. Dwell time + delight, nearly free.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"দুটো সত্যি, একটা মিথ্যা"</b> — 3 real facts + 1 generated plausible-false. <br><b>Logic:</b> pick 3 true facts from the student's top cards; synth a false one by perturbing a real value into a believable range (e.g. inflate quiz count by 40%). Tap to reveal. <span class="pill build">BUILD</span>.</div></div>
+</div>
+
+<div class="feat">
+  <div class="hd"><span class="sp">2021: The Movie &nbsp;·&nbsp; Wrapped Blend</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">"The Movie" narrated the year as film scenes; "Blend" compared your taste with a friend's (via the Blend playlist feature).</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b>Narrative framing</b> (year as acts: slow start → exam-season climax) and a <b class="bn">"স্টাডি ব্লেন্ড"</b> friend-compare over the public share link — a <b>growth loop</b>, tag v2. <span class="pill build">BUILD</span>.</div></div>
+</div>
+
+<h3><span class="yr">2022</span> &nbsp;The identity engine — the year we copy most</h3>
+<div class="feat">
+  <div class="hd"><span class="sp">Listening Personality (16 types)</span><span class="tagspot">THE one to copy</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">16 types (The Replayer, The Specialist, The Adventurer, The Fanclubber…) as a 4-letter code from four binary axes: familiarity↔exploration, loyalty↔variety, timeliness↔newness, commonality↔uniqueness. Myers-Briggs-flavoured on purpose.</div></div>
+  <div class="row"><div class="lab">Data in</div><div class="val">Four computed ratios per user, each thresholded to a binary → 2⁴ = 16 codes.</div></div>
+  <div class="row why"><div class="lab">Why (P1-4)</div><div class="val">Four simple axes → a 4-bit code → 16 identities that feel scientific, flattering, ownable. "I'm an ADVE" is a flex. This is the engine.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"শিখো Learner Personality"</b> — our direct equivalent, fully specified in <a href="#personality">§2–3</a>. Four measurable axes → 16 Bangla types. <span class="pill build">BUILD</span>, all axes from data we <span class="pill have">HAVE</span>.</div></div>
+</div>
+<div class="feat">
+  <div class="hd"><span class="sp">Audio Day</span><span class="tagspot">signature</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">How listening &amp; its moods shift across morning / midday / evening.</div></div>
+  <div class="row why"><div class="lab">Why (P5)</div><div class="val">A time-of-day cut feels intimate — it's about <i>habits</i>, not taste.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"তোমার পড়ার দিন"</b> — study split by band + <b>which subject per band</b> ("Physics at night, Math at dawn"). <span class="pill build">BUILD</span> over <code>user_activity_agg</code> + subject logs. Full spec in <a href="#signature">§6</a>.</div></div>
+</div>
+
+<h3><span class="yr">2023</span> &nbsp;Characters &amp; belonging</h3>
+<div class="feat">
+  <div class="hd"><span class="sp">Me in 2023 — 12 characters (flip to reveal)</span><span class="tagspot">signature</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">One of 12 characters (Shapeshifter, Luminary, Alchemist, Hypnotist, Hunter…), revealed by flipping a card.</div></div>
+  <div class="row why"><div class="lab">Why (P4)</div><div class="val">Note the <b>flip-to-reveal</b> — anticipation before payoff. The reveal matters as much as the label.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val">Reuse the <b>reveal mechanic</b> for our personality finale (C3 already ends on a door that opens). Keep one archetype system, not two. <span class="pill build">BUILD</span> (interaction).</div></div>
+</div>
+<div class="feat">
+  <div class="hd"><span class="sp">Sound Town</span><span class="tagspot">signature</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">Matches you to a real city whose listeners share your taste. Belonging + surprising external anchor.</div></div>
+  <div class="row why"><div class="lab">Why (P5)</div><div class="val">"A whole town listens like me?" — externalises identity into something relatable &amp; shareable.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"স্টাডি টুইন"</b> — match to an archetype cohort/tribe. Needs clustering + truthful framing (no fake rankings). <span class="pill gap">STRETCH / v2</span>.</div></div>
+</div>
+<div class="feat">
+  <div class="hd"><span class="sp">Top-5 with peak month · genre hamburger graphic</span></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b>Top subjects each with peak month</b> + subject-mix visual. Supported by per-month/per-subject splits. <span class="pill have">HAVE</span> / light <span class="pill build">BUILD</span>.</div></div>
+</div>
+
+<h3><span class="yr">2024</span> &nbsp;AI — and the warning</h3>
+<div class="feat">
+  <div class="hd"><span class="sp">Your Music Evolution (phases)</span><span class="tagspot">strong for us</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">Year split into 3 "phases" with quirky names + playlists.</div></div>
+  <div class="row why"><div class="lab">Why (P5,7)</div><div class="val">A year has a shape; naming its chapters makes it a story, not a stat.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"তোমার ২০২৬ এর অধ্যায়"</b> — cluster months into phases ("slow start", "the grind", "exam sprint"), each with dominant subject/behaviour. <span class="pill build">BUILD</span>. Full spec in <a href="#signature">§6</a>.</div></div>
+</div>
+<div class="feat">
+  <div class="hd"><span class="sp">Wrapped AI Podcast (NotebookLM)</span><span class="tagspot">stretch</span></div>
+  <div class="row"><div class="lab">What</div><div class="val">AI-hosted audio episode narrating your year. Time-limited, English-only, few countries.</div></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b class="bn">"তোমার ২০২৬, অডিওতে"</b> — AI Bangla voice recap. On-brand (we run <code>gen-ai</code>, <code>anubadok</code>, <code>transcriptor</code>) but <b>v2</b>, substance first. <span class="pill gap">STRETCH</span>.</div></div>
+</div>
+<div class="feat">
+  <div class="hd"><span class="sp">AI Playlist · Longest Streak</span></div>
+  <div class="row map"><div class="lab">Shikho</div><div class="val"><b>AI Playlist → the retention play:</b> <b class="bn">"২০২৭ স্টাডি প্ল্যান"</b> generated from 2026 data = celebration→return (P7). <span class="pill build">BUILD</span>. Longest streak we <span class="pill have">HAVE</span>.</div></div>
+</div>
+<div class="warn"><b>The 2024 warning:</b> real backlash — fans felt it leaned on AI novelty while <b>cutting substantive stats</b>. Lesson: <b>AI is garnish, not the meal.</b> Earn the "wow" with derived insight first; add AI formats only once the core is strong. A student base is far less forgiving of a flex that doesn't deliver.</div>
+
+<h3>The meta-pattern (what actually generalises)</h3>
+<table>
+<tr><th>Layer</th><th>Spotify</th><th>Shikho equivalent</th><th>Effort</th></tr>
+<tr><td>Floor (everyone)</td><td>top songs/artists/minutes</td><td>active days, hours, top subject, favourite teacher</td><td><span class="pill have">HAVE</span></td></tr>
+<tr><td>Identity (finale)</td><td>Listening Personality</td><td>Learner Personality (16)</td><td><span class="pill build">BUILD</span></td></tr>
+<tr><td>Variable slides (gated)</td><td>Aura, Audio Day, Town</td><td>night owl, favourite teacher, comeback, combos</td><td><span class="pill build">BUILD</span></td></tr>
+<tr><td>Comparative framing</td><td>"top 0.5% of listeners"</td><td>"top 5% in your program" (composite + leaderboard)</td><td><span class="pill build">BUILD</span></td></tr>
+<tr><td>Revelation (combo)</td><td>Sound Town, Aura</td><td>classes→accuracy link, subject×time</td><td><span class="pill build">BUILD</span></td></tr>
+<tr><td>Play/interaction</td><td>Playing Cards</td><td>2 truths &amp; a lie</td><td><span class="pill build">BUILD</span></td></tr>
+<tr><td>Forward motion</td><td>AI Playlist</td><td>2027 study plan</td><td><span class="pill build">BUILD</span></td></tr>
+</table>
+</section>
+
+<!-- 2 PERSONALITY -->
+<section id="personality">
+<h2><span class="n">02</span>The Learner Personality system — axes &amp; math</h2>
+<p class="lead">Our answer to Listening Personality, and the finale the whole wrap builds toward. The discipline that keeps it rigorous (and tunable as settings): <b>define 4 binary axes on real data first; the 16 types fall out of the combinations.</b> Never invent 16 vague labels and reverse-engineer.</p>
+
+<h3>The four axes</h3>
+<div class="axis"><div class="ax">Rhythm<br><small>R ↔ S</small></div><div>
+  <b>Regular (R) vs Sporadic (S)</b> — how consistently they showed up.<br>
+  <code>metric = active_days / weeks_enrolled</code> from <code>user_activity_duration_agg.activity_date</code>. <b>Threshold (setting):</b> ≥ 3.0 active days/week → R, else S. Streak length is a tiebreaker.</div></div>
+<div class="axis"><div class="ax">Clock<br><small>O ↔ L</small></div><div>
+  <b>Owl (O) vs Lark (L)</b> — when they studied.<br>
+  <code>metric = (evening + after_midnight) / total study time</code> from <code>datafuse.user_activity_agg</code> bands. <b>Threshold:</b> ≥ 0.50 → O, else L.</div></div>
+<div class="axis"><div class="ax">Method<br><small>D ↔ V</small></div><div>
+  <b>Doer (D) vs Viewer (V)</b> — practice vs passive consumption.<br>
+  <code>metric = active_time / (active_time + video_time)</code>, where active = quiz + live-exam + model-test + live-class durations, video = recorded + animated. From <code>user_activity_duration_agg</code>. <b>Threshold:</b> ≥ 0.50 → D, else V.</div></div>
+<div class="axis"><div class="ax">Focus<br><small>F ↔ E</small></div><div>
+  <b>Focused (F) vs Explorer (E)</b> — depth in one subject vs breadth.<br>
+  <code>metric = top_subject_time / total_subject_time</code> (Herfindahl concentration as alt). From the subject-time reconstruction. <b>Threshold:</b> top subject ≥ 40% of study time → F, else E.</div></div>
+
+<div class="warn"><b>Data dependency:</b> <b>Focus</b> and the subject cards depend on subject-level study time, which the main agg table does not carry — it's reconstructed from <code>watch_logs</code> / <code>student_attendees</code>↔<code>lessons</code> / <code>mcq_user_chapter_daily</code> and must be reconciled with BI. <b>Clock</b> depends on confirming the <code>user_activity_agg</code> hour bands. Both are the gating unknowns for this system.</div>
+
+<div class="ok"><b>Code &amp; assignment:</b> each student gets a 4-letter code like <code>R-O-D-F</code>. For students near a threshold (within a configurable band), store the <b>second-nearest</b> type too, so copy can hedge ("you're a Night Owl, with a touch of Explorer"). Low-activity students (below the wrap's minimum-activity gate) bypass the 16 and get the dedicated <b class="bn">নতুন শুরু</b> ("Fresh Start") type.</div>
+</section>
+
+<!-- 3 GRID -->
+<section id="grid">
+<h2><span class="n">03</span>The 16 types — full grid</h2>
+<p class="lead">All 2⁴ combinations of Rhythm·Clock·Method·Focus. Each has a code, a name (English + Bangla placeholder for Brand), a one-line definition tied to the axes, the headline + share line, and a rough prevalence guess (BI confirms from distributions). Copy is illustrative.</p>
+
+<div class="ptype"><span class="code">R·O·D·F</span><span class="nm">The Midnight Grinder <small>· <span class="bn">নিশাচর সাধক</span></small></span><span class="prev">~? %</span>
+<div class="def">Regular, night, practice-first, one subject. Shows up nightly and drills the same subject relentlessly.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">রাত জাগে, প্রশ্ন সমাধান করে, আর একটা বিষয়েই ডুবে থাকে — তুমি নিশাচর সাধক।</span> · <b>Share:</b> <span class="bn">আমি ২০২৬-এর নিশাচর সাধক 🦉</span></div></div>
+
+<div class="ptype"><span class="code">R·O·D·E</span><span class="nm">The Night Ranger <small>· <span class="bn">রাতের অভিযাত্রী</span></small></span><span class="prev">~? %</span>
+<div class="def">Regular, night, practice-first, many subjects. Nightly practice across a broad syllabus.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">রাতভর সব বিষয়ে প্রশ্ন সমাধান — তুমি রাতের অভিযাত্রী।</span> · <b>Share:</b> <span class="bn">রাতের অভিযাত্রী, ২০২৬ 🌙</span></div></div>
+
+<div class="ptype"><span class="code">R·O·V·F</span><span class="nm">The Night Scholar <small>· <span class="bn">রাতজাগা পণ্ডিত</span></small></span><span class="prev">~? %</span>
+<div class="def">Regular, night, video-first, one subject. Watches lessons deep into one subject, after dark.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">রাতে একটা বিষয়ে একের পর এক লেসন — তুমি রাতজাগা পণ্ডিত।</span> · <b>Share:</b> <span class="bn">রাতজাগা পণ্ডিত 📘</span></div></div>
+
+<div class="ptype"><span class="code">R·O·V·E</span><span class="nm">The Night Explorer <small>· <span class="bn">নিশি পরিব্রাজক</span></small></span><span class="prev">~? %</span>
+<div class="def">Regular, night, video-first, broad. A wide, curious nightly watcher.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">রাতে সব বিষয়ে ঘুরে বেড়াও লেসনের ভেতর — নিশি পরিব্রাজক।</span> · <b>Share:</b> <span class="bn">নিশি পরিব্রাজক ✨</span></div></div>
+
+<div class="ptype"><span class="code">R·L·D·F</span><span class="nm">The Dawn Driller <small>· <span class="bn">ভোরের যোদ্ধা</span></small></span><span class="prev">~? %</span>
+<div class="def">Regular, day, practice-first, one subject. Disciplined daytime practice, laser-focused.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">দিনের আলোয় এক বিষয়ে টানা অনুশীলন — তুমি ভোরের যোদ্ধা।</span> · <b>Share:</b> <span class="bn">ভোরের যোদ্ধা ☀️</span></div></div>
+
+<div class="ptype"><span class="code">R·L·D·E</span><span class="nm">The All-Rounder <small>· <span class="bn">অলরাউন্ডার</span></small></span><span class="prev">~? %</span>
+<div class="def">Regular, day, practice-first, broad. The classic consistent, well-balanced student.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">প্রতিদিন, সব বিষয়ে, হাতে-কলমে — তুমি খাঁটি অলরাউন্ডার।</span> · <b>Share:</b> <span class="bn">২০২৬-এর অলরাউন্ডার 🏅</span></div></div>
+
+<div class="ptype"><span class="code">R·L·V·F</span><span class="nm">The Devoted Learner <small>· <span class="bn">একনিষ্ঠ শিক্ষার্থী</span></small></span><span class="prev">~? %</span>
+<div class="def">Regular, day, video-first, one subject. Daily, deep, lesson-driven in a single subject.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">রোজ একটা বিষয়ে মন দিয়ে লেসন — একনিষ্ঠ শিক্ষার্থী।</span> · <b>Share:</b> <span class="bn">একনিষ্ঠ শিক্ষার্থী 📗</span></div></div>
+
+<div class="ptype"><span class="code">R·L·V·E</span><span class="nm">The Steady Explorer <small>· <span class="bn">নিয়মিত পরিব্রাজক</span></small></span><span class="prev">~? %</span>
+<div class="def">Regular, day, video-first, broad. Consistent, wide-ranging daytime watcher.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">প্রতিদিন নতুন কিছু, সব বিষয়ে — নিয়মিত পরিব্রাজক।</span> · <b>Share:</b> <span class="bn">নিয়মিত পরিব্রাজক 🧭</span></div></div>
+
+<div class="ptype"><span class="code">S·O·D·F</span><span class="nm">The Night Sprinter <small>· <span class="bn">রাতের স্প্রিন্টার</span></small></span><span class="prev">~? %</span>
+<div class="def">Sporadic, night, practice-first, one subject. Bursts of intense late-night practice on one subject.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">যখন বসো, রাতেই — আর এক বিষয়ে ঝড় তোলো। রাতের স্প্রিন্টার।</span> · <b>Share:</b> <span class="bn">রাতের স্প্রিন্টার ⚡</span></div></div>
+
+<div class="ptype"><span class="code">S·O·D·E</span><span class="nm">The Burst Solver <small>· <span class="bn">ঝটিকা সমাধানকারী</span></small></span><span class="prev">~? %</span>
+<div class="def">Sporadic, night, practice-first, broad. Irregular but intense, wide late-night problem sessions.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">মাঝে মাঝে, কিন্তু রাতভর সব বিষয়ে প্রশ্ন — ঝটিকা সমাধানকারী।</span> · <b>Share:</b> <span class="bn">ঝটিকা সমাধানকারী 💥</span></div></div>
+
+<div class="ptype"><span class="code">S·O·V·F</span><span class="nm">The Midnight Binger <small>· <span class="bn">রাতের একাগ্র দর্শক</span></small></span><span class="prev">~? %</span>
+<div class="def">Sporadic, night, video-first, one subject. Occasional deep late-night lesson binges on one subject.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">রাত হলে এক বিষয়ে লেসনের পর লেসন — রাতের একাগ্র দর্শক।</span> · <b>Share:</b> <span class="bn">রাতের একাগ্র দর্শক 🌌</span></div></div>
+
+<div class="ptype"><span class="code">S·O·V·E</span><span class="nm">The Late Wanderer <small>· <span class="bn">নিশি ভ্রমণকারী</span></small></span><span class="prev">~? %</span>
+<div class="def">Sporadic, night, video-first, broad. Occasional, wide, late-night watching.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">রাতে এলোমেলো ঘুরে বেড়াও সব বিষয়ে — নিশি ভ্রমণকারী।</span> · <b>Share:</b> <span class="bn">নিশি ভ্রমণকারী 🌃</span></div></div>
+
+<div class="ptype"><span class="code">S·L·D·F</span><span class="nm">The Day Sprinter <small>· <span class="bn">দিনের স্প্রিন্টার</span></small></span><span class="prev">~? %</span>
+<div class="def">Sporadic, day, practice-first, one subject. Daytime bursts of focused practice.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">যেদিন বসো, এক বিষয়ে প্রশ্নে ডুবে যাও — দিনের স্প্রিন্টার।</span> · <b>Share:</b> <span class="bn">দিনের স্প্রিন্টার 🏃</span></div></div>
+
+<div class="ptype"><span class="code">S·L·D·E</span><span class="nm">The Weekend Warrior <small>· <span class="bn">ছুটির দিনের যোদ্ধা</span></small></span><span class="prev">~? %</span>
+<div class="def">Sporadic, day, practice-first, broad. Irregular daytime, broad practice — often clustered on free days.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">সময় পেলেই সব বিষয়ে হাতে-কলমে — ছুটির দিনের যোদ্ধা।</span> · <b>Share:</b> <span class="bn">ছুটির দিনের যোদ্ধা 🛡️</span></div></div>
+
+<div class="ptype"><span class="code">S·L·V·F</span><span class="nm">The Deep Diver <small>· <span class="bn">গভীর ডুবুরি</span></small></span><span class="prev">~? %</span>
+<div class="def">Sporadic, day, video-first, one subject. Occasional but deep single-subject lesson sessions.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">যখন পড়ো, এক বিষয়ে একদম গভীরে — গভীর ডুবুরি।</span> · <b>Share:</b> <span class="bn">গভীর ডুবুরি 🌊</span></div></div>
+
+<div class="ptype"><span class="code">S·L·V·E</span><span class="nm">The Free Spirit <small>· <span class="bn">মুক্ত পথিক</span></small></span><span class="prev">~? %</span>
+<div class="def">Sporadic, day, video-first, broad. Relaxed, curious, no fixed routine — dips into everything.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">নিজের মতো করে, সব বিষয়ে একটু একটু — মুক্ত পথিক।</span> · <b>Share:</b> <span class="bn">মুক্ত পথিক 🎐</span></div></div>
+
+<div class="ptype" style="border-color:#D4D9F0;background:var(--navy-soft)"><span class="code">— · —</span><span class="nm">Fresh Start <small>· <span class="bn">নতুন শুরু</span> (fallback)</small></span><span class="prev">below activity gate</span>
+<div class="def">For students under the minimum-activity threshold — no forced 16-type. A gentle, forward-looking identity instead of a hollow one.</div>
+<div class="copy"><b>Headline:</b> <span class="bn">২০২৬ ছিল শুরু — ২০২৭ তোমার বছর হবে।</span> · <b>Share:</b> <span class="bn">আমার যাত্রা সবে শুরু 🌱</span></div></div>
+
+<p class="note">Naming is Brand's call; the <b>axis logic</b> is what engineering builds. 16 feels right (matches Spotify, enough variety, not overwhelming). If BI's distributions show some combinations are near-empty, collapse to 8–12 by merging a weak axis — the code structure makes that a settings change, not a rewrite.</p>
+</section>
+
+<!-- 4 LIBRARY -->
+<section id="library">
+<h2><span class="n">04</span>The insight-card library — with trigger logic</h2>
+<p class="lead">The pool the engine selects from — bigger than any student sees. Each card: category, <b>gate</b> (who's eligible), <b>score</b> inputs (how it competes for a slot), data source, and <b>tiered copy</b>. A typical student surfaces 9–12.</p>
+<div class="legend"><span><span class="pill have">HAVE</span></span><span><span class="pill build">BUILD</span></span><span><span class="pill get">GET</span></span><span><span class="pill gap">GAP/STRETCH</span></span></div>
+<table>
+<tr><th style="width:15%">Card</th><th>Gate (eligibility)</th><th>Score driver</th><th>Data</th><th>Copy tiers (illustrative)</th><th>St.</th></tr>
+
+<tr class="grp"><td colspan="6">Floor — opener / effort (most students)</td></tr>
+<tr><td>Active days</td><td>days ≥ 20</td><td>percentile of days</td><td><code>uada.activity_date</code></td><td class="bn">≥180: "১৮৭ দিন — সপ্তাহে ৫ দিন" · 80–180: "১২০ দিন পড়েছ" · &lt;80: "প্রতিটা দিন গোনা হয়েছে"</td><td><span class="pill have">H</span></td></tr>
+<tr><td>Total hours</td><td>always</td><td>percentile of hours</td><td>Σ <code>*_duration</code></td><td class="bn">"১৪২ ঘণ্টা — না ঘুমিয়ে টানা ৬ দিন পড়ার সমান"</td><td><span class="pill have">H</span></td></tr>
+<tr><td>Longest streak</td><td>streak ≥ 5</td><td>streak length pct</td><td>consec. dates</td><td class="bn">≥20: "টানা ২৩ দিন!" · 5–20: "টানা ৯ দিন"</td><td><span class="pill have">H</span></td></tr>
+<tr><td>Most-consumed content <span class="tag">CEO</span></td><td>always</td><td>skew toward one type</td><td>type durations</td><td class="bn">"সবচেয়ে বেশি: ভিডিও — ৪৮ ঘণ্টা"</td><td><span class="pill have">H</span></td></tr>
+
+<tr class="grp"><td colspan="6">Identity — the surprising middle</td></tr>
+<tr><td>Night owl / Early bird</td><td>a band ≥ 0.50</td><td>(share−0.5)×2</td><td><code>user_activity_agg</code></td><td class="bn">≥0.70: "৭০% পড়া রাতে — খাঁটি নিশাচর" · 0.5–0.7: "৬১% রাতে"</td><td><span class="pill build">B</span></td></tr>
+<tr><td>Favourite teacher <span class="tag">CEO</span></td><td>live classes ≥ 8</td><td>share to top teacher</td><td><code>student_attendees</code>+<code>teacher_attendees</code></td><td class="bn">"প্রিয় শিক্ষক রাকিব স্যার — ৪২টা ক্লাস"</td><td><span class="pill build">B</span></td></tr>
+<tr><td>Top subject by time</td><td>subject time ≥ min</td><td>concentration</td><td>subject reconstruction</td><td class="bn">"পদার্থবিজ্ঞানে ৪১ ঘণ্টা — সবচেয়ে বেশি"</td><td><span class="pill build">B</span></td></tr>
+<tr><td>Best subject on exams <span class="tag">CEO</span></td><td>≥3 exam subjects</td><td>top avg score</td><td><code>model_test_session</code>, <code>user_activities</code></td><td class="bn">"পরীক্ষায় সেরা: রসায়ন — গড় ৮৪%"</td><td><span class="pill get">G</span></td></tr>
+<tr><td>Quiz grinder / hard-Q</td><td>questions ≥ 100</td><td>pct of questions</td><td><code>mcq_user_chapter_daily</code></td><td class="bn">"১,৮৪০ প্রশ্ন — ৩১০টা কঠিন প্রশ্ন সঠিক"</td><td><span class="pill have">H</span></td></tr>
+<tr><td>Live-class champion</td><td>classes_held ≥ 10</td><td>attendance %</td><td><code>student_attendees</code> vs <code>lessons</code></td><td class="bn">"৭২টির ৬৩টায় — ৮৮% উপস্থিতি"</td><td><span class="pill have">H</span></td></tr>
+<tr><td>Shikho AI companion <span class="tag">new</span></td><td>AI msgs ≥ 15</td><td>pct of AI use</td><td><code>gen_ai_conversations/sessions</code></td><td class="bn">"শিখো AI-কে ২১৪ প্রশ্ন — বেশিরভাগ রসায়নে"</td><td><span class="pill get">G</span></td></tr>
+<tr><td>Badges &amp; milestones</td><td>badges ≥ 1</td><td>badge count</td><td><code>StudentBadges</code></td><td class="bn">"এ বছর ৯টা ব্যাজ জিতেছ"</td><td><span class="pill get">G</span></td></tr>
+<tr><td>Biggest study day</td><td>max_day ≥ 2h</td><td>max-day pct</td><td><code>uada</code> by day</td><td class="bn">"২ আগস্ট — এক দিনে ৫ ঘণ্টা!"</td><td><span class="pill have">H</span></td></tr>
+
+<tr class="grp"><td colspan="6">Revelation — combination (the "step deeper")</td></tr>
+<tr><td>Comeback / most improved</td><td>≥6 months data, Δ&gt;0</td><td>accuracy slope</td><td>accuracy by month</td><td class="bn">"বছরের শেষে নির্ভুলতা বেড়েছে ২২%"</td><td><span class="pill have">H</span></td></tr>
+<tr><td>Classes → accuracy link <span class="tag">combo</span></td><td>corr ≥ threshold</td><td>correlation strength</td><td>attendance×accuracy/month</td><td class="bn">"যে মাসে বেশি ক্লাস, নির্ভুলতাও বেশি"</td><td><span class="pill build">B</span></td></tr>
+<tr><td>Subject × time-of-day <span class="tag">combo</span></td><td>2 subjects, clear split</td><td>split sharpness</td><td>subject×time band</td><td class="bn">"পদার্থবিজ্ঞান রাতে, গণিত সকালে"</td><td><span class="pill build">B</span></td></tr>
+<tr><td>Opportunity subject <span class="tag">combo</span></td><td>high acc + low time</td><td>acc/time gap</td><td>accuracy vs time/subject</td><td class="bn">"একটু সময় দিলেই জীববিজ্ঞান হবে সেরা"</td><td><span class="pill build">B</span></td></tr>
+<tr><td>Percentile / rank</td><td>rank ≤ cutoff</td><td>rank</td><td>composite + leaderboard</td><td class="bn">"প্রোগ্রামে টপ ৫%-এ!"</td><td><span class="pill build">B</span></td></tr>
+
+<tr class="grp"><td colspan="6">Loyalty &amp; close</td></tr>
+<tr><td>Years with Shikho</td><td>returning</td><td>years count</td><td><code>Transactions</code></td><td class="bn">"৩ বছর ধরে শিখোর সাথে"</td><td><span class="pill build">B</span></td></tr>
+<tr><td>Lifetime totals</td><td>returning + history</td><td>lifetime hours</td><td>multi-year agg</td><td class="bn">"৩ বছরে ৪১০ ঘণ্টা"</td><td><span class="pill gap">GAP</span></td></tr>
+<tr><td>Learner personality <span class="tag">finale</span></td><td>always (derived)</td><td>n/a (fixed slot)</td><td>§2 axes</td><td class="bn">"তুমি একজন 'রাতের অভিযাত্রী'"</td><td><span class="pill build">B</span></td></tr>
+<tr><td>2 truths &amp; a lie <span class="tag">game</span></td><td>≥4 strong cards</td><td>n/a (fixed slot)</td><td>top cards + synth</td><td class="bn">"কোনটা মিথ্যা? ট্যাপ করে দেখো"</td><td><span class="pill build">B</span></td></tr>
+<tr><td>2027 study plan</td><td>always</td><td>n/a (fixed close)</td><td>Gen-AI over record</td><td class="bn">"২০২৭-এ শুরু করো: দুর্বল ২টা চ্যাপ্টার থেকে"</td><td><span class="pill build">B</span></td></tr>
+<tr><td>Share card</td><td>always</td><td>n/a</td><td>name-hideable PNG</td><td class="bn">"তোমার ২০২৬ — শেয়ার করো"</td><td><span class="pill build">B</span></td></tr>
+</table>
+<p class="note"><code>uada</code> = <code>user_activity_duration_agg</code>. Gates and thresholds are all settings (SC-1737 requirement). ~23 cards; a student sees 9–12.</p>
+</section>
+
+<!-- 5 ENGINE -->
+<section id="engine">
+<h2><span class="n">05</span>The selection &amp; ordering engine</h2>
+<p class="lead">Given one student's record and the library, emit a unique ordered list. This is the core of "unique for each of 30k." Runs in the nightly job; output is stored in the student's Wrap record so the API just reads it.</p>
+
+<h3>Scoring</h3>
+<p>For each eligible card, <code>interestingness ∈ [0,1]</code>:</p>
+<pre><span class="c"># per candidate card c for student s</span>
+score(s,c) = w_extreme · extremity(s,c)      <span class="c"># how far from the typical student (needs BI distributions)</span>
+           + w_rare    · rarity(c)            <span class="c"># how few students qualify for c at all</span>
+           + w_ceo     · ceo_priority(c)      <span class="c"># favourite teacher, best-exam-subject get a bump</span>
+           + w_combo   · is_combination(c)    <span class="c"># reward cross-signal "wow" cards</span>
+           − w_fatigue · category_seen(c)     <span class="c"># penalise a category already picked</span>
+
+extremity(s,c) = |percentile(s.value_c) − 0.5| · 2   <span class="c"># 0 = average, 1 = extreme either way</span>
+</pre>
+
+<h3>Selection &amp; ordering</h3>
+<pre><span class="c"># 1. eligibility</span>
+candidates = [c for c in LIBRARY if c.gate(s)]
+
+<span class="c"># 2. fixed anchors</span>
+opener   = pick(["active_days","total_hours"])        <span class="c"># warm, universal</span>
+finale   = "learner_personality"                       <span class="c"># always the reveal</span>
+closer   = "2027_study_plan" -> "share_card"           <span class="c"># forward motion + share</span>
+game     = "two_truths_lie" if len(strong_cards)>=4    <span class="c"># optional delight, mid-wrap</span>
+
+<span class="c"># 3. body: top scorers with variety</span>
+body = []
+for c in sorted(candidates, by=score, desc):
+    if c in (opener,finale) : continue
+    if category_count(body, c.category) >= 1 : continue   <span class="c"># max 1 per category</span>
+    body.append(c)
+    if len(body) >= target_len(s) : break                  <span class="c"># target 7–10 by data richness</span>
+
+<span class="c"># 4. order on a drama curve</span>
+wrap = [opener]
+    + sort_ascending_by_score(body[: -2])   <span class="c"># build up</span>
+    + highest_scoring_combo(body)           <span class="c"># the "how did it know" beat, late</span>
+    + [game]                                <span class="c"># breath / delight</span>
+    + [finale]                              <span class="c"># personality reveal (door opens)</span>
+    + [closer...]                           <span class="c"># plan + share</span>
+
+<span class="c"># 5. guarantee</span>
+if len(wrap) &lt; MIN_LEN:  wrap += fallback_pool(s)   <span class="c"># course bought, upcoming classes, gentle stat</span>
+</pre>
+
+<div class="three">
+  <div class="card"><h4>Variety rule</h4><p>Max one card per category in the body, so no three subject cards in a row. Categories: effort, identity, revelation, loyalty.</p></div>
+  <div class="card"><h4>Drama curve</h4><p>Warm open → ascending interest → the combination "wow" late → personality reveal → forward close. Not strict ascending; the combo and finale are placed, not sorted.</p></div>
+  <div class="card"><h4>Never-empty</h4><p><code>MIN_LEN</code> guaranteed for every student. Light users fall through to Fresh Start + course + upcoming-2027-classes. No hollow wraps.</p></div>
+</div>
+<div class="ok"><b>Why this lives in the batch job, not the app:</b> the ordered list is computed once per student and stored. The API returns it; the web story renders it. Product retunes weights/thresholds as settings — no app release. This is exactly the "tiers are settings" requirement from SC-1737, extended to selection.</div>
+</section>
+
+<!-- 6 SIGNATURE -->
+<section id="signature">
+<h2><span class="n">06</span>Signature feature specs (v1)</h2>
+<p class="lead">Spotify is remembered for 2–3 signature slides a year. Here are our five, each as a mini-spec: user story, inputs, computation, copy rules, edge cases, effort. Everything else (Aura, Study Twin, AI podcast, Blend) is v2 backlog.</p>
+
+<div class="card navy">
+<h3>S1 · <span class="bn">শিখো Learner Personality</span> &nbsp;<span class="pill build">BUILD</span></h3>
+<p><b>Story:</b> "As a student, I want a name for how I learned this year, so I feel seen and can share it."</p>
+<ul>
+<li><b>Inputs:</b> the four axis metrics (§2).</li>
+<li><b>Compute:</b> threshold each axis → 4-letter code → map to type + copy; store nearest-neighbour type for hedging.</li>
+<li><b>Layout:</b> reveal interaction (door/flip), type name + illustration + the axis bars that produced it ("here's why").</li>
+<li><b>Copy:</b> headline + body + share line per type (§3).</li>
+<li><b>Edge:</b> below activity gate → Fresh Start; near a threshold → "with a touch of…".</li>
+<li><b>Effort:</b> M (needs subject-time + time-bands ready).</li>
+</ul>
+</div>
+
+<div class="card navy">
+<h3>S2 · <span class="bn">তোমার পড়ার দিন</span> (your study day) &nbsp;<span class="pill build">BUILD</span></h3>
+<p><b>Story:</b> "Show me when I study and what — I didn't realise I'm a night person for Physics."</p>
+<ul>
+<li><b>Inputs:</b> time-of-day bands (<code>user_activity_agg</code>), subject×time-band.</li>
+<li><b>Compute:</b> % per band; for the top 1–2 subjects, the band where each peaks.</li>
+<li><b>Layout:</b> a 24h ribbon/clock, subjects pinned to their peak band.</li>
+<li><b>Edge:</b> if bands are flat (no clear peak) → fall back to simple night/day split; needs the <code>user_activity_agg</code> band-hours confirmed.</li>
+<li><b>Effort:</b> M.</li>
+</ul>
+</div>
+
+<div class="card navy">
+<h3>S3 · <span class="bn">তোমার ২০২৬ এর অধ্যায়</span> (year in phases) &nbsp;<span class="pill build">BUILD</span></h3>
+<p><b>Story:</b> "Tell my year as a story with chapters, not a flat total."</p>
+<ul>
+<li><b>Inputs:</b> monthly study time, monthly accuracy, monthly dominant subject.</li>
+<li><b>Compute:</b> segment 12 months into 2–3 phases by change-points (e.g. activity level shift); name each by its dominant behaviour ("slow start", "the grind", "exam sprint").</li>
+<li><b>Layout:</b> a timeline with named phases; tap a phase for its stats.</li>
+<li><b>Edge:</b> single-phase programs (one quarter) → a single "snapshot" chapter (mirrors the 2025 PRD's single-phase handling).</li>
+<li><b>Effort:</b> M–L (segmentation logic).</li>
+</ul>
+</div>
+
+<div class="card mag">
+<h3>S4 · <span class="bn">দুটো সত্যি, একটা মিথ্যা</span> (2 truths &amp; a lie) &nbsp;<span class="pill build">BUILD</span></h3>
+<p><b>Story:</b> "Make me interact — quiz me on my own year."</p>
+<ul>
+<li><b>Inputs:</b> the student's top 3 true facts (from selected cards).</li>
+<li><b>Compute:</b> synth one false-but-plausible fact (perturb a real value within a believable band; never a value that could embarrass).</li>
+<li><b>Layout:</b> 3 tappable cards → reveal correct/incorrect with a smile.</li>
+<li><b>Edge:</b> &lt;4 strong cards → skip (gate). Ensure the lie is never accidentally true.</li>
+<li><b>Effort:</b> S–M. High delight-per-effort.</li>
+</ul>
+</div>
+
+<div class="card mag">
+<h3>S5 · <span class="bn">২০২৭ স্টাডি প্ল্যান</span> (the return hook) &nbsp;<span class="pill build">BUILD</span></h3>
+<p><b>Story:</b> "Now that I've seen 2026, tell me what to do in January" — this is our return-rate metric.</p>
+<ul>
+<li><b>Inputs:</b> weakest 1–2 subjects/chapters (accuracy), upcoming 2027 classes (<code>lessons</code>), opportunity subject.</li>
+<li><b>Compute:</b> Gen-AI (or rules) → 2–3 concrete next steps + a deep link into the app.</li>
+<li><b>Layout:</b> checklist + CTA "২০২৭ শুরু করো".</li>
+<li><b>Edge:</b> if 2027 schedule isn't in <code>lessons</code> by cut-off → generic plan + course CTA.</li>
+<li><b>Effort:</b> M. Owns the January return loop.</li>
+</ul>
+</div>
+
+<p class="note">Plus the <b>floor</b> (core stat cards) and the two <b>CEO asks</b> (favourite teacher, best exam subject). That's a complete, shippable v1 that <i>feels</i> like Wrapped without 20 slides.</p>
+</section>
+
+<!-- 7 CONTRACT -->
+<section id="contract">
+<h2><span class="n">07</span>Per-student data contract (the "one JSON")</h2>
+<p class="lead">What the batch job writes and the API returns — the interface between data, engine, and frontend. Frontend renders <code>wrap[]</code> in order; it never computes. Shape is illustrative.</p>
+<pre>{
+  "student_id": "...", "program_id": "...", "phase_id": "...",
+  "report_type": "yearly",            <span class="c">// yearly | q4 (reuse 2025 switch)</span>
+  "is_report_available": true,
+  "generated_at": "2026-12-26",
+  "window": { "from": "2026-01-01", "to": "2026-12-20" },
+
+  "profile": { "first_name":"...", "class":"...", "group":"...",
+               "years_with_shikho": 3, "joining_class":"..." },
+
+  "personality": {
+    "code": "R-O-D-E", "type":"night_ranger",
+    "name_bn":"রাতের অভিযাত্রী", "name_en":"The Night Ranger",
+    "axes": { "rhythm":"R", "clock":"O", "method":"D", "focus":"E" },
+    "axis_values": { "rhythm":0.71, "clock":0.63, "method":0.58, "focus":0.34 },
+    "near": "burst_solver"            <span class="c">// second-nearest for hedged copy</span>
+  },
+
+  "stats": {                          <span class="c">// raw, for any card + reconciliation</span>
+    "active_days":187, "hours":142.0, "streak_longest":{"days":23,"start":"2026-03-12"},
+    "night_share":0.63, "live": {"joined":63,"held":72,"rate":0.88},
+    "quizzes":148, "questions":1840, "questions_hard_correct":310,
+    "video_minutes":2860, "top_subject":{"name_bn":"পদার্থবিজ্ঞান","hours":41},
+    "favourite_teacher":{"name":"...","classes":42},
+    "best_exam_subject":{"name":"রসায়ন","avg":84},
+    "ai_messages":214, "badges":9,
+    "monthly": { "accuracy":[...12], "hours":[...12], "top_subject":[...12] }
+  },
+
+  "wrap": [                           <span class="c">// ORDERED — this is the engine's output</span>
+    { "card":"active_days", "tier":"high", "copy_bn":"১৮৭ দিন ...", "value":187 },
+    { "card":"favourite_teacher", "tier":"high", "copy_bn":"প্রিয় শিক্ষক ...", ... },
+    { "card":"night_owl", "tier":"high", "copy_bn":"৬৩% রাতে", "value":0.63 },
+    { "card":"classes_accuracy_combo", "tier":"mid", "copy_bn":"যে মাসে বেশি ক্লাস ...", ... },
+    { "card":"two_truths_lie", "facts":[{t:true,...},{t:true,...},{t:false,...}] },
+    { "card":"learner_personality", "ref":"personality" },
+    { "card":"study_plan_2027", "steps":[...], "deeplink":"shikho://..." },
+    { "card":"share", "hide_name_option":true, "image":"...1080x1920.png" }
+  ],
+
+  "share": { "public_url":"https://shikho.com/w/<token>", "referral_code":"..." }
+}</pre>
+<p class="note">Note the design: raw <code>stats</code> (so nothing is lost + BI can reconcile) are separate from the ordered <code>wrap</code> (the engine's decisions). This lets Product change selection/ordering without touching the data job's stat computation.</p>
+</section>
+
+<!-- 8 DATA -->
+<section id="data">
+<h2><span class="n">08</span>Data readiness (summary)</h2>
+<p class="lead">The engine runs mostly on data already in the <code>datafuse</code> warehouse. Field-level mapping is in the companion <code>year-end-wrap-data-build-plan.html</code>; this is the engine-level status.</p>
+<div class="two">
+  <div class="card navy"><h4 style="color:var(--have-fg)">Have</h4><ul>
+    <li>Active days, streaks, durations by 7 types, per day/month — <code>user_activity_duration_agg</code></li>
+    <li>Quizzes, questions, accuracy by subject/chapter/month — <code>mcq_user_*</code></li>
+    <li>Live attendance + teachers — <code>student_attendees</code>, <code>teacher_attendees</code>, <code>lessons</code></li>
+    <li>Live-exam scores — <code>user_activities</code>; profile/purchases — <code>Students</code>, <code>Transactions</code>, <code>programs</code></li>
+  </ul></div>
+  <div class="card mag"><h4 style="color:var(--get-fg)">Build / Get / Gap</h4><ul>
+    <li><span class="pill build">BUILD</span> subject-level study time (no subject column in agg) — gates Focus axis + subject cards</li>
+    <li><span class="pill build">BUILD</span> time-of-day bands, favourite teacher, 3 combos, percentile, phase segmentation</li>
+    <li><span class="pill get">GET</span> Shikho AI, badges, best model-test, QR scans → pipe into the job</li>
+    <li><span class="pill gap">GAP</span> eBook-open log; deep lifetime history (tables start ~late 2024)</li>
+  </ul></div>
+</div>
+<div class="warn"><b>Two gating unknowns to close with BI first:</b> (1) the subject-time reconstruction must reconcile with agg totals — it underpins Focus + every subject card; (2) the <code>user_activity_agg</code> hour-band definitions must be confirmed — they underpin Clock + "study day". Resolve these before committing S1/S2 dates.</div>
+</section>
+
+<!-- 9 METRICS -->
+<section id="metrics">
+<h2><span class="n">09</span>Metrics &amp; experiment design</h2>
+<div class="kpi">
+  <div class="k"><b>Open</b><small>opened ÷ qualified</small></div>
+  <div class="k"><b>Finish</b><small>reached end ÷ opened</small></div>
+  <div class="k"><b>Share</b><small>shared ÷ finished</small></div>
+  <div class="k"><b>Return</b><small>Jan-2027 active days, finishers vs non-openers</small></div>
+</div>
+<p>(From SC-1737; targets TBD.) Beyond the funnel, instrument the engine itself:</p>
+<ul>
+<li><b>Per-card analytics:</b> impressions, dwell time, drop-off, share-from-card. Tells us which cards earn their slot — feeds next year's library pruning.</li>
+<li><b>Personality distribution:</b> are the 16 types balanced? Near-empty types → merge an axis (settings change).</li>
+<li><b>Experiments:</b> (a) personality finale ON vs OFF → share rate; (b) 2027-plan close ON vs OFF → January return (the money metric); (c) engine-selected variable order vs fixed order → finish + share. These validate that the insight engine actually beats "pretty data".</li>
+<li><b>Guardrail:</b> finish rate for low-activity students (the fallback path) — must not crater.</li>
+</ul>
+</section>
+
+<!-- 10 BUILD -->
+<section id="build">
+<h2><span class="n">10</span>Build phasing &amp; effort</h2>
+<div class="phase"><b>P0 · Data record</b> — the nightly job writing <code>stats</code> per paid student; subject-time reconstruction + BI reconciliation; pipe GET sources. <i>Blocks everything.</i> Owner: Data/BI + Backend.</div>
+<div class="phase"><b>P1 · Engine + record extension</b> — the 16-type classifier, card library with gates/copy, selection+ordering writing <code>wrap[]</code>, settings store. Owner: Backend + Product (copy/thresholds).</div>
+<div class="phase"><b>P2 · API</b> — extend the 2025 by-user/program/phase endpoint to return the record. Owner: Backend/Gateway.</div>
+<div class="phase"><b>P3 · Frontend (C3 web story)</b> — render <code>wrap[]</code>; the 5 signature layouts; personality reveal; 2-truths game; share images (PNG 1080×1920) + public link + name-hide; reuse 2025 Android share bridge. Owner: Frontend + Android + Design.</div>
+<div class="phase"><b>P4 · Entry + launch</b> — home banner (prime slot) + Explore-tab card + launch push; <code>is_report_available</code> flag. Device + load test on cheap phones; staff beta. Owner: Android + Product.</div>
+<div class="phase"><b>v2 backlog</b> — Study Aura, Study Twin, AI Bangla podcast, Study Blend (friend compare), lifetime-history once source depth is solved.</div>
+<p class="note">Reuse from the 2025 ship (don't rebuild): home-banner slot &amp; interaction, native screenshot→share sheet, per-program rank (top 50, Bangla ordinals, ties), engagement-tier copy pattern, report-availability flag, API shape, single-phase/snapshot handling.</p>
+</section>
+
+<!-- 11 DECISIONS -->
+<section id="decisions">
+<h2><span class="n">11</span>Open decisions</h2>
+<ul>
+<li><b>Endorse the engine approach</b> (variable selection) vs a fixed order — the core bet behind this whole spec.</li>
+<li><b>Lock the 4 personality axes + thresholds</b> (Product + Brand + BI). Names follow axes.</li>
+<li><b>v1 scope = the 5 signatures + floor + 2 CEO asks?</b> Confirm, or trade one in/out.</li>
+<li><b>Audience + minimum-activity gate; cut-off date; launch window.</b></li>
+<li><b>Direction C3</b> confirmed as the shell; B3 marksheet as the share card?</li>
+<li><b>How far to push combos</b> in v1 (all 3, or start with classes→accuracy only).</li>
+<li><b>BI distribution ask</b> approved (extremity scoring + percentile cards depend on it).</li>
+<li><b>Gen-AI budget</b> for the 2027-plan close (and later the audio recap) across ~30k students.</li>
+</ul>
+<p>Next artifacts I can produce on request: the <b>BI data-verification checklist</b> dropped onto SC-1737; the <b>engine pseudocode as a backend ticket</b>; or a <b>copy deck</b> expanding every card's tiered Bangla strings for Brand.</p>
+</section>
+
+<hr>
+<footer>
+<b>Sources (Spotify facts verified):</b>
+<a href="https://newsroom.spotify.com/2022-11-30/everything-you-need-to-know-about-2022-wrapped/">Spotify Newsroom 2022</a> ·
+<a href="https://www.engadget.com/spotify-wrapped-2022-130037719.html">Engadget — Listening Personality</a> ·
+<a href="https://malaysia.news.yahoo.com/spotify-wrapped-2023-features-130317509.html">Yahoo — 2023 Me/Sound Town</a> ·
+<a href="https://techcrunch.com/2023/11/29/spotify-wrapped-2023-adds-ai-dj-and-blend-to-spotifys-annual-personalized-insights">TechCrunch 2023</a> ·
+<a href="https://techcrunch.com/2024/12/04/spotify-wrapped-2024-adds-an-ai-podcast-powered-by-googles-notebooklm">TechCrunch 2024 AI podcast</a> ·
+<a href="https://campaignlive.com/article/spotifys-2021-wrapped-campaign-includes-games-videos-interactive-features/1734624">Campaign 2021</a>.
+<br>Shikho mappings, personality system, card logic, engine, contract and plan are my analysis, grounded in SC-1737, the 2025 PRD, the C3 prototype, the CEO thread, and the shikho-spec warehouse. Illustrative numbers and Bangla copy are placeholders for BI/Brand to finalise; verify warehouse tables against production before building.
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Year-End Wrap 2026 — Insight Plan</title>
+<style>
+  :root{
+    color-scheme: light;
+    --ground:#F9F8F5; --paper:#FFFFFF; --sunken:#F1EFEA;
+    --ink:#1A1D26; --ink-2:#4B5060; --ink-3:#7C8090;
+    --line:#E3E0D8; --line-2:#EEECE6;
+    --navy:#354894; --magenta:#C2257F;
+    --navy-soft:#ECEEF8; --magenta-soft:#FBE8F2;
+    --have-fg:#2C7A4B; --have-bg:#E3F1E8;
+    --build-fg:#2457A7; --build-bg:#E7EEF9;
+    --get-fg:#9A6A06; --get-bg:#FAEFD3;
+    --gap-fg:#B8304B; --gap-bg:#FAE3E8;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--ground);color:var(--ink);margin:0;
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1060px;margin:0 auto;padding:40px 24px 120px}
+  header.top{border-bottom:2px solid var(--navy);padding-bottom:22px}
+  .kicker{color:var(--magenta);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12.5px}
+  h1{font-size:35px;line-height:1.12;margin:.3em 0 .25em;letter-spacing:-.02em}
+  .sub{color:var(--ink-2);font-size:17px;max-width:72ch}
+  .meta{color:var(--ink-3);font-size:13px;margin-top:14px}
+  .meta b{color:var(--ink-2);font-weight:600}
+  h2{font-size:25px;margin:54px 0 14px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h2 .n{color:var(--magenta);font-weight:700;margin-right:10px}
+  h3{font-size:18.5px;margin:30px 0 10px}
+  h4{font-size:13px;margin:18px 0 6px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  p{margin:10px 0}a{color:var(--navy)}
+  ul,ol{margin:10px 0;padding-left:22px}li{margin:5px 0}
+  code{background:var(--sunken);padding:1.5px 6px;border-radius:5px;font-size:13px;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;color:#3a3f4d}
+  .lead{font-size:17px;color:var(--ink-2)}
+  nav.toc{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:26px 0 8px}
+  nav.toc h4{margin:0 0 10px}
+  nav.toc ol{columns:2;column-gap:36px;margin:0;padding-left:20px}
+  nav.toc a{text-decoration:none}nav.toc a:hover{text-decoration:underline}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin:16px 0}
+  .card.navy{border-left:4px solid var(--navy)}.card.mag{border-left:4px solid var(--magenta)}
+  blockquote{margin:18px 0;padding:20px 26px;background:var(--navy-soft);border-left:5px solid var(--navy);border-radius:12px;color:#20264a;font-size:16.5px;line-height:1.6}
+  blockquote p{margin:8px 0}blockquote .who{display:block;margin-top:10px;font-size:13.5px;color:var(--ink-2);font-weight:600}
+  blockquote em{color:var(--magenta);font-style:normal;font-weight:600;background:#fff;padding:0 3px;border-radius:3px}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13.5px;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line-2);vertical-align:top}
+  th{background:var(--sunken);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2);font-weight:700}
+  tr:last-child td{border-bottom:none}td code{font-size:12px}
+  .grp td{background:var(--navy-soft);font-weight:700;color:var(--navy);font-size:12.5px}
+  .bn{font-family:"Noto Sans Bengali","Hind Siliguri",system-ui;}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
+  .have{background:var(--have-bg);color:var(--have-fg)}.build{background:var(--build-bg);color:var(--build-fg)}
+  .get{background:var(--get-bg);color:var(--get-fg)}.gap{background:var(--gap-bg);color:var(--gap-fg)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px 18px;margin:14px 0 4px;font-size:13px;color:var(--ink-2)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:760px){.two,.three{grid-template-columns:1fr}nav.toc ol{columns:1}}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}
+  .flow .b{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 13px;font-size:13px;font-weight:600;text-align:center}
+  .flow .b small{display:block;font-weight:400;color:var(--ink-3);font-size:11px}
+  .flow .ar{color:var(--magenta);font-weight:800;font-size:18px}
+  .persona{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+  .persona .p{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .persona .p b{color:var(--navy);display:block;font-size:14.5px}
+  .persona .p small{color:var(--ink-3);font-size:12px}
+  @media(max-width:760px){.persona{grid-template-columns:1fr 1fr}}
+  figure{margin:16px 0;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  figure img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line-2)}
+  figcaption{color:var(--ink-3);font-size:12.5px;margin-top:10px;text-align:left}
+  .imgrow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:760px){.imgrow{grid-template-columns:1fr}}
+  .warn{background:var(--get-bg);border:1px solid #EAD9A6;border-radius:10px;padding:12px 16px;font-size:14px;margin:12px 0;color:#6e4f08}
+  .warn b{color:#5a3f05}
+  .ok{background:var(--have-bg);border:1px solid #BEE0CB;border-radius:10px;padding:12px 16px;font-size:14px;margin:12px 0;color:#245c3a}
+  .note{font-size:13px;color:var(--ink-3);margin-top:6px}
+  hr{border:none;border-top:1px solid var(--line);margin:40px 0}
+  footer{color:var(--ink-3);font-size:13px;margin-top:40px;border-top:1px solid var(--line);padding-top:18px}
+  .tag{display:inline-block;background:var(--magenta-soft);color:var(--magenta);font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;margin-left:6px;vertical-align:middle}
+  .wow{color:var(--magenta);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">Shikho · Year-End Wrap 2026</div>
+  <h1>From "data, shown nicely" to a wrap that tells each student something about themselves</h1>
+  <p class="sub">The brief shifted the moment the CEO weighed in. This plan takes his steer literally: it specifies the <b>insight engine</b> that turns the data we already have into ~20–30k individually-tailored wraps — and lists exactly what to build, have, and get to ship it.</p>
+  <div class="meta">
+    For <b>nusrat.mim@shikho.com</b> · 28 Oct 2026 · Grounds: the CEO email thread (read), the live 2026 app home &amp; the 2025 placement (Figma, read), ClickUp <b>SC-1737</b> + the 2025 PRD, the C3 prototype, and the shikho-spec warehouse.
+    <br>Supersedes the earlier <code>year-end-wrap-data-build-plan.html</code>, which was a data catalogue — this is the version with a point of view.
+  </div>
+</header>
+
+<nav class="toc">
+  <h4>On this page</h4>
+  <ol>
+    <li><a href="#ceo">1 · What the CEO actually asked for</a></li>
+    <li><a href="#gap">2 · The gap: attractive data vs. real insight</a></li>
+    <li><a href="#spotify">3 · How Spotify Wrapped makes it personal</a></li>
+    <li><a href="#engine">4 · The proposed insight engine</a></li>
+    <li><a href="#cards">5 · The insight-card library</a></li>
+    <li><a href="#persona">6 · The learner-personality model</a></li>
+    <li><a href="#data">7 · Data: have / build / get</a></li>
+    <li><a href="#place">8 · Where it lives in the app</a></li>
+    <li><a href="#build">9 · What we build</a></li>
+    <li><a href="#decisions">10 · Decisions &amp; what I still need</a></li>
+  </ol>
+</nav>
+
+<!-- 1 CEO -->
+<section id="ceo">
+<h2><span class="n">01</span>What the CEO actually asked for</h2>
+<p class="lead">On 17 Oct, after the concept email went out, <b>Ishmam Ahmed Chowdhury</b> replied to the whole group. His note is the north star for this feature — worth reading in full, because it changes what "done" means.</p>
+<blockquote>
+  <p>A few high level thoughts from my side — basic things like: <b>Favorite teacher page with visual</b> — the content they've consumed the most. <b>Subject they are best at with motions</b> — based on exams attempted/marks.</p>
+  <p><b>Philosophy</b> — What makes Spotify Wrapped unique is that it <em>generates insights based on the individual</em>. Over here, the designs look initially nice but <em>we are mostly representing user data attractively</em>. Let's go a step deeper. Research Spotify Wrapped — specifically, the different <em>combinations of pages</em> it generated and how it uniquely tailored the wrap for each user over at least the past three years. Mapping that to Shikho and the data we have of a user should end up creating something much more meaningful.</p>
+  <p>My experience after going through wrapped would be — <em>wow, I learned something new about myself</em> — maybe something I subconsciously knew. Our hope should be, if we are generating a Year Review for about 20 to 30 thousand students — we should make it as unique as possible for each user.</p>
+  <span class="who">— Ishmam Ahmed Chowdhury, in the "Shikho Year-End Wrap 2026 | Ideas &amp; Feedback" thread</span>
+</blockquote>
+<p>Tasmeet (PM) confirmed the data spec already anticipated most of this: favourite teacher (by live classes), strongest subject (quiz accuracy), best model-test &amp; live-exam with subject, and the per-subject / per-month / time-of-day splits that insights are built from — plus newly-added <b>exam results by subject</b>, <b>subject × time-of-day</b>, and <b>Shikho AI by subject &amp; month</b>. So the <b>data</b> is largely in hand. What is <i>not</i> yet designed is the layer that turns it into individual insight. That layer is this document.</p>
+</section>
+
+<!-- 2 GAP -->
+<section id="gap">
+<h2><span class="n">02</span>The gap: attractive data vs. real insight</h2>
+<div class="two">
+  <div class="card">
+    <h4>What the prototype is today</h4>
+    <p>The three directions (A3 Poster, B3 Marksheet, C3 Journey) are a <b>fixed sequence of the same slides for everyone</b>: active days → streak → night % → live classes → quizzes → video → top subject → a learner label → share. Beautiful, but the <i>same shape</i> for all 30k students. This is "representing user data attractively."</p>
+  </div>
+  <div class="card mag">
+    <h4>What Ishmam is asking for</h4>
+    <p>A wrap where the <b>set of pages, their order, and their copy differ per student</b>, chosen from a larger library by what is actually true and surprising about <i>that</i> student — ending in a moment of "I didn't realise that about myself." Same data; a selection engine on top.</p>
+  </div>
+</div>
+<p>The distance between the two is not more metrics. It is three missing pieces: <b>(a)</b> a library of insight templates bigger than any one student sees, <b>(b)</b> a rule + scoring system that picks each student's subset, and <b>(c)</b> combination insights that cross two signals (the "step deeper"). The rest of this plan specifies all three.</p>
+</section>
+
+<!-- 3 SPOTIFY -->
+<section id="spotify">
+<h2><span class="n">03</span>How Spotify Wrapped makes it personal — and the Shikho mapping</h2>
+<p class="lead">Ishmam asked us to study how Wrapped tailored itself over the last three years. The mechanics that create the uniqueness, and their Shikho equivalent:</p>
+<table>
+  <tr><th>Spotify mechanic</th><th>What it does</th><th>Shikho equivalent (data we hold)</th></tr>
+  <tr><td><b>Core stats everyone gets</b></td><td>Top songs, top artist, minutes listened, top genre.</td><td>Active days, total hours, top subject, favourite teacher, quizzes done.</td></tr>
+  <tr><td><b>Listening Personality</b> (2022)</td><td>16 archetypes from 4 behavioural axes (e.g. explorer vs. loyalist). The finale "who you are" moment.</td><td>A <b>learner personality</b> from Shikho's axes — consistency, intensity, breadth, timing, mode. <a href="#persona">§6</a>.</td></tr>
+  <tr><td><b>Eligibility-gated slides</b></td><td>You only get "your concert" if you went; "audio day" needs enough daytime+night data. Slides appear only if they apply.</td><td>"Night owl" only if night-share high; "favourite teacher" only if enough live classes; "comeback" only if accuracy rose. <b>Gates per card.</b></td></tr>
+  <tr><td><b>Comparative framing</b></td><td>"You were in the top 0.5% of listeners of X."</td><td>"Top 5% in your class/program" — from the composite score &amp; leaderboard we already compute.</td></tr>
+  <tr><td><b>Temporal breakdowns</b></td><td>Top songs by season; "your music evolution" by quarter.</td><td>Per-month / per-quarter study &amp; accuracy; biggest day; weekday pattern. All in the warehouse.</td></tr>
+  <tr><td><b>Combination / revelation</b></td><td>"Sound Town", "audio aura" — derived by crossing signals into something the user didn't state.</td><td>"Your accuracy rose in the months you joined more live classes." "You study Physics at night, Math in the morning." <b>Cross-signal cards.</b></td></tr>
+</table>
+<p class="note">The pattern underneath all three Wrapped years is the same: a <b>large catalogue of templates</b>, a <b>per-user selection</b>, and a <b>derived archetype finale</b>. That is a build we can do with the data we already have.</p>
+</section>
+
+<!-- 4 ENGINE -->
+<section id="engine">
+<h2><span class="n">04</span>The proposed insight engine</h2>
+<p class="lead">One nightly batch produces, per paid student, a <b>unique ordered wrap</b> — not by templating screens, but by scoring a library of insight cards against that student's record and picking the best handful.</p>
+<div class="flow">
+  <span class="b">Warehouse record<small>one JSON / student</small></span><span class="ar">→</span>
+  <span class="b">Card library<small>~25 templates</small></span><span class="ar">→</span>
+  <span class="b">Gate<small>min-data + eligibility</small></span><span class="ar">→</span>
+  <span class="b">Score<small>how extreme / surprising</small></span><span class="ar">→</span>
+  <span class="b">Select &amp; order<small>variety + drama curve</small></span><span class="ar">→</span>
+  <span class="b">Personality finale<small>+ share card</small></span>
+</div>
+<div class="three">
+  <div class="card"><h4>Gate</h4><p>Each card declares a <b>minimum-data rule</b> and an <b>eligibility rule</b>. A card that doesn't clear both is never shown — so no empty "0 classes" slides, and low-data students fall through to gentle cards.</p></div>
+  <div class="card"><h4>Score</h4><p>Each eligible card returns a <b>0–1 "interestingness"</b> — how far the value sits from the typical student (percentile / z-score from BI's distributions), and how rare the card is. The surprising beats the mundane.</p></div>
+  <div class="card"><h4>Select &amp; order</h4><p>Take the top <b>8–12</b> cards, enforce <b>category variety</b> (not three subject cards in a row), then order on a <b>drama curve</b>: warm open → build → personality reveal → share.</p></div>
+</div>
+<p><b>Why this is mostly a data/rules job, not a UI job:</b> SC-1737 already keeps every per-subject, per-month and time-of-day split precisely so "these combinations can be worked out later without new data work." The engine is where that promise gets cashed in. The frontend renders whatever ordered list the engine emits.</p>
+<div class="ok"><b>Guardrail for the 30k:</b> every student is guaranteed a minimum-length, never-empty wrap. A student with little activity still gets: years-with-Shikho, course they bought, upcoming 2027 classes, one gentle stat, and a "2026 was the start" personality — the spec already lists these low-activity fallbacks.</div>
+</section>
+
+<!-- 5 CARDS -->
+<section id="cards">
+<h2><span class="n">05</span>The insight-card library</h2>
+<p class="lead">A first cut of the catalogue — bigger than any one student sees. Each card is an insight ("wow" line), a trigger that decides who gets it, the data behind it, and whether we have / build / get that data. CEO-named asks are tagged.</p>
+<div class="legend">
+  <span><span class="pill have">HAVE</span> in warehouse</span>
+  <span><span class="pill build">BUILD</span> derive from data we hold</span>
+  <span><span class="pill get">GET</span> pipe a service DB in</span>
+  <span><span class="pill gap">GAP</span> source to locate</span>
+</div>
+<table>
+  <tr><th style="width:20%">Card</th><th style="width:30%">The "wow" line (illustrative)</th><th>Shows when</th><th>Data</th><th>Status</th></tr>
+
+  <tr class="grp"><td colspan="5">Opener &amp; effort — most students</td></tr>
+  <tr><td>Active days</td><td class="bn wow">১৮৭ দিন তুমি পড়তে এসেছ — সপ্তাহে প্রায় ৫ দিন</td><td>always (≥ min days)</td><td><code>user_activity_duration_agg</code></td><td><span class="pill have">HAVE</span></td></tr>
+  <tr><td>Longest streak</td><td class="bn wow">টানা ২৩ দিন — ১২ মার্চ থেকে</td><td>streak ≥ tier min</td><td>same (consecutive dates)</td><td><span class="pill have">HAVE</span></td></tr>
+  <tr><td>Total hours</td><td class="bn wow">১৪২ ঘণ্টা — না ঘুমিয়ে টানা ৬ দিন পড়ার সমান</td><td>always</td><td>sum of <code>*_duration</code></td><td><span class="pill have">HAVE</span></td></tr>
+  <tr><td>Most-consumed content <span class="tag">CEO</span></td><td class="bn wow">সবচেয়ে বেশি দেখেছ ভিডিও — ৪৮ ঘণ্টা</td><td>always</td><td>duration by content type</td><td><span class="pill have">HAVE</span></td></tr>
+
+  <tr class="grp"><td colspan="5">Who you are as a learner — the surprising middle</td></tr>
+  <tr><td>Night owl / early bird</td><td class="bn wow">তোমার ৬১% পড়া রাতে — তুমি রাতজাগা তারা</td><td>a time band ≥ 50%</td><td><code>datafuse.user_activity_agg</code></td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Favourite teacher <span class="tag">CEO</span></td><td class="bn wow">তোমার প্রিয় শিক্ষক রাকিব স্যার — ৪২টা ক্লাস</td><td>live classes ≥ min</td><td><code>student_attendees</code>+<code>teacher_attendees</code>+<code>Teachers</code></td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Top subject by time</td><td class="bn wow">পদার্থবিজ্ঞানে দিয়েছ ৪১ ঘণ্টা — সবচেয়ে বেশি</td><td>subject time ≥ min</td><td>subject reconstruction (video+live+quiz logs)</td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Best subject on exams <span class="tag">CEO</span></td><td class="bn wow">পরীক্ষায় তোমার সেরা বিষয় রসায়ন — গড় ৮৪%</td><td>≥ 3 exam subjects</td><td><code>model_test_session</code>, <code>user_activities</code> (LiveExam)</td><td><span class="pill get">GET</span></td></tr>
+  <tr><td>Quiz grinder / hard-Q hero</td><td class="bn wow">১,৮৪০টা প্রশ্ন — তার ৩১০টা কঠিন প্রশ্ন সঠিক</td><td>questions ≥ min</td><td><code>mcq_user_chapter_daily</code></td><td><span class="pill have">HAVE</span></td></tr>
+  <tr><td>Live-class champion</td><td class="bn wow">৭২টা ক্লাসের ৬৩টায় ছিলে — ৮৮% উপস্থিতি</td><td>attendance ≥ tier</td><td><code>student_attendees</code> vs <code>lessons</code></td><td><span class="pill have">HAVE</span></td></tr>
+  <tr><td>Shikho AI companion <span class="tag">CEO-new</span></td><td class="bn wow">শিখো AI-কে ২১৪টা প্রশ্ন — বেশিরভাগ রসায়নে</td><td>AI messages ≥ min</td><td><code>gen_ai_conversations</code>, <code>gen_ai_sessions</code></td><td><span class="pill get">GET</span></td></tr>
+  <tr><td>Badges &amp; milestones</td><td class="bn wow">এ বছর তুমি জিতেছ ৯টা ব্যাজ</td><td>badges ≥ 1</td><td><code>StudentBadges</code>+<code>GamificationBadges</code></td><td><span class="pill get">GET</span></td></tr>
+
+  <tr class="grp"><td colspan="5">Growth &amp; combination — the "step deeper"</td></tr>
+  <tr><td>Comeback / most improved</td><td class="bn wow">বছরের শেষে তোমার নির্ভুলতা বেড়েছে ২২%</td><td>accuracy trend ↑, enough months</td><td>accuracy by month, <code>mcq_user_chapter_daily</code></td><td><span class="pill have">HAVE</span></td></tr>
+  <tr><td>Classes → accuracy link <span class="tag">combo</span></td><td class="bn wow">যে মাসে বেশি লাইভ ক্লাস করেছ, নির্ভুলতাও বেশি ছিল</td><td>correlation clears threshold</td><td>attendance × accuracy, by month</td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Subject × time-of-day <span class="tag">combo</span></td><td class="bn wow">পদার্থবিজ্ঞান পড়ো রাতে, গণিত সকালে</td><td>two subjects, clear split</td><td>subject logs × time band</td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Opportunity subject</td><td class="bn wow">একটু সময় দিলেই জীববিজ্ঞান হবে তোমার সেরা</td><td>high accuracy, low time</td><td>accuracy vs time by subject</td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Percentile / rank</td><td class="bn wow">তোমার প্রোগ্রামে তুমি টপ ৫%-এ</td><td>rank ≤ cutoff (as 2025: top 50)</td><td>composite score + leaderboard</td><td><span class="pill build">BUILD</span></td></tr>
+
+  <tr class="grp"><td colspan="5">Loyalty &amp; close</td></tr>
+  <tr><td>Years with Shikho</td><td class="bn wow">তুমি ৩ বছর ধরে শিখোর সাথে</td><td>returning student</td><td><code>Transactions</code>, <code>programs</code></td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Lifetime totals</td><td class="bn wow">৩ বছরে মোট ৪১০ ঘণ্টা পড়েছ</td><td>returning + history exists</td><td>multi-year aggregates</td><td><span class="pill gap">GAP</span></td></tr>
+  <tr><td>Learner personality <span class="tag">finale</span></td><td class="bn wow">তুমি একজন "নিয়মিত রাতজাগা পড়ুয়া"</td><td>always (derived)</td><td>axes in <a href="#persona">§6</a></td><td><span class="pill build">BUILD</span></td></tr>
+  <tr><td>Share card</td><td class="bn wow">তোমার ২০২৬ — শেয়ার করো</td><td>always</td><td>name-hideable; PNG 1080×1920</td><td><span class="pill build">BUILD</span></td></tr>
+</table>
+<p class="note">Roughly 22 cards; a typical student sees 9–12. The three <span class="tag">combo</span> cards are the heart of the CEO's "go a step deeper" — they're low-cost to compute because the per-month and per-subject splits already exist.</p>
+</section>
+
+<!-- 6 PERSONA -->
+<section id="persona">
+<h2><span class="n">06</span>The learner-personality model</h2>
+<p class="lead">The finale "who you are" moment — Shikho's answer to Spotify's Listening Personality. Derived, never asked. Built from five behavioural axes we can measure today:</p>
+<table>
+  <tr><th>Axis</th><th>Low ↔ High</th><th>From</th></tr>
+  <tr><td>Consistency</td><td>sporadic ↔ regular</td><td>active days, streak</td></tr>
+  <tr><td>Intensity</td><td>light ↔ marathon</td><td>hours per active day, biggest day</td></tr>
+  <tr><td>Breadth</td><td>specialist ↔ all-rounder</td><td>spread of subject time</td></tr>
+  <tr><td>Timing</td><td>early bird ↔ night owl</td><td>time-of-day split</td></tr>
+  <tr><td>Mode</td><td>watcher / quizzer / class-goer / asker</td><td>dominant content type + AI use</td></tr>
+</table>
+<p>A primary <b>archetype</b> comes from the dominant <i>mode</i>, with a <b>modifier</b> from consistency + timing — giving a large set of named Bangla types. A first cut:</p>
+<div class="persona">
+  <div class="p"><b class="bn">নিয়মিত পড়ুয়া</b><small>Regular — high consistency</small></div>
+  <div class="p"><b class="bn">রাতজাগা তারা</b><small>Night Owl — night-heavy</small></div>
+  <div class="p"><b class="bn">কুইজ মাস্টার</b><small>Quiz Master — quiz-dominant</small></div>
+  <div class="p"><b class="bn">ক্লাসের সুপারস্টার</b><small>Class Regular — live attendance</small></div>
+  <div class="p"><b class="bn">ভিডিও এক্সপ্লোরার</b><small>Video Explorer — watch-heavy</small></div>
+  <div class="p"><b class="bn">প্রশ্নবাজ</b><small>The Questioner — Shikho-AI heavy</small></div>
+  <div class="p"><b class="bn">অলরাউন্ডার</b><small>All-rounder — broad subjects</small></div>
+  <div class="p"><b class="bn">বিশেষজ্ঞ</b><small>Specialist — deep in one</small></div>
+  <div class="p"><b class="bn">কামব্যাক স্টার</b><small>Comeback — improved late</small></div>
+  <div class="p"><b class="bn">ম্যারাথনার</b><small>Marathoner — long sessions</small></div>
+  <div class="p"><b class="bn">স্প্রিন্টার</b><small>Sprinter — short, frequent</small></div>
+  <div class="p"><b class="bn">নতুন শুরু</b><small>Fresh Start — low-activity fallback</small></div>
+</div>
+<p class="note">Exact axes, cut-offs and the type names are Product/Brand calls — all are <b>settings</b>, tunable without a release, as SC-1737 requires. The point here is that each type is backed by numbers we can already compute.</p>
+</section>
+
+<!-- 7 DATA -->
+<section id="data">
+<h2><span class="n">07</span>Data: what we have, build, and get</h2>
+<p class="lead">The good news for the CEO's ask: the engine runs mostly on data already in the <code>datafuse</code> warehouse. The gaps are a short, known list.</p>
+<div class="two">
+  <div class="card navy">
+    <h4 style="color:var(--have-fg)">Have now (warehouse)</h4>
+    <ul>
+      <li>Active days, streaks, study time by 7 content types, per day/month — <code>user_activity_duration_agg</code></li>
+      <li>Quizzes, questions, accuracy by subject/chapter/month — <code>mcq_user_*</code></li>
+      <li>Live-class attendance &amp; teachers — <code>student_attendees</code>, <code>teacher_attendees</code>, <code>lessons</code></li>
+      <li>Live-exam scores — <code>user_activities</code></li>
+      <li>Profile &amp; purchases — <code>Students</code>, <code>Transactions</code>, <code>programs</code></li>
+    </ul>
+  </div>
+  <div class="card mag">
+    <h4 style="color:var(--get-fg)">Build / Get</h4>
+    <ul>
+      <li><span class="pill build">BUILD</span> subject-level study time (agg has <b>no subject column</b>) — the one real derivation task</li>
+      <li><span class="pill build">BUILD</span> time-of-day bands, favourite teacher, the 3 combo insights, percentile</li>
+      <li><span class="pill get">GET</span> Shikho AI (<code>gen_ai_*</code>), badges (<code>StudentBadges</code>), best model-test (<code>model_test_session</code>), QR scans</li>
+      <li><span class="pill gap">GAP</span> eBook-open log (locate it); deep lifetime history (core tables start ~late 2024)</li>
+    </ul>
+  </div>
+</div>
+<div class="warn"><b>The one structural watch-item:</b> subject is the most <i>personal</i> dimension (top subject, best subject, subject × time) yet the main aggregate table has no subject column. Subject-level time must be reconstructed from the per-log tables and reconciled with BI before the subject cards are promised. Everything else is aggregation the warehouse already supports.</div>
+<p class="note">Full field-by-field source mapping lives in SC-1737 and in the companion <code>year-end-wrap-data-build-plan.html</code>; this section is the engine-level summary.</p>
+</section>
+
+<!-- 8 PLACEMENT -->
+<section id="place">
+<h2><span class="n">08</span>Where it lives in the app</h2>
+<p class="lead">I pulled the live 2026 home and last year's placement from Figma. The entry point is a solved problem — we reuse the prime slot the 2025 review already owned.</p>
+<div class="imgrow">
+  <figure>
+    <img src="wrap-placement-2025.png" alt="2025 Year Wrapped and Quarter Review home banner placement">
+    <figcaption><b>2025 (shipped):</b> the review sat in a purple banner in the <b>prime home slot</b> — directly under the header, above "আজকের রুটিন" — with two variants ("তোমার ২০২৫ Shikho জার্নি!" / "এই তিন মাসে তুমি কেমন করলে?") and a "চলে দেখি →" CTA.</figcaption>
+  </figure>
+  <figure>
+    <img src="wrap-home-2026.png" alt="Current 2026 app home screen">
+    <figcaption><b>2026 (live home):</b> same prime slot currently holds the "প্রোফাইল ছবি যোগ করো" card. Bottom nav is now <b>হোম · এক্সপ্লোর · কোর্স · শিখো AI</b> — note the new <b>এক্সপ্লোর</b> tab.</figcaption>
+  </figure>
+</div>
+<h3>Recommended entry points</h3>
+<ul>
+  <li><b>Home banner</b> in that prime slot during the launch window (26–31 Dec), styled "তোমার ২০২৬" — the slot and interaction are already proven from 2025.</li>
+  <li><b>এক্সপ্লোর tab</b> card — the 2026 home gained an Explore tab; a persistent Wrap entry there outlives the banner.</li>
+  <li><b>Launch-day push</b> notification, and a <b>public share link</b> page so a friend who receives a card can open it (and convert).</li>
+</ul>
+<p class="note">Recommended delivery: a <b>web story screen</b> the app opens (prototype direction C3 "Journey"), with the 2025 native share bridge reused. Web lets Product iterate the insight copy without an app release — which matters when the engine is tuned by settings.</p>
+</section>
+
+<!-- 9 BUILD -->
+<section id="build">
+<h2><span class="n">09</span>What we build</h2>
+<div class="three">
+  <div class="card">
+    <h4>A · Data layer</h4>
+    <ul>
+      <li>Yearly aggregation job → one Wrap record / paid student (new DAG in <code>data_pipeline_bronze</code>).</li>
+      <li>Subject-level reconstruction + BI reconciliation.</li>
+      <li>Pipe the GET sources: Shikho AI, badges, best model-test, QR.</li>
+      <li>Tier / threshold / min-data <b>settings store</b> (no release to retune).</li>
+    </ul>
+  </div>
+  <div class="card mag">
+    <h4>B · Insight engine <span class="tag">new</span></h4>
+    <ul>
+      <li>The <b>card library</b> (~25 templates) with gate + score + copy-variants.</li>
+      <li>The <b>selection &amp; ordering</b> algorithm (variety + drama curve + min-length guarantee).</li>
+      <li>The <b>personality classifier</b> (axes → type).</li>
+      <li>Needs BI's <b>metric distributions</b> to compute "how surprising" (percentiles).</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>C · API &amp; app</h4>
+    <ul>
+      <li>Wrap API in the gateway returning the ordered card list per student (extend the 2025 by-user/program/phase API).</li>
+      <li>Web story screen (C3) rendering whatever list the engine emits.</li>
+      <li>Reuse 2025: native share-sheet bridge, PNG 1080×1920, rank/ordinals, home-banner entry, <code>is_report_available</code> flag.</li>
+      <li>Public share-link page + name-hide option.</li>
+    </ul>
+  </div>
+</div>
+<p><b>Reuse, don't rebuild (from the 2025 ship):</b> the home-banner slot &amp; interaction, native screenshot → share sheet, per-program rank (top 50, Bangla ordinals, tie handling), engagement-tier copy pattern, the report-availability flag, and the backend API shape. The genuinely new work is <b>B, the insight engine</b> — which is where the CEO's bar is won or lost.</p>
+</section>
+
+<!-- 10 DECISIONS -->
+<section id="decisions">
+<h2><span class="n">10</span>Decisions &amp; what I still need</h2>
+<div class="two">
+  <div class="card">
+    <h4>Decisions to lock</h4>
+    <ul>
+      <li>Endorse the <b>insight-engine</b> approach (vs. a fixed slide order) — this is the core choice the CEO's note points to.</li>
+      <li>Direction: confirm <b>C3 Journey</b> as the shell; borrow B3's marksheet share card.</li>
+      <li>Audience + minimum activity to qualify; cut-off date.</li>
+      <li>Personality axes, type names, and tier cut-offs (Product + Brand).</li>
+      <li>How far to push <b>combination insights</b> in v1 (the "step deeper").</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>What I still need</h4>
+    <ul>
+      <li><b>BI distributions</b> (Mahizebin / Novera) for each metric — the engine's scoring needs them, and they confirm the "not checked yet" sources.</li>
+      <li>Confirmation the <b>GET</b> sources (AI, badges, model-test, QR) can be piped by the cut-off.</li>
+      <li>A node-level look at the <b>2026 Explore tab</b> if we want a permanent entry there (I have the home; say the word and I'll pull Explore).</li>
+    </ul>
+  </div>
+</div>
+<p>Say which and I'll do it next: <b>(a)</b> turn the card library into the concrete per-student <b>JSON contract</b> for engineering; <b>(b)</b> write the full <b>Spotify-Wrapped 3-year teardown</b> (2021–2024 slide-by-slide) with a Shikho card mapped to each, as the CEO literally requested; or <b>(c)</b> draft the <b>insight-engine spec</b> (gate/score/order pseudocode + the distribution asks for BI) to drop onto SC-1737.</p>
+</section>
+
+<hr>
+<footer>
+  Sources read for this version: CEO email thread "Shikho Year-End Wrap 2026 | Ideas &amp; Feedback" (Ishmam Chowdhury, 17 Oct) · Figma <i>Homepage Redesign 2026</i> (live home, node 6469:124210) &amp; <i>App Homepage Revamp</i> (2025 placement, node 6407:3645) · ClickUp SC-1737 (data spec) + ST-25781 PRD (2025 feature) · shikho-year-end-wrap prototype (C3) · shikho-spec warehouse docs. Illustrative numbers are examples; spec tables are generated from code — verify against production before building.
+</footer>
+
+</div>
+</body>
+</html>
