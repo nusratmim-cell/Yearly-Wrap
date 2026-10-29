@@ -390,6 +390,29 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
   </div>
   <p class="src">Sources (green = ready today, amber = to build, blue = pipe from a service DB) → nightly Airflow job → one stored record per student → read API → app → share.</p>
 
+  <h3>2.0 Where the data comes from (provenance)</h3>
+  <p class="lead">The wrap reads one warehouse — <code>datafuse</code> (Postgres) — but that warehouse is fed by the whole platform. Two paths fill it, and the wrap job sits on top of both; it never touches the source services directly, so it can’t slow the app, exams or live classes.</p>
+  <ul>
+    <li><b>Live event stream.</b> Each microservice (exam, live-exam, academic-program, live-class, gamification…) emits domain events over <b>NATS JetStream / gRPC</b>; the <b>KPI service</b> mirrors them into <code>datafuse</code>. (e.g. a model test publishes <code>LESSON.ModelTest.&lt;id&gt;.VALIDATED</code>; live-class attendance and exam results flow the same way.)</li>
+    <li><b>Nightly aggregation (Airflow, <code>data_pipeline_bronze</code>).</b> DAGs roll raw activity into the aggregate tables the wrap uses — <code>user_activity_duration_agg</code> (7 activity-type durations), <code>mcq_user_*_daily</code> (quiz / question / subject), plus S3 bronze backups — every morning ~06:00–07:00 BD.</li>
+    <li><b>Operational stores not yet in the warehouse</b> (MongoDB / ArangoDB): AI chats (gen-ai), model-test detail (live-exam), badges (gamification), QR scans. These are the GET-sources — §2.5 pipes them in.</li>
+  </ul>
+
+  <h3>Source-of-truth map — every metric to its origin (and what to reuse)</h3>
+  <table>
+    <tr><th>Wrap metric</th><th>Origin service</th><th>Origin → warehouse</th><th>Reuse (existing job)</th></tr>
+    <tr><td>Study time (7 types) · video mins/count</td><td>academic-program · video</td><td>activity events → <code>user_activity_duration_agg</code></td><td><code>user_activity_duration_agg_dag</code></td></tr>
+    <tr><td>Live-class attendance</td><td>live-class (teachmint)</td><td>NATS → <code>student_/teacher_attendees</code></td><td><code>kpi_to_crm_events_lca_dag</code> (same joins)</td></tr>
+    <tr><td>Quizzes · questions · correct · hard</td><td>live-exam (MCQ)</td><td>Mongo → <code>mcq_user_*_daily</code></td><td><code>mcq_session_agg_to_kpi_dag</code></td></tr>
+    <tr><td><b>Best / strongest / weakest subject</b></td><td>live-exam</td><td><code>mcq_user_chapter_daily.subject_name</code> accuracy</td><td><b><code>practice-quiz-subject-wise-event_dag</code> already computes highest/lowest subject</b></td></tr>
+    <tr><td>Best subject by exam marks</td><td>live-exam</td><td><code>model_test_session</code> (Mongo) → Grade / Rank / subject analytics</td><td><code>live_exam_agg_to_crm_dag</code>, <code>live_exam_result_even_to_crm_dag</code></td></tr>
+    <tr><td>Favourite teacher</td><td>live-class</td><td><code>teacher_attendees</code> ⋈ <code>Teachers</code></td><td>BI live-class attendee joins</td></tr>
+    <tr><td>Active days · streak</td><td>all of the above</td><td><code>user_activity_duration_agg.activity_date</code></td><td>new (derive in DAG)</td></tr>
+    <tr><td>AI usage</td><td>gen-ai</td><td>Mongo conversations → pipe (§2.5)</td><td><code>mongodb-to-postgres-sync</code> pattern</td></tr>
+    <tr><td>Badges</td><td>gamification</td><td><code>StudentBadges</code></td><td>KPI badge sync</td></tr>
+    <tr><td>Profile · years-with-Shikho</td><td>core</td><td><code>Students</code> · <code>Transactions</code></td><td>user-sync</td></tr>
+  </table>
+
   <h3>2.1 Table <code>datafuse.wrap_2026</code></h3>
 <pre><span class="k">CREATE TABLE</span> datafuse.wrap_2026 (
   user_id         <span class="t">varchar</span>  <span class="k">NOT NULL</span>,   program_id <span class="t">varchar</span> <span class="k">NOT NULL</span>,
@@ -434,7 +457,7 @@ getYearWrap(year: 2026): WrapPayload        <span class="c">// → wrap_2026.pay
 getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</span>
 <span class="c">// states: is_available=false → exists:false / "coming soon"; not paid → NOT_ELIGIBLE</span>
 <span class="c">// share: reuse POST /api/public/v1/report-card/share  (ST-25781, deployed)</span></pre>
-  <p class="src">Reuse scoring helpers already in <code>results-reporting</code> (<code>class%×0.5+exam%×0.5</code>, grade cutoffs). Do <b>not</b> inherit its hardcoded-0 fields or stale last-week rank. Reuse 24h public cache.</p>
+  <p class="src">The resolver lives in the <b>gateway</b> (<code>POST /graphql</code> → gRPC to the <b>analytics</b> service, which already reads <code>datafuse</code> for results-reporting). It just selects the stored <code>payload</code> by <code>(user_id, program_id)</code> — O(1), no computation, &lt;150ms p95 off the 24h cache. Reuse scoring helpers already in <code>results-reporting</code> (<code>class%×0.5+exam%×0.5</code>, grade cutoffs); do <b>not</b> inherit its hardcoded-0 fields or stale last-week rank.</p>
 
   <h3>2.4 Response contract (frozen)</h3>
 <pre>{ <span class="s">"schema_version"</span>:<span class="s">"1.0"</span>, <span class="s">"is_available"</span>:<span class="k">true</span>, <span class="s">"is_fresh_start"</span>:<span class="k">false</span>, <span class="s">"cutoff_date"</span>:<span class="s">"2026-12-20"</span>,
@@ -451,6 +474,29 @@ getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</
   <span class="s">"badges"</span>:[{<span class="s">"code"</span>:<span class="s">"first_bencher"</span>,<span class="s">"label_bn"</span>:<span class="s">"ফার্স্ট বেঞ্চার"</span>,<span class="s">"metric"</span>:<span class="s">"attendance_rate"</span>}, …],
   <span class="s">"slides"</span>:[{<span class="s">"type"</span>:<span class="s">"cover"</span>,<span class="s">"order"</span>:1}, … {<span class="s">"type"</span>:<span class="s">"marksheet"</span>,<span class="s">"order"</span>:7}],
   <span class="s">"share"</span>:{<span class="s">"card_default_hide_name"</span>:<span class="k">true</span>} }</pre>
+
+  <h3>2.5 GET-source integration (pipe these into datafuse first)</h3>
+  <p class="lead">Four signals live in operational stores, not the warehouse. Each is piped with the <b>existing Mongo→Postgres pattern</b> (<code>mongodb-to-postgres-sync</code>: pymongo rolling-window read → psycopg2 UPSERT on <code>_id</code>) — one small DAG per source, ~1 day each. <b>Deadline: in <code>datafuse</code> by ~10 Dec</b>, else the signal drops from v1 and the wrap degrades gracefully (§4).</p>
+  <table>
+    <tr><th>Signal</th><th>Service · store</th><th>Pipe</th><th>Wrap use</th></tr>
+    <tr><td>AI usage ("N questions")</td><td>gen-ai · MongoDB conversations (<code>POST /conversation/continue</code> writes them)</td><td>new DAG → <code>datafuse.gen_ai_conversations_daily</code> (count + days by <code>created_at</code>)</td><td>active-day union + "তুমি AI-কে N বার জিজ্ঞেস করেছ"</td></tr>
+    <tr><td>Best subject by exam</td><td>live-exam · <code>model_test_session</code> (Mongo) — results carry Grade / Rank / subject analytics</td><td>reuse <code>live_exam_agg</code> / <code>mcq_session_agg</code> → subject accuracy</td><td>P0 enhancement slide</td></tr>
+    <tr><td>Badges earned</td><td>gamification · <code>StudentBadges</code></td><td>KPI badge sync (partly in warehouse already)</td><td>badges slide (v2)</td></tr>
+    <tr><td>QR / book scans</td><td>live-exam (qr-quiz) · <code>qr_scan_logs</code></td><td>new DAG → daily scan-days</td><td>active-day union</td></tr>
+  </table>
+  <p class="src">Model-test results are <b>eventually consistent</b> (async calc, gated by <code>result_publish_time</code>, published on NATS <code>LESSON.ModelTest.&lt;id&gt;.VALIDATED</code>) — the nightly DAG reads settled results, so there’s no race.</p>
+
+  <h3>2.6 Reliability, idempotency &amp; observability</h3>
+  <p class="lead">The existing pipeline is <b>at-most-once with no retries, no DLQ and no alerting</b> (a documented limitation of the CRM-sync / aggregation DAGs — silent gaps). The wrap is launch-critical and share-facing, so it must be stricter:</p>
+  <table>
+    <tr><th>Concern</th><th>Requirement</th></tr>
+    <tr><td>Idempotency</td><td><b>UPSERT</b> on <code>(user_id, program_id)</code> — never append (do not inherit the MCQ-agg append-mode dup bug). Reruns are safe.</td></tr>
+    <tr><td>Retries</td><td>Airflow <code>retries ≥ 2</code> with backoff (existing DAGs use none) — a transient Mongo/PG blip must not drop a student.</td></tr>
+    <tr><td>QA gate (<code>t10</code>)</td><td>Row stays <code>is_available=false</code> until it passes: no NULL headline stats, study ≤ 24h/day, rate ≤ 1, streak ≤ active_days, no negatives. Bad rows are quarantined + counted, never shipped.</td></tr>
+    <tr><td>Freshness</td><td>Runs after the upstream aggregations finish (~07:30 BD); a completeness check confirms every source table has the day before building. Final locked run: night of <b>20 Dec</b>.</td></tr>
+    <tr><td>Observability</td><td>Per-run metrics: cohort size, rows built, rows quarantined (by reason), % populating each slide. Alert if quarantine-rate spikes or cohort drops vs the prior run.</td></tr>
+    <tr><td>Privacy</td><td><code>wrap_2026</code> holds per-student stats under standard warehouse access; the public share card exposes only opted-in fields (§3.5).</td></tr>
+  </table>
 </section>
 
 <!-- ============ TAB 3 ANDROID ============ -->
