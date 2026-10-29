@@ -292,6 +292,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
     <div class="ashot"><img src="shots/b_02_cover_filled.png"><div class="lab">1 · Cover</div><div class="scap"><b>Personalisation.</b> Writes the student’s own নাম/শ্রেণি into the খাতা — instant “this is mine”. <b>Mascot:</b> the bird reads its notebook; fields write in by hand.</div></div>
     <div class="arrow">➜</div>
     <div class="acards">
+      <div class="scontext"><b>On this screen:</b> the opening “বার্ষিক খাতা” notebook cover — the student’s name, class and section written in by hand, with the Shikho logo and the bird mascot.</div>
       <div class="acard data"><span class="h">Data needed</span><b>Fields:</b> <code>Students.fist_name</code> (text), <code>Students.class</code> (text), <code>Students.study_group</code> (text). <b>Compute:</b> none — read as-is. <b>Window:</b> current profile snapshot (use the current class). <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span><code>:feature:quarterreview</code> → new <code>MarksheetCoverComponent</code> (extend <code>StudentYearlyOverviewComponent</code>). Bangla via <code>getBengaliNumber()</code>.</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.profile</code> · DAG <code>t1_cohort</code>.</div>
