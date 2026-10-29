@@ -86,6 +86,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
 .acard .h{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:2px}
 .acard code{font-size:11.5px}
 .acard.data{background:var(--blue-bg);border-color:var(--blue)}.acard.data .h{color:var(--blue)}
+.acard.logic{background:var(--purple-bg);border-color:var(--purple)}.acard.logic .h{color:var(--purple)}
 .acard.android{background:var(--green-bg);border-color:var(--green)}.acard.android .h{color:var(--green)}
 .acard.backend{background:var(--amber-bg);border-color:var(--amber)}.acard.backend .h{color:var(--amber)}
 .mermaid{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0;text-align:center}
@@ -279,6 +280,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
       <div class="acard data"><span class="h">Data needed</span><b>Fields:</b> <code>is_available</code> (bool) + paid status. <b>Gate:</b> render only if the student is paid <b>AND</b> <code>wrap_2026.is_available = true</code>. <b>Compute:</b> none. <b>Window:</b> n/a — it’s a show/hide flag.</div>
       <div class="acard android"><span class="h">Android — where</span><code>:feature:home</code> → <code>PaidUserScreen.kt</code>. Add <code>WrapBannerCard</code> (mirror <code>ReportCardStatusWidget</code>); event <code>OnYearWrapClicked</code> → new <code>@Serializable WrapRoute</code> in <code>HomeScreenNavigation.kt</code>.</div>
       <div class="acard backend"><span class="h">Backend — where</span>GraphQL <code>getIfYearWrapExist</code> (mirror <code>GetIfYearlyReviewExist</code>) → reads <code>wrap_2026.is_available</code>.</div>
+      <div class="acard logic"><span class="h">Logic &amp; copy rules</span>Headline inserts the student’s <b>name + biggest honest number</b> (active_days, else total hours). <b>Fresh-Start</b> students get copy C (no number). Shown only if paid <b>and</b> <code>is_available=true</code>; otherwise the slot keeps the normal home card.</div>
     </div>
   </div>
 
@@ -290,6 +292,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
       <div class="acard data"><span class="h">Data needed</span><b>Fields:</b> <code>Students.fist_name</code> (text), <code>Students.class</code> (text), <code>Students.study_group</code> (text). <b>Compute:</b> none — read as-is. <b>Window:</b> current profile snapshot (use the current class). <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span><code>:feature:quarterreview</code> → new <code>MarksheetCoverComponent</code> (extend <code>StudentYearlyOverviewComponent</code>). Bangla via <code>getBengaliNumber()</code>.</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.profile</code> · DAG <code>t1_cohort</code>.</div>
+      <div class="acard logic"><span class="h">Logic &amp; copy rules</span>Pure print — name / class / section verbatim from the profile. If a field is empty, <b>drop that line</b> (never render a blank or “null”).</div>
     </div>
   </div>
 
@@ -301,6 +304,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
       <div class="acard data"><span class="h">Data needed</span><b>Formula:</b> <code>total_study_seconds</code> = SUM(all <code>*_duration</code> columns in <code>user_activity_duration_agg</code>); <code>school_days</code> = round(total ÷ 21600) [6h×3600]. <b>Also:</b> <code>study_by_type_seconds</code> (7 types) + <code>study_by_month_seconds[12]</code> for the secondary visuals. <b>Window:</b> 2026-01-01 → cut-off. <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span><code>:feature:quarterreview</code> → <code>StudyTimeComponent</code> (reuse <code>YearlyQuarterHourComponent</code> layout).</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.stats.total_study_seconds</code>, <code>study_school_days</code> · DAG <code>t2_engagement</code>.</div>
+      <div class="acard logic"><span class="h">Logic &amp; copy rules</span><b>hours</b> = round(total_study_sec/3600); <b>“≈ N স্কুল দিন”</b> = round(hours/6). Headline tier (config): ≥200h → “অসাধারণ পরিশ্রম” · 50–199h → default · &lt;50h → “শুরুটা দারুণ”. <b>Hide the slide</b> if total &lt; the study-time <code>min_show</code>.</div>
     </div>
   </div>
 
@@ -312,6 +316,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
       <div class="acard data"><span class="h">Data needed</span><b>joined</b> = count <code>student_attendees</code> where stay ≥ min (10 min OR 30% of class length — a setting); <b>held</b> = count <code>lessons</code> where <code>content_type=LiveClass</code> by <code>academic_program_id</code>, from enrolment date; <b>rate</b> = joined÷held (clamp ≤ 1). <b>Join:</b> on <code>content_id</code> (or <code>room_id</code> if empty). <b>Badge:</b> First Bencher = attendance tier in <code>wrap_tier_config</code>. <b>Window:</b> 2026→cut-off. <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span>reuse existing <code>LiveClassReviewComponent</code>, re-skin to হাজিরা grid.</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.stats.live_class{joined,held,rate}</code> + <code>badges[]</code> · DAG <code>t3_attendance</code> + <code>t7</code>.</div>
+      <div class="acard logic"><span class="h">Logic &amp; copy rules</span><b>rate</b> = joined/held. Title/badge by tier (config): ≥85% → <b>ফার্স্ট বেঞ্চার</b> · 60–84% → নিয়মিত উপস্থিতি · &lt;60% → no badge, just an encouraging line. Grid draws one tick per <i>held</i> class, filled for joined. <b>Hide the slide</b> if held &lt; 5 (too few to be meaningful).</div>
     </div>
   </div>
 
@@ -323,6 +328,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
       <div class="acard data"><span class="h">Data needed</span><b>completed</b> = <code>mcq_user_quiz_daily.quiz_completed</code> (cross-check <code>user_activity_duration_agg.quiz_count</code>); <b>by_month[12]</b> = cumulative per month; <b>questions / correct / hard</b> = <code>mcq_user_chapter_daily.total_questions / total_correct / hard_question_correct</code>. <b>Badge:</b> কুইজ যোদ্ধা from config. <b>Window:</b> 2026→cut-off. <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span>new <code>QuizReviewComponent</code> (reuse <code>WeeklyReviewComponent</code> chart pattern).</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.stats.quiz</code> + Quiz-Warrior badge · DAG <code>t4_quiz</code>.</div>
+      <div class="acard logic"><span class="h">Logic &amp; copy rules</span><b>count</b> = quiz_completed. <b>“আর Xটা হলেই চ্যাম্পিয়ন”</b> is a <i>near-miss nudge</i>: let <code>next</code> = the next quiz tier above the student (config, e.g. Champion = 150) and <code>X = next − count</code>; show it <b>only when 0 &lt; X ≤ 5</b>. If count ≥ the top tier → “<b>তুমি কুইজ চ্যাম্পিয়ন! 🏆</b>” instead. If X &gt; 5 → no nudge, just the count (+ কুইজ যোদ্ধা badge if earned). Graph = cumulative quizzes by month.</div>
     </div>
   </div>
 
@@ -334,6 +340,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
       <div class="acard data"><span class="h">Data needed</span><b>minutes</b> = (<code>recorded_videos_duration</code> + <code>animated_videos_duration</code>) ÷ 60; <b>count</b> = <code>recorded_videos_count</code> + <code>animated_videos_count</code>; <b>movies</b> = minutes ÷ 120. <b>Badge:</b> ভিডিও ম্যারাথনার from config. <b>Window:</b> 2026→cut-off. <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span>new <code>VideoReviewComponent</code> (film-strip; same pager slide pattern).</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.stats.video{minutes,count}</code> + Video-Marathoner badge · DAG <code>t2</code>.</div>
+      <div class="acard logic"><span class="h">Logic &amp; copy rules</span><b>minutes</b> = round(video_sec/60); <b>“≈ N টা সিনেমা”</b> = round(minutes/120). Film-strip draws one cell per movie-equivalent. Badge <b>ভিডিও ম্যারাথনার</b> by tier (config). <b>Hide the slide</b> if minutes &lt; <code>min_show</code>.</div>
     </div>
   </div>
 
@@ -345,6 +352,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
       <div class="acard data"><span class="h">Data needed</span>active dates + streak + <b>cohort-relative axis scores</b> → stamp (self-balancing; see Tab 7 §7.1) <span class="pill p-build">BUILD</span></div>
       <div class="acard android"><span class="h">Android — where</span>reuse <code>LongestStreakComponent</code> + new <code>LearnerStampComponent</code> (tap-to-stamp; activity grid).</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.learner_type</code> + <code>stats.active_days/avg_days_per_week/longest_streak/active_dates</code> · DAG <code>t5</code>+<code>t7</code>.</div>
+      <div class="acard logic"><span class="h">Logic &amp; copy rules</span>Stamp = the cohort-relative type from §7.1. <b>“N দিন”</b> = active_days; <b>“সপ্তাহে গড়ে X দিন”</b> = round(avg_days_per_week). Activity grid = one cell per calendar day, filled on active dates. <b>Streak callout</b> “{start} থেকে {end}, টানা {days} দিন” shows <b>only if longest_streak ≥ 3</b>. If active_days &lt; 5 → this becomes the Fresh-Start short deck.</div>
     </div>
   </div>
 
@@ -356,6 +364,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
       <div class="acard data"><span class="h">Data needed</span>all stats + <code>badges[]</code> + <code>top_subject</code> (from quiz/exam accuracy by <code>subject_name</code> — subject-native, no time-rebuild) <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span>new <code>MarksheetShareComponent</code>; reuse <code>ReviewBottomInfoComponent</code> + <code>Capturable</code>→<code>shareBitmap()</code> (already in module); নাম-লুকাও toggle swaps name/rank layer before capture.</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>POST /report-card/share</code> (reuse ST-25781) → <code>short_url</code> via Mask · subject from DAG <code>t6</code>.</div>
+      <div class="acard logic"><span class="h">Logic &amp; copy rules</span>Each result row prints <b>only if its stat exists</b> (else the row is omitted — e.g. no top_subject → no “বছরের বিষয়” row). Badges listed from <code>badges[]</code>. Serial = “{YY}-{program}-{seq}”, date = <code>cutoff_date</code>. <b>“কার্ডে নাম লুকাও” defaults ON</b> for the shared copy (no name / school / rank).</div>
     </div>
   </div>
 
