@@ -433,7 +433,23 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
   min_value <span class="t">numeric</span>, label_bn <span class="t">text</span>, badge_code <span class="t">varchar</span>, min_show <span class="t">numeric</span>,
   <span class="k">PRIMARY KEY</span>(metric,tier));
 <span class="k">CREATE TABLE</span> datafuse.wrap_type_rule (axis <span class="t">varchar</span>, code <span class="t">varchar</span>,
-  predicate <span class="t">text</span>, label_bn <span class="t">text</span>, priority <span class="t">int</span>, <span class="k">PRIMARY KEY</span>(axis,code));</pre>
+  predicate <span class="t">text</span>, label_bn <span class="t">text</span>, priority <span class="t">int</span>, <span class="k">PRIMARY KEY</span>(axis,code));
+
+<span class="c">-- seed: badge tiers  (metric, tier, min_value, label_bn, badge_code, min_show)</span>
+<span class="k">INSERT INTO</span> wrap_tier_config <span class="k">VALUES</span>
+ (<span class="s">'attendance_rate'</span>,<span class="s">'first_bencher'</span>,0.85,<span class="s">'ফার্স্ট বেঞ্চার'</span>,<span class="s">'first_bencher'</span>,0.20),
+ (<span class="s">'quiz_completed'</span> ,<span class="s">'quiz_warrior'</span> ,100 ,<span class="s">'কুইজ যোদ্ধা'</span>   ,<span class="s">'quiz_warrior'</span> ,5),
+ (<span class="s">'video_minutes'</span>  ,<span class="s">'video_marathoner'</span>,1500,<span class="s">'ভিডিও ম্যারাথনার'</span>,<span class="s">'video_marathoner'</span>,30),
+ (<span class="s">'longest_streak'</span> ,<span class="s">'streak_master'</span>,21 ,<span class="s">'স্ট্রিক মাস্টার'</span> ,<span class="s">'streak_master'</span>,3);
+<span class="c">-- seed: learner-type labels — one stamp per student, chosen by the z-score rule in 2.2a</span>
+<span class="k">INSERT INTO</span> wrap_type_rule <span class="k">VALUES</span>
+ (<span class="s">'rhythm'</span>   ,<span class="s">'regular_studier'</span>,<span class="s">'z_high'</span>,<span class="s">'নিয়মিত পড়ুয়া'</span>  ,1),
+ (<span class="s">'intensity'</span>,<span class="s">'hard_worker'</span>    ,<span class="s">'z_high'</span>,<span class="s">'পরিশ্রমী'</span>       ,2),
+ (<span class="s">'clock'</span>    ,<span class="s">'night_owl'</span>      ,<span class="s">'z_high'</span>,<span class="s">'রাতজাগা পড়ুয়া'</span>,3),
+ (<span class="s">'method'</span>   ,<span class="s">'doer'</span>           ,<span class="s">'z_high'</span>,<span class="s">'অনুশীলনকারী'</span>    ,4),
+ (<span class="s">'focus'</span>    ,<span class="s">'specialist'</span>     ,<span class="s">'z_high'</span>,<span class="s">'একনিষ্ঠ'</span>        ,5),
+ (<span class="s">'focus'</span>    ,<span class="s">'explorer'</span>       ,<span class="s">'z_low'</span> ,<span class="s">'অনুসন্ধানী'</span>     ,6),
+ (<span class="s">'_default'</span>,<span class="s">'balanced'</span>       ,<span class="s">'none'</span>  ,<span class="s">'ভারসাম্যপূর্ণ'</span>  ,99);</pre>
 
   <h3>2.2 DAG <code>wrap_2026_build_dag_v1_0</code> (data_pipeline_bronze / Airflow)</h3>
   <table>
@@ -450,6 +466,115 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
     <tr><td><code>t10_qa_gate</code></td><td>outlier/null guard; flip <code>is_available=true</code> only for sane rows</td><td>—</td><td><span class="own o-dag">DAG</span></td></tr>
   </table>
 
+  <h3>2.2a Per-task computation — what each task actually runs</h3>
+  <p class="lead">All queries run on <code>datafuse</code> over the window <b>2026-01-01 → 2026-12-20</b>, scoped to the <code>cohort</code> from t1. Most of this assembles tables that already exist (see the source-of-truth map); verify the few column names marked <code>?</code> with <code>information_schema</code> before coding.</p>
+
+<pre><span class="c">-- t1 · cohort  (paid 2026 students; confirm the paid definition with the ST-25781 owner)</span>
+<span class="k">CREATE TEMP TABLE</span> cohort <span class="k">AS</span>
+<span class="k">SELECT DISTINCT</span> s.id <span class="k">AS</span> user_id, t.course_id <span class="k">AS</span> program_id
+<span class="k">FROM</span> "Students" s <span class="k">JOIN</span> "Transactions" t <span class="k">ON</span> t.student_id = s.id
+<span class="k">WHERE</span> t.status = <span class="s">'paid'</span> <span class="k">AND</span> t.tran_date <span class="k">BETWEEN</span> <span class="s">'2026-01-01'</span> <span class="k">AND</span> <span class="s">'2026-12-20'</span>;
+
+<span class="c">-- t2 · engagement  (study time, by type, by month, video)</span>
+<span class="k">SELECT</span> user_id,
+  <span class="k">SUM</span>(recorded_videos_duration + animated_videos_duration + live_class_duration
+    + quiz_duration + live_exam_duration + model_test_duration + smart_note_duration) <span class="k">AS</span> total_study_sec,
+  <span class="k">SUM</span>(recorded_videos_duration + animated_videos_duration) <span class="k">AS</span> video_sec,
+  <span class="k">SUM</span>(recorded_videos_count + animated_videos_count)       <span class="k">AS</span> video_count,
+  <span class="k">SUM</span>(quiz_count) <span class="k">AS</span> quiz_count_agg
+<span class="k">FROM</span> user_activity_duration_agg
+<span class="k">WHERE</span> activity_date <span class="k">BETWEEN</span> <span class="s">'2026-01-01'</span> <span class="k">AND</span> <span class="s">'2026-12-20'</span>
+<span class="k">GROUP BY</span> user_id;
+<span class="c">-- study_by_month[12]: add date_trunc('month',activity_date) to GROUP BY</span>
+<span class="c">-- study_by_type:     one SUM() per *_duration column</span>
+
+<span class="c">-- t3 · attendance + favourite teacher  (min-stay = 10 min OR 30% of class length)</span>
+<span class="k">WITH</span> held <span class="k">AS</span> (
+  <span class="k">SELECT</span> academic_program_id, <span class="k">COUNT</span>(*) <span class="k">AS</span> held <span class="k">FROM</span> lessons
+  <span class="k">WHERE</span> content_type=<span class="s">'LiveClass'</span> <span class="k">AND</span> start_time <span class="k">BETWEEN</span> <span class="s">'2026-01-01'</span> <span class="k">AND</span> <span class="s">'2026-12-20'</span>
+  <span class="k">GROUP BY</span> academic_program_id),
+joined <span class="k">AS</span> (
+  <span class="k">SELECT</span> sa.user_id, <span class="k">COUNT</span>(*) <span class="k">AS</span> joined
+  <span class="k">FROM</span> student_attendees sa
+  <span class="k">JOIN</span> teacher_attendees ta <span class="k">ON</span> ta.content_id = <span class="k">COALESCE</span>(<span class="k">NULLIF</span>(sa.content_id,<span class="s">''</span>), sa.room_id)
+  <span class="k">WHERE</span> sa.duration &gt;= <span class="k">GREATEST</span>(600, 0.30 * ta.duration)
+  <span class="k">GROUP BY</span> sa.user_id)
+<span class="k">SELECT</span> c.user_id, j.joined, h.held,
+       <span class="k">LEAST</span>(j.joined::numeric / <span class="k">NULLIF</span>(h.held,0), 1) <span class="k">AS</span> rate
+<span class="k">FROM</span> cohort c <span class="k">LEFT JOIN</span> joined j <span class="k">USING</span>(user_id)
+                <span class="k">LEFT JOIN</span> held h <span class="k">ON</span> h.academic_program_id = c.program_id;
+<span class="c">-- favourite teacher = most-attended:</span>
+<span class="k">SELECT DISTINCT ON</span> (sa.user_id) sa.user_id, ta.teacher_id, <span class="k">COUNT</span>(*) n
+<span class="k">FROM</span> student_attendees sa
+<span class="k">JOIN</span> teacher_attendees ta <span class="k">ON</span> ta.content_id = <span class="k">COALESCE</span>(<span class="k">NULLIF</span>(sa.content_id,<span class="s">''</span>),sa.room_id)
+<span class="k">GROUP BY</span> sa.user_id, ta.teacher_id <span class="k">ORDER BY</span> sa.user_id, n <span class="k">DESC</span>;  <span class="c">-- join teacher_id → Teachers</span>
+
+<span class="c">-- t4 · quizzes</span>
+<span class="k">SELECT</span> user_id, <span class="k">SUM</span>(quiz_completed) <span class="k">AS</span> quizzes <span class="k">FROM</span> mcq_user_quiz_daily <span class="k">WHERE</span> «day»? <span class="k">BETWEEN</span> … <span class="k">GROUP BY</span> user_id;
+<span class="k">SELECT</span> user_id, <span class="k">SUM</span>(total_questions) q, <span class="k">SUM</span>(total_correct) correct, <span class="k">SUM</span>(hard_question_correct) hard
+<span class="k">FROM</span> mcq_user_chapter_daily <span class="k">WHERE</span> «day»? <span class="k">BETWEEN</span> … <span class="k">GROUP BY</span> user_id;
+
+<span class="c">-- t5 · active days + longest streak  (gaps-and-islands)</span>
+<span class="k">WITH</span> d <span class="k">AS</span> (<span class="k">SELECT DISTINCT</span> user_id, activity_date <span class="k">FROM</span> user_activity_duration_agg
+         <span class="k">WHERE</span> activity_date <span class="k">BETWEEN</span> <span class="s">'2026-01-01'</span> <span class="k">AND</span> <span class="s">'2026-12-20'</span>
+         <span class="c">-- UNION distinct AI / QR days once piped (§2.5)</span> ),
+g <span class="k">AS</span> (<span class="k">SELECT</span> user_id, activity_date,
+          activity_date - (<span class="k">ROW_NUMBER</span>() <span class="k">OVER</span> (<span class="k">PARTITION BY</span> user_id <span class="k">ORDER BY</span> activity_date))::int <span class="k">AS</span> grp
+        <span class="k">FROM</span> d),
+runs <span class="k">AS</span> (<span class="k">SELECT</span> user_id, grp, <span class="k">COUNT</span>(*) len, <span class="k">MIN</span>(activity_date) s, <span class="k">MAX</span>(activity_date) e
+           <span class="k">FROM</span> g <span class="k">GROUP BY</span> user_id, grp)
+<span class="k">SELECT DISTINCT ON</span> (user_id) user_id, len <span class="k">AS</span> longest_streak, s <span class="k">AS</span> streak_start, e <span class="k">AS</span> streak_end
+<span class="k">FROM</span> runs <span class="k">ORDER BY</span> user_id, len <span class="k">DESC</span>;
+<span class="c">-- active_days = COUNT(DISTINCT activity_date); avg_days_per_week = active_days / weeks_since_first_activity</span>
+
+<span class="c">-- t6 · best / weakest subject  (subject-native accuracy — no time rebuild)</span>
+<span class="k">WITH</span> subj <span class="k">AS</span> (
+  <span class="k">SELECT</span> user_id, subject_name,
+    <span class="k">SUM</span>(total_correct)::numeric / <span class="k">NULLIF</span>(<span class="k">SUM</span>(total_questions),0) <span class="k">AS</span> accuracy,
+    <span class="k">SUM</span>(total_questions) <span class="k">AS</span> q
+  <span class="k">FROM</span> mcq_user_chapter_daily
+  <span class="k">WHERE</span> «day»? <span class="k">BETWEEN</span> <span class="s">'2026-01-01'</span> <span class="k">AND</span> <span class="s">'2026-12-20'</span>
+    <span class="k">AND</span> lower(subject_name) <span class="k">NOT IN</span> (<span class="s">'orientation'</span>,<span class="s">'orientation and guideline'</span>)
+  <span class="k">GROUP BY</span> user_id, subject_name)
+<span class="k">SELECT DISTINCT ON</span> (user_id) user_id, subject_name <span class="k">AS</span> top_subject, accuracy
+<span class="k">FROM</span> subj <span class="k">WHERE</span> q &gt;= :min_questions          <span class="c">-- a setting, e.g. 20; weakest = ORDER BY accuracy ASC</span>
+<span class="k">ORDER BY</span> user_id, accuracy <span class="k">DESC</span>;
+
+<span class="c">-- t7a · badges = highest tier each metric clears</span>
+<span class="k">SELECT</span> m.user_id, c.badge_code, c.label_bn
+<span class="k">FROM</span> student_metrics m <span class="k">JOIN</span> wrap_tier_config c <span class="k">ON</span>
+   (c.metric=<span class="s">'attendance_rate'</span> <span class="k">AND</span> m.rate           &gt;= c.min_value)
+<span class="k">OR</span> (c.metric=<span class="s">'quiz_completed'</span>  <span class="k">AND</span> m.quizzes        &gt;= c.min_value)
+<span class="k">OR</span> (c.metric=<span class="s">'video_minutes'</span>   <span class="k">AND</span> m.video_sec/60   &gt;= c.min_value)
+<span class="k">OR</span> (c.metric=<span class="s">'longest_streak'</span>  <span class="k">AND</span> m.longest_streak &gt;= c.min_value);</pre>
+
+  <h4>t7b · Learner-type — cohort-relative, self-balancing (the signature stamp)</h4>
+  <p class="lead">One stamp per student. It is chosen <b>relative to the cohort</b>, so the types spread ~evenly whatever the raw distribution looks like (why this removes the distribution risk — §7.0 R1):</p>
+  <ol>
+    <li>Per student compute each <b>axis</b> raw value: <code>rhythm</code>=active_days/weeks_enrolled · <code>intensity</code>=total_study_sec · <code>clock</code>=night_share <i>(needs an hour-band column; drop this axis if absent)</i> · <code>method</code>=active_sec/(active_sec+video_sec) · <code>focus</code>=top_subject_accuracy − mean_subject_accuracy.</li>
+    <li>Per axis, compute the <b>cohort</b> mean μ and stddev σ; then <code>z = (x − μ) / σ</code>.</li>
+    <li>The stamp = the axis with the <b>largest |z|</b> (the trait the student is most extreme on), mapped via <code>wrap_type_rule</code> (z&gt;0 → the <code>z_high</code> label, z&lt;0 → its <code>z_low</code> opposite).</li>
+    <li>Fallback: if every |z| &lt; 0.5 → the <code>balanced</code> stamp (ভারসাম্যপূর্ণ) — nobody gets a blank.</li>
+  </ol>
+<pre><span class="k">WITH</span> z <span class="k">AS</span> (<span class="k">SELECT</span> user_id,
+    (rhythm    - avg(rhythm)    <span class="k">OVER</span>())/<span class="k">NULLIF</span>(stddev_pop(rhythm)    <span class="k">OVER</span>(),0) <span class="k">AS</span> z_rhythm,
+    (intensity - avg(intensity) <span class="k">OVER</span>())/<span class="k">NULLIF</span>(stddev_pop(intensity) <span class="k">OVER</span>(),0) <span class="k">AS</span> z_intensity,
+    (method    - avg(method)    <span class="k">OVER</span>())/<span class="k">NULLIF</span>(stddev_pop(method)    <span class="k">OVER</span>(),0) <span class="k">AS</span> z_method,
+    (focus     - avg(focus)     <span class="k">OVER</span>())/<span class="k">NULLIF</span>(stddev_pop(focus)     <span class="k">OVER</span>(),0) <span class="k">AS</span> z_focus
+  <span class="k">FROM</span> student_axis_values)
+<span class="c">-- then, per user, pick the axis with MAX(abs(z)) and map (axis, sign) → wrap_type_rule.label_bn</span>
+<span class="c">-- BI confirm step (§7.0 R1): GROUP BY the chosen stamp → counts should spread, not collapse.</span></pre>
+
+  <h4>Orchestration (Airflow, <code>data_pipeline_bronze</code>)</h4>
+<pre><span class="c"># wrap_2026_build_dag_v1_0</span>
+schedule_interval = <span class="s">"30 7 * * *"</span>        <span class="c"># after the 06–07 BD aggregations; run Dec 1 → 20</span>
+default_args = { <span class="s">"retries"</span>: 2, <span class="s">"retry_delay"</span>: 10m, <span class="s">"on_failure_callback"</span>: alert_slack }
+<span class="c"># wait for upstream aggregates to finish for the day:</span>
+ExternalTaskSensor(user_activity_duration_agg_dag_v1_0)
+ExternalTaskSensor(mcq_session_agg_to_kpi_dag_v1_0)
+<span class="c"># task graph:</span>
+t1_cohort &gt;&gt; [t2_engagement, t3_attendance, t4_quiz, t5_days_streak, t6_subject] &gt;&gt; t7_tiers_type &gt;&gt; t8_assemble &gt;&gt; t9_upsert &gt;&gt; t10_qa_gate</pre>
+
   <h3>2.3 Read API (analytics service)</h3>
   <p>Follow the existing report-card transport: either a GraphQL query exposed through the gateway (like <code>getYearlyReview</code>, which <code>:feature:quarterreview</code> already calls via <code>AcademicProgramRepository</code>) or a Ktor-REST endpoint on <code>ANALYTICS_REPORT_BASE_URL</code> (like <code>api/v1/results/…</code>). <b>Recommended: add a GraphQL query</b> so the existing review data-layer plugs in with minimal client change.</p>
 <pre><span class="c">// GraphQL resolver just reads the row — no computation</span>
@@ -458,6 +583,25 @@ getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</
 <span class="c">// states: is_available=false → exists:false / "coming soon"; not paid → NOT_ELIGIBLE</span>
 <span class="c">// share: reuse POST /api/public/v1/report-card/share  (ST-25781, deployed)</span></pre>
   <p class="src">The resolver lives in the <b>gateway</b> (<code>POST /graphql</code> → gRPC to the <b>analytics</b> service, which already reads <code>datafuse</code> for results-reporting). It just selects the stored <code>payload</code> by <code>(user_id, program_id)</code> — O(1), no computation, &lt;150ms p95 off the 24h cache. Reuse scoring helpers already in <code>results-reporting</code> (<code>class%×0.5+exam%×0.5</code>, grade cutoffs); do <b>not</b> inherit its hardcoded-0 fields or stale last-week rank.</p>
+<pre><span class="c"># GraphQL schema (gateway) — mirrors the §2.4 payload</span>
+<span class="k">type</span> Query {
+  yearWrap(year: Int!): WrapPayload        <span class="c"># null if not available / not eligible</span>
+  yearWrapExists(year: Int!): Boolean!     <span class="c"># cheap banner gate</span>
+}
+<span class="k">type</span> WrapPayload {
+  schemaVersion: String!   isAvailable: Boolean!   isFreshStart: Boolean!   cutoffDate: String!
+  profile: WrapProfile!    learnerType: LearnerType    stats: WrapStats!
+  badges: [Badge!]!        slides: [Slide!]!           share: ShareConfig!
+}
+<span class="k">type</span> WrapProfile  { firstName: String!  class: String  studyGroup: String  yearsWithShikho: Int }
+<span class="k">type</span> LearnerType  { code: String!  labelBn: String!  axis: String! }
+<span class="k">type</span> Badge        { code: String!  labelBn: String!  metric: String! }
+<span class="k">type</span> Slide        { type: String!  order: Int! }
+<span class="k">type</span> ShareConfig  { cardDefaultHideName: Boolean! }
+<span class="c"># WrapStats mirrors the stats object in §2.4 (activeDays, longestStreak{days,start,end}, …)</span>
+
+<span class="c"># Errors: not paid → NOT_ELIGIBLE (403) · no row → yearWrap=null + yearWrapExists=false</span>
+<span class="c">#         row not ready → isAvailable=false ("coming soon") · reuse 24h public cache + 100/min rate-limit</span></pre>
 
   <h3>2.4 Response contract (frozen)</h3>
 <pre>{ <span class="s">"schema_version"</span>:<span class="s">"1.0"</span>, <span class="s">"is_available"</span>:<span class="k">true</span>, <span class="s">"is_fresh_start"</span>:<span class="k">false</span>, <span class="s">"cutoff_date"</span>:<span class="s">"2026-12-20"</span>,
