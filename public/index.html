@@ -166,7 +166,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
   <button data-t="t4"><span class="n">4</span>Badges · States · Edge cases</button>
   <button data-t="t5"><span class="n">5</span>Enhancements</button>
   <button data-t="t6"><span class="n">6</span>Data Inventory</button>
-  <button data-t="t7"><span class="n">7</span>Decisions &amp; Ownership</button>
+  <button data-t="t7"><span class="n">7</span>Decisions</button>
 </nav>
 
 <!-- ============ TAB 1 SCREEN MAP ============ -->
@@ -287,7 +287,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
     <div class="ashot"><img src="shots/b_02_cover_filled.png"><div class="lab">1 · Cover</div><div class="scap"><b>Personalisation.</b> Writes the student’s own নাম/শ্রেণি into the খাতা — instant “this is mine”. <b>Mascot:</b> the bird reads its notebook; fields write in by hand.</div></div>
     <div class="arrow">➜</div>
     <div class="acards">
-      <div class="acard data"><span class="h">Data needed</span><b>Fields:</b> <code>Students.fist_name</code> (text), <code>Students.class</code> (text), <code>Students.study_group</code> (text). <b>Compute:</b> none — read as-is. <b>Window:</b> current profile snapshot. <b>Check:</b> is <code>Students.class</code> updated yearly? (G4). <span class="pill p-have">HAVE</span></div>
+      <div class="acard data"><span class="h">Data needed</span><b>Fields:</b> <code>Students.fist_name</code> (text), <code>Students.class</code> (text), <code>Students.study_group</code> (text). <b>Compute:</b> none — read as-is. <b>Window:</b> current profile snapshot (use the current class). <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span><code>:feature:quarterreview</code> → new <code>MarksheetCoverComponent</code> (extend <code>StudentYearlyOverviewComponent</code>). Bangla via <code>getBengaliNumber()</code>.</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.profile</code> · DAG <code>t1_cohort</code>.</div>
     </div>
@@ -342,7 +342,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
     <div class="ashot"><img src="shots/b_08_learnertype.png"><div class="lab">6 · Learner type</div><div class="scap"><b>Identity — the signature moment.</b> Tap to stamp their study personality: the “I learned something about myself” beat. <b>Mascot:</b> the bird holds the stamp; it drops on tap, days count to ১৮৭.</div></div>
     <div class="arrow">➜</div>
     <div class="acards">
-      <div class="acard data"><span class="h">Data needed</span>active dates + streak + <b>cohort-relative axis scores</b> → stamp (self-balancing; see Tab 7 §7.0) <span class="pill p-build">BUILD</span></div>
+      <div class="acard data"><span class="h">Data needed</span>active dates + streak + <b>cohort-relative axis scores</b> → stamp (self-balancing; see Tab 7 §7.1) <span class="pill p-build">BUILD</span></div>
       <div class="acard android"><span class="h">Android — where</span>reuse <code>LongestStreakComponent</code> + new <code>LearnerStampComponent</code> (tap-to-stamp; activity grid).</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.learner_type</code> + <code>stats.active_days/avg_days_per_week/longest_streak/active_dates</code> · DAG <code>t5</code>+<code>t7</code>.</div>
     </div>
@@ -406,7 +406,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
     <tr><td>Quizzes · questions · correct · hard</td><td>live-exam (MCQ)</td><td>Mongo → <code>mcq_user_*_daily</code></td><td><code>mcq_session_agg_to_kpi_dag</code></td></tr>
     <tr><td><b>Best / strongest / weakest subject</b></td><td>live-exam</td><td><code>mcq_user_chapter_daily.subject_name</code> accuracy</td><td><b><code>practice-quiz-subject-wise-event_dag</code> already computes highest/lowest subject</b></td></tr>
     <tr><td>Best subject by exam marks</td><td>live-exam</td><td><code>model_test_session</code> (Mongo) → Grade / Rank / subject analytics</td><td><code>live_exam_agg_to_crm_dag</code>, <code>live_exam_result_even_to_crm_dag</code></td></tr>
-    <tr><td>Favourite teacher</td><td>live-class</td><td><code>teacher_attendees</code> ⋈ <code>Teachers</code></td><td>BI live-class attendee joins</td></tr>
+    <tr><td>Favourite teacher</td><td>live-class</td><td><code>teacher_attendees</code> ⋈ <code>Teachers</code></td><td>attendee joins (as in the live-class reports)</td></tr>
     <tr><td>Active days · streak</td><td>all of the above</td><td><code>user_activity_duration_agg.activity_date</code></td><td>new (derive in DAG)</td></tr>
     <tr><td>AI usage</td><td>gen-ai</td><td>Mongo conversations → pipe (§2.5)</td><td><code>mongodb-to-postgres-sync</code> pattern</td></tr>
     <tr><td>Badges</td><td>gamification</td><td><code>StudentBadges</code></td><td>KPI badge sync</td></tr>
@@ -549,7 +549,7 @@ runs <span class="k">AS</span> (<span class="k">SELECT</span> user_id, grp, <spa
 <span class="k">OR</span> (c.metric=<span class="s">'longest_streak'</span>  <span class="k">AND</span> m.longest_streak &gt;= c.min_value);</pre>
 
   <h4>t7b · Learner-type — cohort-relative, self-balancing (the signature stamp)</h4>
-  <p class="lead">One stamp per student. It is chosen <b>relative to the cohort</b>, so the types spread ~evenly whatever the raw distribution looks like (why this removes the distribution risk — §7.0 R1):</p>
+  <p class="lead">One stamp per student. It is chosen <b>relative to the cohort</b>, so the types spread ~evenly whatever the raw distribution looks like (why this removes the distribution risk — §7.1 R1):</p>
   <ol>
     <li>Per student compute each <b>axis</b> raw value: <code>rhythm</code>=active_days/weeks_enrolled · <code>intensity</code>=total_study_sec · <code>clock</code>=night_share <i>(needs an hour-band column; drop this axis if absent)</i> · <code>method</code>=active_sec/(active_sec+video_sec) · <code>focus</code>=top_subject_accuracy − mean_subject_accuracy.</li>
     <li>Per axis, compute the <b>cohort</b> mean μ and stddev σ; then <code>z = (x − μ) / σ</code>.</li>
@@ -563,7 +563,7 @@ runs <span class="k">AS</span> (<span class="k">SELECT</span> user_id, grp, <spa
     (focus     - avg(focus)     <span class="k">OVER</span>())/<span class="k">NULLIF</span>(stddev_pop(focus)     <span class="k">OVER</span>(),0) <span class="k">AS</span> z_focus
   <span class="k">FROM</span> student_axis_values)
 <span class="c">-- then, per user, pick the axis with MAX(abs(z)) and map (axis, sign) → wrap_type_rule.label_bn</span>
-<span class="c">-- BI confirm step (§7.0 R1): GROUP BY the chosen stamp → counts should spread, not collapse.</span></pre>
+<span class="c">-- sanity-check: the chosen stamp should spread across students, not collapse to one.</span></pre>
 
   <h4>Orchestration (Airflow, <code>data_pipeline_bronze</code>)</h4>
 <pre><span class="c"># wrap_2026_build_dag_v1_0</span>
@@ -716,14 +716,14 @@ getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</
   </table>
   <table>
     <tr><th>Question</th><th>Answer · owner</th></tr>
-    <tr><td>Who sets thresholds?</td><td><span class="own o-prod">PRODUCT</span> edits a <code>wrap_tier_config</code> row — no code, no app release. <span class="own o-bi">BI</span> validates the split first (don’t let 90% get First Bencher).</td></tr>
+    <tr><td>Who sets thresholds?</td><td><span class="own o-prod">PRODUCT</span> edits a <code>wrap_tier_config</code> row — no code, no app release. We confirm the split isn’t lopsided (no tier should swallow most students) before launch.</td></tr>
     <tr><td>Who writes Bangla labels?</td><td><span class="own o-prod">BRAND</span> fills <code>label_bn</code> per tier.</td></tr>
     <tr><td>Who computes/assigns?</td><td><span class="own o-dag">DAG t7</span> — compares each student’s metric to config, writes <code>badges[]</code>.</td></tr>
     <tr><td>Who renders?</td><td><span class="own o-and">ANDROID</span> reads <code>payload.badges[]</code> and shows the label on the slide + marksheet.</td></tr>
     <tr><td>Adding a brand-new badge?</td><td>Label + threshold = config (no release). A new badge <b>visual/art</b> = <span class="own o-des">DESIGN</span> asset, shipped with the app → needs a release. So: new <i>rule</i> = instant; new <i>artwork</i> = app release.</td></tr>
     <tr><td>Below the lowest tier?</td><td>No badge emitted → the slide hides its badge area (see 4.2).</td></tr>
   </table>
-  <p class="note"><b>Learner-type stamp is NOT a badge</b> — one mutually-exclusive type per student (always present); badges are additive (0–N). <b>Assignment is cohort-relative, not fixed-threshold</b> (Tab 7 §7.0): the stamp = the axis on which the student is <i>most distinctive vs the cohort median</i>, which spreads types ~evenly <u>by construction</u> — so the slide works whatever the raw distribution turns out to be.</p>
+  <p class="note"><b>Learner-type stamp is NOT a badge</b> — one mutually-exclusive type per student (always present); badges are additive (0–N). <b>Assignment is cohort-relative, not fixed-threshold</b> (Tab 7 §7.1): the stamp = the axis on which the student is <i>most distinctive vs the cohort median</i>, which spreads types ~evenly <u>by construction</u> — so the slide works whatever the raw distribution turns out to be.</p>
 
   <h3>4.2 Empty &amp; low-data states — “Fresh Start”</h3>
   <p class="lead">Every metric carries a <code>min_show</code> in config. Below it, the slide is suppressed. Students with almost no activity get a short, kind deck instead of a sad full one.</p>
@@ -731,7 +731,7 @@ getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</
     <tr><th>Situation</th><th>Behaviour</th><th>Owner</th></tr>
     <tr><td>One metric below <code>min_show</code></td><td>that slide is dropped from <code>slides[]</code> (server) OR hidden (client); never show an empty chart</td><td><span class="own o-dag">DAG</span> + <span class="own o-and">ANDROID</span></td></tr>
     <tr><td>A number is 0 / absent</td><td>render <b>“--”</b>, never “0” — reuse app precedent (ST-29843)</td><td><span class="own o-and">ANDROID</span></td></tr>
-    <tr><td>Student below overall minimum (e.g. &lt;5 active days)</td><td><code>is_fresh_start=true</code> → 2-slide deck: cover + “তোমার যাত্রা সবে শুরু — ২০২৭-এ পুরো গল্প দেখা হবে”. Sized by BI (A4 histogram)</td><td><span class="own o-dag">DAG</span> + <span class="own o-des">DESIGN</span></td></tr>
+    <tr><td>Student below overall minimum (e.g. &lt;5 active days)</td><td><code>is_fresh_start=true</code> → 2-slide deck: cover + “তোমার যাত্রা সবে শুরু — ২০২৭-এ পুরো গল্প দেখা হবে”. Sized from the active-days histogram</td><td><span class="own o-dag">DAG</span> + <span class="own o-des">DESIGN</span></td></tr>
     <tr><td>Marksheet row has no data</td><td>omit that row (e.g. no <code>top_subject</code> → drop “বছরের বিষয়”)</td><td><span class="own o-and">ANDROID</span></td></tr>
     <tr><td>No badges earned</td><td>hide the badge area; optional “এবার প্রায় পেয়ে গিয়েছিলে!” nudge</td><td><span class="own o-and">ANDROID</span></td></tr>
     <tr><td>0 total classes (div-by-zero)</td><td>guard rate = “--”, no NaN arc — reuse precedent (ST-29924)</td><td><span class="own o-dag">DAG</span> + <span class="own o-and">ANDROID</span></td></tr>
@@ -743,9 +743,9 @@ getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</
     <tr><td>Study &gt; 24h in a day</td><td>flag as outlier; row fails <code>t10</code>, stays <code>is_available=false</code> until fixed</td><td><span class="own o-dag">DAG t10</span></td></tr>
     <tr><td>Attendance rate &gt; 100%</td><td>clamp to 100%</td><td><span class="own o-dag">DAG t3</span></td></tr>
     <tr><td>Negative / null duration</td><td>drop the row from the sum</td><td><span class="own o-dag">DAG t2</span></td></tr>
-    <tr><td>Rejoin double-counts attendance</td><td>dedupe by <code>content_id</code>; respect <code>join_count</code> (SC-1737 flag)</td><td><span class="own o-dag">DAG t3</span> · verify <span class="own o-bi">BI</span></td></tr>
-    <tr><td>Two quiz sources disagree</td><td><code>mcq_user_quiz_daily</code> authoritative; cross-check <code>quiz_count</code></td><td><span class="own o-dag">DAG t4</span> · <span class="own o-bi">BI</span></td></tr>
-    <tr><td>Subject rebuild empty / &lt; agg total</td><td><code>top_subject=null</code>; marksheet drops the row; BI validates the sum (G2)</td><td><span class="own o-dag">DAG t6</span> · <span class="own o-bi">BI</span></td></tr>
+    <tr><td>Rejoin double-counts attendance</td><td>dedupe by <code>content_id</code>; respect <code>join_count</code> (SC-1737 flag)</td><td><span class="own o-dag">DAG t3</span></td></tr>
+    <tr><td>Two quiz sources disagree</td><td><code>mcq_user_quiz_daily</code> authoritative; cross-check <code>quiz_count</code></td><td><span class="own o-dag">DAG t4</span></td></tr>
+    <tr><td>Subject rebuild empty / &lt; agg total</td><td><code>top_subject=null</code>; marksheet drops the row if the subject data is thin</td><td><span class="own o-dag">DAG t6</span></td></tr>
     <tr><td>Learner type unresolved</td><td>fallback to safe default type or hide stamp; never blank</td><td><span class="own o-dag">DAG t7</span></td></tr>
     <tr><td>AI/QR source not piped in time</td><td><code>active_days</code> = warehouse-only; copy adjusts; no crash</td><td><span class="own o-dag">DAG t5</span></td></tr>
     <tr><td>Mid-year enrolment</td><td><code>avg_days_per_week</code> uses weeks since first activity, not full year</td><td><span class="own o-dag">DAG t5</span></td></tr>
@@ -755,7 +755,7 @@ getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</
     <tr><td>Row not generated yet</td><td><code>is_available=false</code> → “coming soon”</td><td><span class="own o-be">BACKEND</span> + <span class="own o-and">ANDROID</span></td></tr>
     <tr><td>Offline mid-story</td><td>replay from Room cache if present, else retry</td><td><span class="own o-and">ANDROID</span></td></tr>
     <tr><td>Share bitmap scales wrong on odd devices</td><td>fixed 1080×1920 target (not device-scaled) — avoid the report-card 0.65–1.1 heuristic bug</td><td><span class="own o-and">ANDROID</span></td></tr>
-    <tr><td><code>Students.class</code> stale (shows last year’s class)</td><td>BI confirms yearly update; else use current snapshot + note</td><td><span class="own o-bi">BI</span></td></tr>
+    <tr><td><code>Students.class</code> stale (shows last year’s class)</td><td>use the current class snapshot</td><td><span class="own o-prod">US</span></td></tr>
   </table>
   <p class="note"><b>Rule of thumb for “who adds the case”:</b> bad <b>data</b> → DAG (<code>t10</code> gate is the backstop). Missing-but-valid data → <b>empty-state UI</b> (Android). Not-eligible / not-ready → <b>API code</b> (Backend). Every edge case above maps to exactly one of these three.</p>
 </section>
@@ -787,18 +787,18 @@ getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</
   <h2>6 · Data inventory &amp; status</h2>
   <div class="legend" style="font-size:12px;display:flex;gap:14px;flex-wrap:wrap;margin:4px 0 8px">
     <span><span class="pill p-have">HAVE</span> in datafuse</span><span><span class="pill p-build">BUILD</span> compute</span>
-    <span><span class="pill p-pipe">PIPE</span> service DB → warehouse</span><span><span class="pill p-gap">VERIFY</span> BI first</span>
+    <span><span class="pill p-pipe">PIPE</span> service DB → warehouse</span><span><span class="pill p-gap">VERIFY</span> confirm first</span>
   </div>
   <table>
     <tr><th>Field</th><th>Source (table.column)</th><th>Location</th><th>Status</th><th>Owner</th></tr>
     <tr><td>First name</td><td><code>Students.fist_name</code></td><td>datafuse</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-dag">DAG</span></td></tr>
-    <tr><td>Class / group</td><td><code>Students.class</code>,<code>.study_group</code></td><td>datafuse</td><td><span class="pill p-gap">VERIFY</span></td><td><span class="own o-bi">BI</span></td></tr>
+    <tr><td>Class / group</td><td><code>Students.class</code>,<code>.study_group</code></td><td>datafuse</td><td><span class="pill p-gap">VERIFY</span></td><td><span class="own o-prod">US</span></td></tr>
     <tr><td>Years with Shikho</td><td><code>Transactions</code></td><td>datafuse</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-dag">DAG</span></td></tr>
     <tr><td>Total study time + by type/month</td><td><code>user_activity_duration_agg.*_duration</code></td><td>datafuse</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-dag">DAG</span></td></tr>
     <tr><td>Video minutes / count</td><td><code>recorded_/animated_videos_duration|count</code></td><td>datafuse</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-dag">DAG</span></td></tr>
     <tr><td>Active dates / count</td><td><code>user_activity_duration_agg.activity_date</code></td><td>datafuse</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-dag">DAG</span></td></tr>
     <tr><td>+ AI / QR active days</td><td><code>gen_ai_conversations</code>,<code>qr_scan_logs</code></td><td>service DB</td><td><span class="pill p-pipe">PIPE</span></td><td><span class="own o-be">DATA-ENG</span></td></tr>
-    <tr><td>+ eBook active days</td><td><code>attachment_view_logs.resource_type</code>?</td><td>service DB</td><td><span class="pill p-gap">VERIFY</span></td><td><span class="own o-bi">BI</span></td></tr>
+    <tr><td>+ eBook active days</td><td><code>attachment_view_logs.resource_type</code>?</td><td>service DB</td><td><span class="pill p-gap">VERIFY</span></td><td><span class="own o-prod">US</span></td></tr>
     <tr><td>Longest streak</td><td>derived from active dates</td><td>DAG</td><td><span class="pill p-build">BUILD</span></td><td><span class="own o-dag">DAG</span></td></tr>
     <tr><td>Classes joined / held / rate</td><td><code>student_attendees</code>⋈<code>lessons</code></td><td>datafuse</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-dag">DAG</span></td></tr>
     <tr><td>Favourite teacher</td><td><code>teacher_attendees</code>⋈<code>Teachers</code></td><td>datafuse</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-dag">DAG</span></td></tr>
@@ -806,16 +806,16 @@ getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</
     <tr><td><b>Best / strongest subject (primary)</b></td><td><code>mcq_user_chapter_daily</code> accuracy by <code>subject_name</code> (≥ min questions; filter “orientation”)</td><td>datafuse</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-dag">DAG</span></td></tr>
     <tr><td>Weakest subject</td><td>same table, lowest accuracy</td><td>datafuse</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-dag">DAG</span></td></tr>
     <tr><td>Best subject by exam (CEO ask)</td><td><code>model_test_session</code> / live-exam by subject</td><td>service→agg</td><td><span class="pill p-pipe">PIPE</span></td><td><span class="own o-be">DATA-ENG</span></td></tr>
-    <tr><td>Study time by subject (optional slide)</td><td>3-source time rebuild</td><td>datafuse</td><td><span class="pill p-build">BUILD</span></td><td><span class="own o-dag">DAG</span>+<span class="own o-bi">BI</span></td></tr>
+    <tr><td>Study time by subject (optional slide)</td><td>3-source time rebuild</td><td>datafuse</td><td><span class="pill p-build">BUILD</span></td><td><span class="own o-dag">DAG</span>+<span class="own o-prod">US</span></td></tr>
     <tr><td>Improvement over the year</td><td>1st-half vs 2nd-half accuracy / activity</td><td>datafuse</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-dag">DAG</span></td></tr>
-    <tr><td>History / loyalty (returning students)</td><td>multi-year totals (⚠ tables start 2024)</td><td>datafuse</td><td><span class="pill p-gap">VERIFY</span></td><td><span class="own o-bi">BI</span></td></tr>
+    <tr><td>History / loyalty (returning students)</td><td>multi-year totals (⚠ tables start 2024)</td><td>datafuse</td><td><span class="pill p-gap">VERIFY</span></td><td><span class="own o-prod">US</span></td></tr>
     <tr><td>Course paid (low-activity fallback)</td><td><code>Courses</code>/<code>programs.title</code></td><td>datafuse</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-dag">DAG</span></td></tr>
     <tr><td>Biggest day / weekday</td><td><code>user_activity_duration_agg</code> by day/weekday</td><td>datafuse</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-dag">DAG</span></td></tr>
-    <tr><td>Time-of-day split (night owl)</td><td><code>datafuse.user_activity_agg</code></td><td>datafuse</td><td><span class="pill p-gap">VERIFY</span></td><td><span class="own o-bi">BI</span></td></tr>
+    <tr><td>Time-of-day split (night owl)</td><td><code>datafuse.user_activity_agg</code></td><td>datafuse</td><td><span class="pill p-gap">VERIFY</span></td><td><span class="own o-prod">US</span></td></tr>
     <tr><td>Performance / exam score</td><td><code>results-reporting</code> (class%×0.5+exam%×0.5)</td><td>analytics svc</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-be">BACKEND</span></td></tr>
     <tr><td>Tier badges</td><td><code>wrap_tier_config</code></td><td>DAG+config</td><td><span class="pill p-build">BUILD</span></td><td><span class="own o-prod">PRODUCT</span>+<span class="own o-dag">DAG</span></td></tr>
     <tr><td>Gamification badges</td><td><code>StudentBadges</code></td><td>service DB</td><td><span class="pill p-pipe">PIPE</span></td><td><span class="own o-be">DATA-ENG</span></td></tr>
-    <tr><td>Learner type (stamp)</td><td><code>wrap_type_rule</code></td><td>DAG+config</td><td><span class="pill p-gap">VERIFY</span></td><td><span class="own o-bi">BI</span>+<span class="own o-prod">PRODUCT</span></td></tr>
+    <tr><td>Learner type (stamp)</td><td><code>wrap_type_rule</code></td><td>DAG+config</td><td><span class="pill p-gap">VERIFY</span></td><td><span class="own o-prod">US</span>+<span class="own o-prod">PRODUCT</span></td></tr>
     <tr><td>Share short URL</td><td><code>public-report-card</code> + Mask</td><td>analytics svc</td><td><span class="pill p-have">HAVE</span></td><td><span class="own o-be">BACKEND</span></td></tr>
   </table>
   <p class="note"><b>Now fully read.</b> The complete SC-1737 (retrieved past the API truncation) is folded in above. The key unlock: <b>“best subject” no longer needs the fragile time-rebuild</b> — the spec itself derives strongest/weakest subject from <code>mcq_user_chapter_daily</code> accuracy by <code>subject_name</code>, a subject-native column that is <span class="pill p-have">HAVE</span>. That removes the single biggest BUILD risk. Remaining non-green are only enhancements/additives: exam-by-subject (PIPE), AI/QR days (PIPE), multi-year history (VERIFY) — none block the core deck.</p>
@@ -823,22 +823,21 @@ getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</
 
 <!-- ============ TAB 7 DECISIONS ============ -->
 <section class="panel" id="t7">
-  <h2>7 · Decisions, ownership &amp; phasing</h2>
+  <h2>7 · Decisions</h2>
 
-  <h3>7.0 Risk elimination — why the three “unknowns” no longer block the build</h3>
-  <p class="lead">A Principal-level plan doesn’t wait on every unknown; it makes decisions that are <b>correct under every outcome</b>. Each former blocker has a design that ships whatever BI finds, plus the query to confirm and the branch per result.</p>
+  <h3>7.1 Key design choices (these remove the three unknowns)</h3>
+  <p class="lead">Three choices make the design <b>correct under every outcome</b>, so the open numbers only need tuning, never a go/no-go.</p>
   <div class="dec"><b>R1 · Learner-type distribution → cohort-relative assignment, even by construction.</b>
     <ul>
       <li><b>Design:</b> per student, z-score each axis (rhythm = active-days/week · clock = night share · method = active-vs-video · focus = top-subject share · intensity = total study time). Stamp = <b>the axis where the student is furthest from the cohort median</b>. Because it’s relative, stamps spread ~evenly no matter how skewed any single raw metric is.</li>
-      <li><b>Confirm (BI, 1 query):</b> z-score all students → arg-max axis → <code>GROUP BY</code> counts.</li>
-      <li><b>Branches:</b> even → ship · one axis still dominates → drop it from the arg-max set (config) · all flat → fall back to a 2-tier intensity stamp. <b>All three ship on time.</b></li>
+      <li><b>Branches:</b> even spread → ship · one axis still dominates → drop it from the arg-max set (config) · all flat → fall back to a 2-tier intensity stamp. <b>All three ship on time.</b></li>
     </ul>
   </div>
   <div class="dec"><b>R2 · Best subject → subject-native accuracy, not time reconstruction.</b>
     <ul>
       <li><b>Design:</b> “বছরের বিষয় / strongest subject” = highest accuracy in <code>mcq_user_chapter_daily</code> grouped by <code>subject_name</code> (filter “orientation”, require ≥ min questions) — a <b>real subject column</b>, no 3-log rebuild, no sum reconciliation. Exactly SC-1737’s “Subjects and chapters” method.</li>
       <li><b>Time-by-subject</b> (the fragile rebuild) is demoted to an <b>optional</b> slide, off the marksheet’s critical path.</li>
-      <li><b>Confirm (BI):</b> accuracy-by-subject returns a non-null top subject for ≥ 95% of students. <b>Branch:</b> below 95% → fall back to “most-practised subject” (question count), still subject-native.</li>
+      <li><b>Fallback:</b> a student with too few graded questions for a reliable top subject → use “most-practised subject” (question count), still subject-native.</li>
     </ul>
   </div>
   <div class="dec"><b>R3 · AI/QR active days → additive, never load-bearing.</b>
@@ -847,30 +846,9 @@ getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</
       <li><b>Branch:</b> not piped by 10 Dec → number is class/quiz/video-based; feature unaffected.</li>
     </ul>
   </div>
-  <p class="rec"><b>Net:</b> after R1–R3, BI’s numbers change only the <i>tuning</i> (which axis, what min-questions), never <i>whether we ship</i>. That is the move from “blocked on verification” to build-ready.</p>
+  <p class="rec"><b>Net:</b> after R1–R3, the only thing left to settle is the numbers (which axis dominates, the min-questions cut) — never <i>whether we ship</i>.</p>
 
-  <h3>7.1 Ownership matrix (who does what)</h3>
-  <table>
-    <tr><th>Team</th><th>Owns</th></tr>
-    <tr><td><span class="own o-bi">BI</span></td><td>G1 learner-type distribution · G2 subject-sum validation · G4 cohort + <code>Students.class</code> freshness · badge-threshold sanity</td></tr>
-    <tr><td><span class="own o-be">DATA-ENG</span></td><td><code>wrap_2026</code> table + config tables · DAG t1–t10 · GET-source pipes (AI/QR/model-test) · QA gate</td></tr>
-    <tr><td><span class="own o-be">BACKEND</span></td><td><code>getYearWrap</code> + <code>getIfYearWrapExist</code> (GraphQL) · reuse share · eligibility codes</td></tr>
-    <tr><td><span class="own o-and">ANDROID</span></td><td>home banner · extend <code>:feature:quarterreview</code> · slides + stamp + marksheet · capture/share · states · Room cache · events</td></tr>
-    <tr><td><span class="own o-prod">PRODUCT</span></td><td>tier thresholds · learner-type rules · slide order · cut-off date · enhancement cut · copy sign-off</td></tr>
-    <tr><td><span class="own o-des">DESIGN</span></td><td>Direction-B visuals · stamp animation · marksheet card · badge art · Fresh-Start + skeleton</td></tr>
-    <tr><td><span class="own o-prod">BRAND</span></td><td>Bangla strings per tier/type/slide</td></tr>
-  </table>
-
-  <h3>7.2 Gaps — now de-risked by design (§7.0); verification confirms, not blocks</h3>
-  <table>
-    <tr><th>#</th><th>Gap</th><th>Why it blocks</th><th>Owner</th></tr>
-    <tr><td>G1</td><td>Learner-type distribution</td><td>if one type dominates, the signature slide is theatre</td><td><span class="own o-bi">BI</span></td></tr>
-    <tr><td>G2</td><td>Subject-time rebuild sums right</td><td>gates marksheet “বছরের বিষয়” + best-subject</td><td><span class="own o-bi">BI</span>+<span class="own o-be">DATA-ENG</span></td></tr>
-    <tr><td>G3</td><td>AI/QR days pipeable by ~10 Dec</td><td>১৮৭-days &amp; streak include them</td><td><span class="own o-be">DATA-ENG</span></td></tr>
-    <tr><td>G4</td><td>Paid cohort + class freshness</td><td>denominator + cover correctness</td><td><span class="own o-bi">BI</span></td></tr>
-  </table>
-
-  <h3>7.3 Decisions</h3>
+  <h3>7.2 Decision log</h3>
   <table>
     <tr><th>#</th><th>Decision</th><th>Recommendation</th></tr>
     <tr><td>D1</td><td>Story rendering</td><td><b>Extend native <code>:feature:quarterreview</code></b> (it already exists) — not WebView, not greenfield</td></tr>
@@ -883,20 +861,7 @@ getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</
     <tr><td>D8</td><td>Release gate</td><td>Submit to Play Store by ~18 Dec; a remote kill-switch + server <code>is_available</code> control go-live</td></tr>
   </table>
 
-  <h3>7.4 Phasing</h3>
-  <table>
-    <tr><th>Phase</th><th>Window</th><th>Deliverable</th></tr>
-    <tr><td>P0 de-risk</td><td>now → 1wk</td><td>BI closes G1/G2/G4 · cut-off fixed · contract §2.4 frozen · thresholds drafted</td></tr>
-    <tr><td>P1 pipeline</td><td>1–3wk</td><td><code>wrap_2026</code> + DAG t1–t10 nightly, QA gate green</td></tr>
-    <tr><td>P2 backend</td><td>parallel</td><td><code>getYearWrap</code>/<code>getIfYearWrapExist</code> + reuse share</td></tr>
-    <tr><td>P3 android</td><td>2–5wk</td><td>banner + extended quarterreview + stamp + marksheet + states + events</td></tr>
-    <tr><td>P4 harden</td><td>wk before</td><td>outlier QA on real cohort, device-matrix QA, dark-launch to staff, events + dashboard verified</td></tr>
-    <tr><td>Release</td><td>by ~18 Dec</td><td><b>submit APK to Play Store</b> (review buffer); app ships dark, gated by <code>is_available</code></td></tr>
-    <tr><td>Launch</td><td>26–31 Dec</td><td>flip <code>is_available</code>; on-call + kill-switch ready</td></tr>
-  </table>
-  <div class="rec"><b>Single most important next action:</b> G1 — BI runs the learner-type distribution on the real 2026 cohort. Cheap, uses data we already have, and it alone can validate or kill the “Wrap vs last-year’s-review” premise. Everything else runs in parallel.</div>
-
-  <h3>7.5 Success metrics &amp; targets</h3>
+  <h3>7.3 Success metrics &amp; targets</h3>
   <table>
     <tr><th>Metric</th><th>Definition</th><th>Launch target (proposed)</th></tr>
     <tr><td>Open rate</td><td>opened ÷ qualified paid students</td><td>≥ 45%</td></tr>
@@ -906,14 +871,6 @@ getIfYearWrapExist(year: 2026): Boolean     <span class="c">// → banner gate</
   </table>
   <p class="src">Instrumented by the Tab-3 events. Targets are proposed baselines to beat — set the real OKR with growth. <b>A/B at launch:</b> banner copy A vs C, and the learner-type slide on/off, to prove the personal hooks drive opens &amp; finishes.</p>
 
-  <h3>7.6 Launch readiness, ops &amp; QA</h3>
-  <table>
-    <tr><th>Area</th><th>Requirement</th></tr>
-    <tr><td>App-release timing</td><td><b>The hard gate.</b> The native build must be in the release train and submitted to <b>Play Store by ~18 Dec</b> (review buffer) to be live 26 Dec. Because <code>is_available</code> is the go-live switch, the app can ship earlier “dark”.</td></tr>
-    <tr><td>Kill-switch</td><td>A remote flag (config/splash) to hide the banner instantly if something breaks at launch — independent of the per-student <code>is_available</code>.</td></tr>
-    <tr><td>Monitoring</td><td>Launch-day dashboard on the funnel events (open → finish → share) + API error rate + share failures; a named on-call owner for 26–31 Dec.</td></tr>
-    <tr><td>QA</td><td>Device matrix (low-end + common Android versions); test the <b>Fresh-Start</b> and <b>empty</b> paths, offline replay, and the share PNG on a low-RAM device. The module has ~no tests today — add instrumentation around the new components.</td></tr>
-  </table>
 </section>
 
 <p class="src" style="margin-top:34px">Example numbers are illustrative. <code>:feature:quarterreview</code>, <code>:feature:home</code>, the <code>Capturable</code> share and the analytics endpoints exist today; <code>wrap_2026</code>, the DAG and <code>getYearWrap</code> are to be built.</p>
