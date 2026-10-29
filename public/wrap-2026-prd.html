@@ -87,6 +87,8 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
 .acard code{font-size:11.5px}
 .acard.data{background:var(--blue-bg);border-color:var(--blue)}.acard.data .h{color:var(--blue)}
 .acard.logic{background:var(--purple-bg);border-color:var(--purple)}.acard.logic .h{color:var(--purple)}
+.scontext{background:var(--sunken);border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:12.8px;color:var(--ink-2);line-height:1.55}
+.scontext b{color:var(--navy)}
 .acard.android{background:var(--green-bg);border-color:var(--green)}.acard.android .h{color:var(--green)}
 .acard.backend{background:var(--amber-bg);border-color:var(--amber)}.acard.backend .h{color:var(--amber)}
 .mermaid{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0;text-align:center}
@@ -277,6 +279,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
     <div class="ashot"><img src="shots/b_00_home_full.jpg"><div class="lab">Home banner</div><div class="scap"><b>Entry hook.</b> Everything hinges on this one tap — a personal number + the glowing notebook pull the eye. <b>Mascot:</b> the bird peeks in; one-time shimmer on first load.</div></div>
     <div class="arrow">➜</div>
     <div class="acards">
+      <div class="scontext"><b>On this screen:</b> the home entry card — a notebook-themed banner with the title, a one-line teaser, and a “খাতা খোলো” button that opens the whole story.</div>
       <div class="acard data"><span class="h">Data needed</span><b>Fields:</b> <code>is_available</code> (bool) + paid status. <b>Gate:</b> render only if the student is paid <b>AND</b> <code>wrap_2026.is_available = true</code>. <b>Compute:</b> none. <b>Window:</b> n/a — it’s a show/hide flag.</div>
       <div class="acard android"><span class="h">Android — where</span><code>:feature:home</code> → <code>PaidUserScreen.kt</code>. Add <code>WrapBannerCard</code> (mirror <code>ReportCardStatusWidget</code>); event <code>OnYearWrapClicked</code> → new <code>@Serializable WrapRoute</code> in <code>HomeScreenNavigation.kt</code>.</div>
       <div class="acard backend"><span class="h">Backend — where</span>GraphQL <code>getIfYearWrapExist</code> (mirror <code>GetIfYearlyReviewExist</code>) → reads <code>wrap_2026.is_available</code>.</div>
@@ -301,6 +304,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
     <div class="ashot"><img src="shots/b_03_studytime.png"><div class="lab">2 · Study time</div><div class="scap"><b>Pride &amp; scale.</b> “১৪২ ঘণ্টা = ২৪ স্কুল দিন” makes the effort feel huge. <b>Mascot:</b> the bird points proudly; the number counts up.</div></div>
     <div class="arrow">➜</div>
     <div class="acards">
+      <div class="scontext"><b>On this screen:</b> total hours studied all year, turned into “≈ N school days”, with a day-mark strip and the “÷6” maths — the first big “I did a lot” moment.</div>
       <div class="acard data"><span class="h">Data needed</span><b>Formula:</b> <code>total_study_seconds</code> = SUM(all <code>*_duration</code> columns in <code>user_activity_duration_agg</code>); <code>school_days</code> = round(total ÷ 21600) [6h×3600]. <b>Also:</b> <code>study_by_type_seconds</code> (7 types) + <code>study_by_month_seconds[12]</code> for the secondary visuals. <b>Window:</b> 2026-01-01 → cut-off. <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span><code>:feature:quarterreview</code> → <code>StudyTimeComponent</code> (reuse <code>YearlyQuarterHourComponent</code> layout).</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.stats.total_study_seconds</code>, <code>study_school_days</code> · DAG <code>t2_engagement</code>.</div>
@@ -313,6 +317,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
     <div class="ashot"><img src="shots/b_04_attendance.png"><div class="lab">3 · Attendance</div><div class="scap"><b>Reward &amp; status.</b> The হাজিরা sheet fills and a “First Bencher” title lands. <b>Mascot:</b> the bird celebrates; ticks fill, badge drops in.</div></div>
     <div class="arrow">➜</div>
     <div class="acards">
+      <div class="scontext"><b>On this screen:</b> a live-class attendance register (হাজিরা খাতা) — classes joined vs held as a tick grid, the total (“৬৩/৭২”), and an attendance-title badge.</div>
       <div class="acard data"><span class="h">Data needed</span><b>joined</b> = count <code>student_attendees</code> where stay ≥ min (10 min OR 30% of class length — a setting); <b>held</b> = count <code>lessons</code> where <code>content_type=LiveClass</code> by <code>academic_program_id</code>, from enrolment date; <b>rate</b> = joined÷held (clamp ≤ 1). <b>Join:</b> on <code>content_id</code> (or <code>room_id</code> if empty). <b>Badge:</b> First Bencher = attendance tier in <code>wrap_tier_config</code>. <b>Window:</b> 2026→cut-off. <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span>reuse existing <code>LiveClassReviewComponent</code>, re-skin to হাজিরা grid.</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.stats.live_class{joined,held,rate}</code> + <code>badges[]</code> · DAG <code>t3_attendance</code> + <code>t7</code>.</div>
@@ -325,6 +330,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
     <div class="ashot"><img src="shots/b_05_quiz.png"><div class="lab">4 · Quizzes</div><div class="scap"><b>Momentum.</b> A rising graph + “আর ২টা হলেই চ্যাম্পিয়ন” pulls them back. <b>Mascot:</b> the bird cheers; the line draws upward.</div></div>
     <div class="arrow">➜</div>
     <div class="acards">
+      <div class="scontext"><b>On this screen:</b> how many quizzes the student did across the year, drawn as a rising month-by-month graph, with a “কুইজ যোদ্ধা” badge and a nudge toward the next milestone.</div>
       <div class="acard data"><span class="h">Data needed</span><b>completed</b> = <code>mcq_user_quiz_daily.quiz_completed</code> (cross-check <code>user_activity_duration_agg.quiz_count</code>); <b>by_month[12]</b> = cumulative per month; <b>questions / correct / hard</b> = <code>mcq_user_chapter_daily.total_questions / total_correct / hard_question_correct</code>. <b>Badge:</b> কুইজ যোদ্ধা from config. <b>Window:</b> 2026→cut-off. <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span>new <code>QuizReviewComponent</code> (reuse <code>WeeklyReviewComponent</code> chart pattern).</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.stats.quiz</code> + Quiz-Warrior badge · DAG <code>t4_quiz</code>.</div>
@@ -337,6 +343,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
     <div class="ashot"><img src="shots/b_06_video.png"><div class="lab">5 · Video</div><div class="scap"><b>Relatable scale.</b> “২,৮৬০ মিনিট = ২৪টা সিনেমা” — a scale a teen feels. <b>Mascot:</b> the bird with a laptop; film cells light up.</div></div>
     <div class="arrow">➜</div>
     <div class="acards">
+      <div class="scontext"><b>On this screen:</b> total minutes of video watched, shown as “≈ N movies” on a film-strip, with a “ভিডিও ম্যারাথনার” badge.</div>
       <div class="acard data"><span class="h">Data needed</span><b>minutes</b> = (<code>recorded_videos_duration</code> + <code>animated_videos_duration</code>) ÷ 60; <b>count</b> = <code>recorded_videos_count</code> + <code>animated_videos_count</code>; <b>movies</b> = minutes ÷ 120. <b>Badge:</b> ভিডিও ম্যারাথনার from config. <b>Window:</b> 2026→cut-off. <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span>new <code>VideoReviewComponent</code> (film-strip; same pager slide pattern).</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.stats.video{minutes,count}</code> + Video-Marathoner badge · DAG <code>t2</code>.</div>
@@ -349,6 +356,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
     <div class="ashot"><img src="shots/b_08_learnertype.png"><div class="lab">6 · Learner type</div><div class="scap"><b>Identity — the signature moment.</b> Tap to stamp their study personality: the “I learned something about myself” beat. <b>Mascot:</b> the bird holds the stamp; it drops on tap, days count to ১৮৭.</div></div>
     <div class="arrow">➜</div>
     <div class="acards">
+      <div class="scontext"><b>On this screen:</b> a tap-to-reveal rubber-stamp naming the student’s study personality, plus total active days, the weekly average, an activity-grid calendar, and the longest streak.</div>
       <div class="acard data"><span class="h">Data needed</span>active dates + streak + <b>cohort-relative axis scores</b> → stamp (self-balancing; see Tab 7 §7.1) <span class="pill p-build">BUILD</span></div>
       <div class="acard android"><span class="h">Android — where</span>reuse <code>LongestStreakComponent</code> + new <code>LearnerStampComponent</code> (tap-to-stamp; activity grid).</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>payload.learner_type</code> + <code>stats.active_days/avg_days_per_week/longest_streak/active_dates</code> · DAG <code>t5</code>+<code>t7</code>.</div>
@@ -361,6 +369,7 @@ ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
     <div class="ashot"><img src="shots/b_09_marksheet.png"><div class="lab">7 · Marksheet (share)</div><div class="scap"><b>Payoff &amp; share.</b> Everything becomes one proud, shareable card — the viral moment. <b>Mascot:</b> the bird holds a certificate; rows stamp in.</div></div>
     <div class="arrow">➜</div>
     <div class="acards">
+      <div class="scontext"><b>On this screen:</b> the shareable Shikho marksheet — every stat as a result row, the earned badges, a “নাম লুকাও” privacy toggle, and a Share button.</div>
       <div class="acard data"><span class="h">Data needed</span>all stats + <code>badges[]</code> + <code>top_subject</code> (from quiz/exam accuracy by <code>subject_name</code> — subject-native, no time-rebuild) <span class="pill p-have">HAVE</span></div>
       <div class="acard android"><span class="h">Android — where</span>new <code>MarksheetShareComponent</code>; reuse <code>ReviewBottomInfoComponent</code> + <code>Capturable</code>→<code>shareBitmap()</code> (already in module); নাম-লুকাও toggle swaps name/rank layer before capture.</div>
       <div class="acard backend"><span class="h">Backend — where</span><code>POST /report-card/share</code> (reuse ST-25781) → <code>short_url</code> via Mask · subject from DAG <code>t6</code>.</div>
