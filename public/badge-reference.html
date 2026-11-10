@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrap 2026 — Badge reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#F9F8F5;--paper:#FFFFFF;--sunken:#F1EFEA;--ink:#1A1D26;--ink-2:#4B5060;--ink-3:#7C8090;
+    --line:#E3E0D8;--line-2:#EEECE6;--navy:#354894;--magenta:#C2257F;--green:#2C7A4B;--green-bg:#E3F1E8;
+    --amber:#9A6A06;--amber-bg:#FAEFD3;--blue:#2563A8;--blue-bg:#E7ECFB;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);padding:26px 18px 90px;
+    font-family:"Hind Siliguri","Noto Sans Bengali",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:15px;line-height:1.6}
+  .wrap{max-width:900px;margin:0 auto}
+  h1{font-size:22px;margin:0 0 4px}
+  .sub{color:var(--ink-2);font-size:13.5px;margin:0 0 22px;max-width:76ch}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:16px 0}
+  .chead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 4px;flex-wrap:wrap}
+  .chead h2{font-size:16px;margin:0;color:var(--navy)}
+  .cnote{font-size:12.5px;color:var(--ink-2);margin:2px 0 12px}
+  .copy{appearance:none;border:1px solid var(--navy);background:var(--navy);color:#fff;font-weight:700;
+    font-size:12.5px;padding:7px 15px;border-radius:999px;cursor:pointer;white-space:nowrap;font-family:inherit}
+  .copy:hover{background:#2a3a7a}.copy.ok{background:var(--green);border-color:var(--green)}
+  table{border-collapse:collapse;width:100%;font-size:12.8px;background:var(--paper);
+    border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  th,td{text-align:left;padding:8px 11px;border-bottom:1px solid var(--line-2);vertical-align:top}
+  th{background:#EEF0F7;color:var(--navy);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em}
+  tr:last-child td{border-bottom:0}
+  .bn{font-weight:600}
+  .grp td{background:var(--sunken);font-weight:700;font-size:10.5px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.04em}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;
+    background:var(--sunken);padding:1px 6px;border-radius:4px;color:var(--navy)}
+  .who{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .who.top{background:var(--green-bg);color:var(--green)}
+  .who.mid{background:var(--blue-bg);color:var(--blue)}
+  .who.low{background:var(--amber-bg);color:var(--amber)}
+  .who.all{background:#FCE3F1;color:var(--magenta)}
+  .tag{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:999px;
+    background:var(--amber-bg);color:var(--amber);margin-left:5px}
+  pre{background:#1E2230;color:#E7E9F0;border-radius:9px;padding:15px 16px;overflow-x:auto;
+    font:12.2px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:0;white-space:pre-wrap;word-break:break-word}
+  .pre-bn{font-family:"Hind Siliguri","Noto Sans Bengali",ui-monospace,monospace}
+  .hint{font-size:12px;color:var(--ink-3);margin:10px 0 0}
+  ol.rules{margin:8px 0 0;padding-left:20px}ol.rules li{margin:5px 0;font-size:13px}
+  ol.rules b{color:var(--ink)}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:#fff;
+    font-size:13px;padding:9px 16px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Wrap 2026 — Badge reference</h1>
+  <p class="sub">Two badge systems. <b>A</b> = badges the Wrap computes. <b>B</b> = learning badges the gamification service already awards (Wrap only reads). <b>C</b> = the curation rules that guarantee <b>every student type — top, middle, and low-activity — earns at least one badge and nobody sees an empty shelf.</b> Bangla renders here; the <b>Copy</b> buttons give clean UTF-8 text.</p>
+
+  <!-- A -->
+  <div class="card">
+    <div class="chead">
+      <h2>A · Wrap badges — ladders (we compute these)</h2>
+      <button class="copy" data-key="wrap">Copy table</button>
+    </div>
+    <p class="cnote">Each metric is a <b>ladder</b> with a low <b>starter rung</b>, so a barely-active student still lands on a badge — plus two universal badges every eligible student can reach. <span class="who all">ALL</span> universal · <span class="who low">LOW</span> low-activity · <span class="who mid">MID</span> middle · <span class="who top">TOP</span> high achiever.</p>
+    <table>
+      <tr><th>Badge (label_bn)</th><th>Metric</th><th>Rule (tier)</th><th>Reaches</th></tr>
+      <tr class="grp"><td colspan="4">Universal — everyone lands here</td></tr>
+      <tr><td><span class="bn">যাত্রা শুরু</span> (Journey Begun)</td><td><code>active_days</code></td><td>&ge; 1 active day<span class="tag">proposed</span></td><td><span class="who all">ALL</span></td></tr>
+      <tr><td><span class="bn">শিখোর সাথী</span> (Shikho Companion)</td><td><code>years_with_shikho</code></td><td>&ge; 2 years<span class="tag">proposed</span></td><td><span class="who all">LOYALTY</span></td></tr>
+      <tr class="grp"><td colspan="4">Attendance ladder</td></tr>
+      <tr><td><span class="bn">ক্লাসে পা রাখা</span> (First Class)</td><td><code>live_class.joined</code></td><td>&ge; 1 class<span class="tag">proposed</span></td><td><span class="who low">LOW</span></td></tr>
+      <tr><td><span class="bn">নিয়মিত উপস্থিতি</span> (Regular)</td><td><code>attendance_rate</code></td><td>0.60&ndash;0.85</td><td><span class="who mid">MID</span></td></tr>
+      <tr><td><span class="bn">ফার্স্ট বেঞ্চার</span> (First Bencher)</td><td><code>attendance_rate</code></td><td>&ge; 0.85 (85%)</td><td><span class="who top">TOP</span></td></tr>
+      <tr class="grp"><td colspan="4">Quiz ladder</td></tr>
+      <tr><td><span class="bn">কুইজের সূচনা</span> (Quiz Starter)</td><td><code>quiz_completed</code></td><td>&ge; 1 quiz<span class="tag">proposed</span></td><td><span class="who low">LOW</span></td></tr>
+      <tr><td><span class="bn">কুইজ যোদ্ধা</span> (Quiz Warrior)</td><td><code>quiz_completed</code></td><td>&ge; 100 quizzes</td><td><span class="who top">TOP</span></td></tr>
+      <tr class="grp"><td colspan="4">Video ladder</td></tr>
+      <tr><td><span class="bn">ভিডিও শুরু</span> (Video Starter)</td><td><code>video_minutes</code></td><td>&ge; 10 min<span class="tag">proposed</span></td><td><span class="who low">LOW</span></td></tr>
+      <tr><td><span class="bn">ভিডিও ম্যারাথনার</span> (Video Marathoner)</td><td><code>video_minutes</code></td><td>&ge; 1500 min (25h)</td><td><span class="who top">TOP</span></td></tr>
+      <tr class="grp"><td colspan="4">Streak ladder</td></tr>
+      <tr><td><span class="bn">ধারাবাহিকতা</span> (Getting Consistent)</td><td><code>longest_streak</code></td><td>&ge; 3 days<span class="tag">proposed</span></td><td><span class="who mid">MID</span></td></tr>
+      <tr><td><span class="bn">স্ট্রিক মাস্টার</span> (Streak Master)</td><td><code>longest_streak</code></td><td>&ge; 21 days</td><td><span class="who top">TOP</span></td></tr>
+    </table>
+    <p class="hint">Mechanism: a badge is earned when the metric clears a threshold row in <code>wrap_tier_config</code>; DAG task <code>t7</code> assigns the highest rung cleared per ladder. All numbers are config — Product retunes with no app release.</p>
+  </div>
+
+  <!-- C -->
+  <div class="card">
+    <div class="chead">
+      <h2>C · Every student earns something — curation rules</h2>
+      <button class="copy" data-key="curation">Copy rules</button>
+    </div>
+    <p class="cnote">The badge shelf must <b>only ever add pride, never highlight absence.</b> These rules make that true for all ~20–30k students.</p>
+    <ol class="rules">
+      <li><b>Everyone earns ≥ 1.</b> The starter rungs clear at ~1, so any student who studied even one day gets <span class="bn">যাত্রা শুরু</span>. A Fresh-Start student is never badge-less.</li>
+      <li><b>Show the top rung per ladder, 3–4 badges max.</b> Don't dump the whole list — one badge per metric (the highest cleared), ordered achievement-first.</li>
+      <li><b>Never show absence.</b> No "0 badges", no empty shelf, no greyed / locked "not earned" badges shown to low performers.</li>
+      <li><b>Loyalty is unconditional.</b> Returning students always get <span class="bn">শিখোর সাথী</span>, independent of 2026 activity.</li>
+      <li><b>If still zero</b> (edge case), fall back to the universal participation badge — the shelf is never blank.</li>
+    </ol>
+    <p class="cnote" style="margin-top:14px"><b>Which badges each student type sees:</b></p>
+    <table>
+      <tr><th>Student type</th><th>Badges surfaced</th></tr>
+      <tr><td><span class="who top">TOP</span> high activity &amp; results</td><td>First Bencher · Quiz Warrior · Video Marathoner · Streak Master + top gamification (Wisdom 100%, Speed&amp;Accuracy)</td></tr>
+      <tr><td><span class="who mid">MID</span> solid effort, mixed results</td><td>Regular · Getting Consistent · mid gamification tiers · any starter rungs reached</td></tr>
+      <tr><td><span class="who low">LOW</span> little activity / Fresh Start</td><td><b>যাত্রা শুরু (always)</b> · First Class / Quiz Starter / Video Starter (whatever they touched) · শিখোর সাথী (if returning) — guaranteed ≥ 1</td></tr>
+    </table>
+  </div>
+
+  <!-- B -->
+  <div class="card">
+    <div class="chead">
+      <h2>B · Learning badges — gamification service (Wrap only reads)</h2>
+      <button class="copy" data-key="learn">Copy logic</button>
+    </div>
+    <pre class="pre-bn" id="learnPre"></pre>
+    <p class="hint">Already awarded live in the <code>gamification</code> service, stored as ArangoDB edges synced to KPI <code>StudentBadges</code>. Only Wrap-side work = the <code>StudentBadges → datafuse</code> pipe = open decision <b>O7</b> (owner Backend, by 10 Dec). Exact badge IDs: <code>gamification/server/badge_map.go</code>.</p>
+  </div>
+
+  <div class="card" style="text-align:center">
+    <button class="copy" data-key="all" style="padding:9px 22px">Copy everything (A + C + B)</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard ✓</div>
+
+<script>
+  var wrapRows = [
+    ['Badge (label_bn)','Metric','Rule (tier)','Reaches'],
+    ['— Universal —','','',''],
+    ['যাত্রা শুরু (Journey Begun)','active_days','>= 1 active day [proposed]','ALL'],
+    ['শিখোর সাথী (Shikho Companion)','years_with_shikho','>= 2 years [proposed]','LOYALTY'],
+    ['— Attendance ladder —','','',''],
+    ['ক্লাসে পা রাখা (First Class)','live_class.joined','>= 1 class [proposed]','LOW'],
+    ['নিয়মিত উপস্থিতি (Regular)','attendance_rate','0.60-0.85','MID'],
+    ['ফার্স্ট বেঞ্চার (First Bencher)','attendance_rate','>= 0.85 (85%)','TOP'],
+    ['— Quiz ladder —','','',''],
+    ['কুইজের সূচনা (Quiz Starter)','quiz_completed','>= 1 quiz [proposed]','LOW'],
+    ['কুইজ যোদ্ধা (Quiz Warrior)','quiz_completed','>= 100 quizzes','TOP'],
+    ['— Video ladder —','','',''],
+    ['ভিডিও শুরু (Video Starter)','video_minutes','>= 10 min [proposed]','LOW'],
+    ['ভিডিও ম্যারাথনার (Video Marathoner)','video_minutes','>= 1500 min (25h)','TOP'],
+    ['— Streak ladder —','','',''],
+    ['ধারাবাহিকতা (Getting Consistent)','longest_streak','>= 3 days [proposed]','MID'],
+    ['স্ট্রিক মাস্টার (Streak Master)','longest_streak','>= 21 days','TOP']
+  ];
+  var wrapTSV = 'A) WRAP BADGES — LADDERS (we compute these)\n' + wrapRows.map(function(r){return r.join('\t');}).join('\n');
+
+  var curation = [
+    'C) BADGE CURATION — EVERY STUDENT EARNS SOMETHING, NOBODY SEES AN EMPTY SHELF',
+    '',
+    'Rules:',
+    '1. Everyone earns >= 1. Starter rungs clear at ~1, so any student who studied even one day gets',
+    '   "যাত্রা শুরু" (Journey Begun). A Fresh-Start student is never badge-less.',
+    '2. Show the top rung per ladder, 3-4 badges max. One badge per metric (highest cleared),',
+    '   ordered achievement-first. Do not dump the full list.',
+    '3. Never show absence. No "0 badges", no empty shelf, no greyed/locked "not earned" badges to low performers.',
+    '4. Loyalty is unconditional. Returning students always get "শিখোর সাথী", independent of 2026 activity.',
+    '5. If still zero (edge case), fall back to the universal participation badge. Shelf is never blank.',
+    '',
+    'Which badges each student type sees:',
+    '- TOP  (high activity & results): First Bencher, Quiz Warrior, Video Marathoner, Streak Master',
+    '                                  + top gamification (Wisdom 100%, Speed&Accuracy).',
+    '- MID  (solid effort, mixed results): Regular, Getting Consistent, mid gamification tiers,',
+    '                                  any starter rungs reached.',
+    '- LOW  (little activity / Fresh Start): যাত্রা শুরু (ALWAYS), First Class / Quiz Starter / Video Starter',
+    '                                  (whatever they touched), শিখোর সাথী (if returning). Guaranteed >= 1.',
+    '',
+    'Principle: the badge shelf only ever ADDS pride, never highlights absence (ties to the',
+    '"every student finishes proud" rule in the Strategy tab).'
+  ].join('\n');
+
+  var learn = [
+    'LEARNING BADGES — CALCULATION LOGIC (source: gamification gRPC service)',
+    'Stored as edges in ArangoDB (student_badge_edges) -> synced to KPI (StudentBadges / userBadges).',
+    'Each is one-time per tier, and (for learning/chapter/exam) SUBJECT-SCOPED.',
+    '',
+    '1) LEARNING COMPLETION BADGE  ("Wisdom")',
+    '   RPC: Gamification/LearningCompletionBadge {UserId, VideoId}',
+    '   Logic: resolve subject from the video (videos -> topics -> chapters -> subject.code);',
+    '          count topics in that subject where topic_progress.progress == 100.',
+    '          percent = 100 * finished / total',
+    '   Tiers (percent): 100 / >=75 / >=50 / >=25 / >=5   (below 5% = no badge)',
+    '   Scope: one-time per (user, subject, tier). Map: wisdomBadgeMap (5->66318 ... 100->91401)',
+    '',
+    '2) CHAPTER TEST COMPLETION BADGE',
+    '   RPC: Gamification/CalculateChapterTestCompletionBadge {ChapterId, UserId}',
+    '   Logic: subject = chapter.Header.Subject.Code;',
+    '          Exam.GetTestExamCompletion(userId, subjectId) -> {TotalExam, TotalTaken}',
+    '          percent = 100 * taken / total',
+    '   Tiers (percent): 100 / >=50 / >=5   (below 5% = no badge)',
+    '   Scope: one-time per (user, subject, tier). Map: testCompletionBadgeMap (5->89923, 50->67251, 100->60096)',
+    '',
+    '3) MODEL & BOARD EXAM COMPLETION BADGE',
+    '   RPC: Gamification/CalculateModelAndBoardExamCompletionBadge {SubjectId, UserId}',
+    '   Logic: Exam.GetBoardExamCompletion + Exam.GetModelExamCompletion; combine both ->',
+    '          percent = 100 * (taken_model + taken_board) / (total_model + total_board)',
+    '   Tiers (percent): 100 / >=50 / >=5',
+    '   Scope: one-time per (user, subject, tier). Map: examCompletionBadgeMap (5->59995, 50->48813, 100->68541)',
+    '',
+    '4) SPEED & ACCURACY BADGE',
+    '   RPC: Gamification/CalculateSpeedAndAccuracyBadges {ExamSessionId, Type}',
+    '   Logic (from exam session ResultSummary):',
+    '          accuracy = 100 * CorrectAns / TotalQuestion',
+    '          Accuracy tiers: ==100 / >=90 / >=85 / >=80 / >=70   (REPEATABLE, count++ each time)',
+    '          IF accuracy tier >= 70: speed = AvgTimeSpentPerQuestion (seconds)',
+    '          Speed tiers (sec/question): <30 / <60 / <90 / <120',
+    '          Below 70% accuracy = no badge at all.',
+    '   Maps: accuracyBadgeMap, speedBadgeMap',
+    '',
+    '5) APP-USAGE TROPHY BADGE  (Dedication = daily, Commitment = monthly)',
+    '   RPC: Gamification/AppUsageTrophyBadgeCalculation {UserId}',
+    '   Logic: sum month activity time (raw_video_usage + smart_note_usage + practice_usage + exam progress),',
+    '          seconds / 60 = minutes; compute a daily total and a monthly total.',
+    '   Daily (Dedication) tiers, minutes:  >=10 / >=20 / >=45 / >=120   (once per calendar day)',
+    '   Monthly (Commitment) tiers, minutes: >=150 / >=300 / >=500 / >=750 (once per calendar month)',
+    '   Timezone: month/day in UTC+6 (Asia/Dhaka). Maps: DedicationBadgeMap, CommitmentBadgeMap',
+    '',
+    '6) POINTS / MILESTONE / LEVEL  (overall, not subject-scoped)',
+    '   Every badge above also adds points; level is derived from TotalPoints:',
+    '   Level tiers: >=1000 -> L2, >=5000 -> L3, >=25000 -> L4, >=100000 -> L5, >=500000 -> L6  (else L1)',
+    '   One-time milestone badge per level. Map: milestoneBadgeMap',
+    '   Single write path: calculateMilestoneBadge() (every badge handler calls it).',
+    '',
+    'NOTE FOR THE WRAP:',
+    '- NOT recomputed by the Wrap. Already awarded live in the gamification service.',
+    '- Wrap only needs them piped: StudentBadges (ArangoDB edges -> KPI) into datafuse, shown on the badges slide.',
+    '- That pipe = open decision O7 (owner Backend, by 10 Dec).',
+    '- Exact badge IDs: gamification/server/badge_map.go. RPC contracts: buffers/protobuff.'
+  ].join('\n');
+
+  var PAYLOADS = { wrap: wrapTSV, curation: curation, learn: learn,
+                   all: wrapTSV + '\n\n\n' + curation + '\n\n\n' + learn };
+
+  document.getElementById('learnPre').textContent = learn;
+
+  function toast(){var t=document.getElementById('toast');t.classList.add('show');setTimeout(function(){t.classList.remove('show');},1500);}
+  function fallbackCopy(txt){
+    var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);
+  }
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var txt=PAYLOADS[btn.getAttribute('data-key')];var label=btn.textContent;
+      var done=function(){btn.textContent='Copied ✓';btn.classList.add('ok');toast();
+        setTimeout(function(){btn.textContent=label;btn.classList.remove('ok');},1600);};
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(done,function(){fallbackCopy(txt);done();});
+      }else{fallbackCopy(txt);done();}
+    });
+  });
+</script>
+</body>
+</html>

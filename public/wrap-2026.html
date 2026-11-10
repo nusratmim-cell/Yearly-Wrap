@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrap 2026 — PRD</title>
+<style>
+:root{
+  color-scheme: light;
+  --ground:#F9F8F5; --paper:#FFFFFF; --sunken:#F1EFEA;
+  --ink:#1A1D26; --ink-2:#4B5060; --ink-3:#7C8090;
+  --line:#E3E0D8; --line-2:#EEECE6;
+  --navy:#354894; --magenta:#C2257F;
+  --code-bg:#1E2230; --code-ink:#E7E9F0;
+  --red:#B8304B; --red-bg:#FAE3E8;
+  --green:#2C7A4B; --green-bg:#E3F1E8;
+  --amber:#9A6A06; --amber-bg:#FAEFD3;
+  --blue:#2563A8; --blue-bg:#E7ECFB;
+  --purple:#5a4a9a; --purple-bg:#EDEBF6;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:1080px;margin:0 auto;padding:26px 20px 100px}
+.kick{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:700}
+h1{font-size:28px;margin:6px 0 4px;letter-spacing:-.01em}
+.sub{color:var(--ink-2);font-size:14.5px;margin:0;max-width:78ch}
+.src{font-size:12px;color:var(--ink-3)}
+.src code,.sub code,.lead code,.deck code{background:var(--sunken);padding:1px 5px;border-radius:4px;color:var(--navy)}
+.tabs{position:sticky;top:0;background:var(--ground);border-bottom:2px solid var(--navy);
+  display:flex;gap:4px;flex-wrap:wrap;padding:10px 0;margin:16px 0 20px;z-index:20}
+.tabs button{font:600 13px/1 inherit;color:var(--navy);background:var(--paper);border:1px solid var(--line);
+  border-radius:999px;padding:9px 14px;cursor:pointer}
+.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tabs button .n{opacity:.6;font-weight:700;margin-right:5px}
+.panel{display:none}.panel.on{display:block;animation:f .2s ease}
+@keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+h2{font-size:22px;margin:8px 0 6px;letter-spacing:-.01em}
+h3{font-size:17px;margin:26px 0 6px;color:var(--navy);border-top:1px solid var(--line);padding-top:16px}
+h4{font-size:14px;margin:16px 0 4px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+p{margin:7px 0}.lead{color:var(--ink-2);max-width:80ch}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.3px;
+  background:var(--sunken);padding:1px 5px;border-radius:4px;color:#2b2f3a}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:9px;padding:14px 16px;overflow-x:auto;
+  font:12.3px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:10px 0}
+pre .c{color:#8A93A8}pre .k{color:#C78BE0}pre .s{color:#8FD18B}pre .t{color:#6FB3E6}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:12.6px;background:var(--paper);
+  border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line-2);vertical-align:top}
+th{background:#EEF0F7;color:var(--navy);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em}
+tr:last-child td{border-bottom:0}
+ul{margin:6px 0;padding-left:20px}li{margin:3px 0}
+.pill{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.p-have{background:var(--green-bg);color:var(--green)}
+.p-build{background:var(--amber-bg);color:var(--amber)}
+.p-pipe{background:var(--blue-bg);color:var(--blue)}
+.p-gap{background:var(--red-bg);color:var(--red)}
+.p-dec{background:#EDEBF6;color:#5a4a9a}
+.own{display:inline-block;font-size:10px;font-weight:800;padding:2px 6px;border-radius:5px;letter-spacing:.03em}
+.o-dag{background:var(--amber-bg);color:var(--amber)}
+.o-be{background:var(--purple-bg);color:var(--purple)}
+.o-and{background:var(--green-bg);color:var(--green)}
+.o-bi{background:var(--blue-bg);color:var(--blue)}
+.o-prod{background:#FCE3F1;color:var(--magenta)}
+.o-des{background:#E7ECFB;color:var(--navy)}
+.note{font-size:13px;background:var(--sunken);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:7px;padding:11px 14px;margin:14px 0}
+.note b{color:var(--amber)}
+.rec{font-size:13px;background:var(--green-bg);border:1px solid #bfe0cc;border-left:3px solid var(--green);border-radius:7px;padding:11px 14px;margin:14px 0}
+.rec b{color:var(--green)}
+.correct{font-size:13px;background:#FFF4E1;border:1px solid #EBD79A;border-left:3px solid var(--amber);border-radius:7px;padding:12px 14px;margin:14px 0}
+.correct b{color:var(--amber)}
+.reversal{font-size:13px;background:#FCE3F1;border:1px solid #f3b9d9;border-left:3px solid var(--magenta);border-radius:7px;padding:12px 14px;margin:14px 0}
+.reversal b{color:var(--magenta)}
+.deck{color:var(--ink-2);max-width:82ch;margin:4px 0 14px;font-size:14px;line-height:1.62}
+/* strategy */
+.bet{background:linear-gradient(120deg,#354894,#5b3a8f 55%,#C2257F);color:#fff;border-radius:16px;padding:20px 24px;margin:14px 0;box-shadow:0 10px 28px rgba(53,72,148,.2)}
+.bet .bl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;font-weight:800}
+.bet .bt{font-size:19px;font-weight:800;margin:7px 0 9px;line-height:1.38}
+.bet p{font-size:13.3px;opacity:.96;margin:6px 0;max-width:86ch;line-height:1.62}
+.bet .em{background:rgba(255,255,255,.18);border-radius:5px;padding:1px 6px;font-weight:700;white-space:nowrap}
+.principle{border-left:4px solid var(--magenta);background:#FCE3F1;border-radius:12px;padding:15px 17px;margin:16px 0}
+.principle .pl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--magenta);font-weight:800}
+.principle .pt{font-size:15.5px;font-weight:800;color:#8a1e5c;margin:4px 0 6px;line-height:1.35}
+.principle p{font-size:13px;color:#5a2347;margin:5px 0;line-height:1.6;max-width:86ch}
+.mathrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.mathrow .m{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 13px;text-align:center;min-width:94px}
+.mathrow .m b{display:block;color:var(--navy);font-size:16px;line-height:1.2}
+.mathrow .m span{font-size:10.5px;color:var(--ink-3)}
+.mathrow .x{color:var(--magenta);font-weight:800;font-size:15px}
+.nstar{background:var(--navy);color:#fff;border-radius:12px;padding:15px 17px;margin:12px 0}
+.nstar .nl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.82;font-weight:800}
+.nstar .nt{font-size:15px;font-weight:800;margin:5px 0}
+.nstar p{font-size:12.5px;opacity:.95;margin:4px 0;line-height:1.55}
+.nstar code{background:rgba(255,255,255,.16);color:#fff}
+.leverage{display:flex;align-items:stretch;gap:0;margin:14px 0;flex-wrap:wrap}
+.leverage .lv{flex:1 1 140px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:center;font-size:12px;position:relative}
+.leverage .lv b{display:block;font-size:17px;color:var(--navy)}
+.leverage .lv.hot{background:#FCE3F1;border-color:#f3b9d9}.leverage .lv.hot b{color:var(--magenta)}
+.leverage .ar{display:flex;align-items:center;color:var(--ink-3);font-weight:800;padding:0 6px}
+/* generic card grid */
+.ggrid{display:grid;gap:12px;margin:14px 0}
+.gg2{grid-template-columns:1fr 1fr}.gg3{grid-template-columns:repeat(3,1fr)}
+.cc{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:13px 15px;border-left:4px solid var(--line)}
+.cc .ct{font-weight:800;font-size:13px;margin:0 0 5px;display:flex;align-items:center;gap:8px;color:var(--ink);line-height:1.3}
+.cc .cb{font-size:12.5px;color:var(--ink-2);line-height:1.6}
+.cc .cb code{font-size:11.5px}.cc .cb b{color:var(--ink)}
+.cc.ok{border-left-color:var(--green)}.cc.warn{border-left-color:var(--amber)}
+.cc.info{border-left-color:var(--blue)}.cc.open{border-left-color:var(--purple)}
+.cc .tag{font-size:9.5px;font-weight:800;padding:2px 8px;border-radius:999px;margin-left:auto;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
+.cc.ok .tag{background:var(--green-bg);color:var(--green)}
+.cc.warn .tag{background:var(--amber-bg);color:var(--amber)}
+.cc.info .tag{background:var(--blue-bg);color:var(--blue)}
+.cc.open .tag{background:var(--purple-bg);color:var(--purple)}
+/* banner mock */
+.banner-mock{position:relative;max-width:430px;margin:14px 0;border-radius:16px;overflow:hidden;background:linear-gradient(120deg,#354894,#5b3a8f 55%,#C2257F);color:#fff;padding:15px 17px;display:flex;align-items:center;gap:13px;box-shadow:0 8px 22px rgba(53,72,148,.22)}
+.bm-icon{flex:0 0 50px;height:62px;border-radius:9px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px}
+.bm-text{flex:1 1 auto;min-width:0}.bm-title{font-weight:800;font-size:15px;line-height:1.3}
+.bm-sub{font-size:12px;opacity:.92;margin:3px 0 8px}
+.bm-cta{display:inline-block;background:#fff;color:#C2257F;font-weight:800;font-size:12.5px;padding:6px 12px;border-radius:999px}
+.bm-new{position:absolute;top:10px;right:12px;background:#E0294B;font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px}
+.tl{display:flex;margin:20px 0 6px;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:12px}
+.tl div{flex:1;padding:9px 8px;text-align:center;border-right:1px solid var(--line-2)}
+.tl div:last-child{border-right:0}.tl b{display:block;color:var(--navy)}
+.tl .hot{background:#FCE3F1}.tl .hot b{color:var(--magenta)}
+.protolink{display:inline-block;background:var(--magenta);color:#fff;font-weight:700;font-size:13.5px;text-decoration:none;padding:9px 16px;border-radius:999px}
+.protolink.sm{padding:3px 10px;font-size:12px;vertical-align:middle}
+.showlist{margin:10px 0}.showlist li{margin:6px 0}
+@media(max-width:820px){.gg2,.gg3{grid-template-columns:1fr}.leverage .ar{transform:rotate(90deg)}}
+@media(max-width:780px){h1{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="kick">Shikho Year-End Wrap 2026 · Direction B “Marksheet” · Android</div>
+<h1>Product Requirement &amp; Technical Productization Spec</h1>
+<p class="sub">Implementation-ready spec for the Android SuperApp. Ship the “Marksheet” year-in-review to the student base, live 26–31 December 2026. One self-contained document: strategy, screens, data, build, and every corner case answered.</p>
+<p style="margin:10px 0 2px"><a class="protolink" href="https://shikho-year-end-wrap.vercel.app/?v=b" target="_blank">▶ Open the interactive prototype — Direction B (?v=b)</a></p>
+<p class="src">Rebuilt 2026-11-10 · grounded in <code>SC-1737</code> (data spec), <code>ST-25781</code> (deployed predecessor), the Shikho service specs (shikho-spec), and the Nov-4 badge/eligibility business-logic decisions. Unverified claims are tagged <span class="pill p-gap">VERIFY</span> and collected in §7.4.</p>
+
+<div class="reversal"><b>Two decisions changed since the earlier draft — this doc is reconciled to them:</b>
+<ul style="margin:6px 0 0">
+  <li><b>Who gets a wrap → everyone.</b> Paid, trial and free students all get the same full wrap (was “paid only”). One template; thin sections show encouraging copy, never an empty chart. Only staff / test / deleted accounts and post-cutoff signups are excluded.</li>
+  <li><b>Badges → 11, all self-computed.</b> The gamification badge service is treated as dead (unused ~3 years); the wrap reads <b>nothing</b> from it and computes all 11 badges from each student’s own window activity.</li>
+</ul></div>
+
+<div class="correct"><b>Scope — locked decisions (unchanged):</b>
+<ul style="margin:6px 0 0">
+  <li><b>Android only.</b> No web portal; the prototype is the design reference.</li>
+  <li><b>Build by extending <code>:feature:quarterreview</code></b> — it already ships last year’s animated review with bitmap share and an availability gate. Not greenfield, not a WebView.</li>
+  <li><b>“Best subject” = quiz/exam accuracy by subject</b> (subject-native), not time reconstruction.</li>
+  <li><b>Precompute nightly</b> into one record per student; the app only reads it.</li>
+  <li><b>Not in v1:</b> iOS, web, editing the card in-app, friends/leaderboard compare inside the wrap, and wraps for pre-2024 history.</li>
+</ul></div>
+
+<nav class="tabs" id="tabs">
+  <button class="on" data-t="t9"><span class="n">1</span>Strategy</button>
+  <button data-t="t0"><span class="n">2</span>Overview</button>
+  <button data-t="t1"><span class="n">3</span>Screens</button>
+  <button data-t="t2"><span class="n">4</span>Backend &amp; data</button>
+  <button data-t="t3"><span class="n">5</span>Android</button>
+  <button data-t="t8"><span class="n">6</span>Corner cases</button>
+  <button data-t="t7"><span class="n">7</span>Decisions &amp; grounding</button>
+</nav>
+
+<!-- ===================== STRATEGY ===================== -->
+<section class="panel on" id="t9">
+  <h2>Strategy — the bet, the insight, the bar</h2>
+  <p class="deck">The rest of this doc is the <i>execution</i> — screens, data, scope. This is the <b>altitude</b>: why this wins, the one risk that kills it, how big the prize is, and the single number we steer by. If we disagree here, nothing downstream matters.</p>
+
+  <div class="bet">
+    <div class="bl">The bet</div>
+    <div class="bt">Show every student a proud, personal, shareable story of their year → they come back in January, and their shared card sells Shikho to the exact peers we want next.</div>
+    <p>It’s the <b>Spotify Wrapped</b> playbook — identity, pride, social proof — moved from “your songs” to “your effort.” Two returns from one artifact: <span class="em">retention</span> (a reason to re-engage when the new class starts) and <span class="em">acquisition</span> (authentic, student-made proof shown to other students). Opening it to <b>free and trial students too</b> widens the acquisition edge: a free student who shares a proud card is both a near-conversion and a billboard.</p>
+  </div>
+
+  <h3>Why it works — the insight</h3>
+  <p class="lead">Students <b>systematically underweight their own effort</b>. A year of work is invisible to them by December. Reflecting it back — <i>187 days, 142 hours, a 23-day streak</i> — converts invisible effort into visible pride, and pride is the emotional fuel for returning. And a card carrying <b>real numbers from a real student</b> is the most credible ad we can put in front of their friends — who are precisely our target market, because <b>students buy from students</b>.</p>
+  <p class="lead">The <b>learner-type stamp</b> is the differentiator, not the stats. “I studied 142 hours” is a number; <b>“I’m a রাতজাগা পড়ুয়া (Night Owl)”</b> — or a <b>পরিশ্রমী (Hard Worker)</b> — is an identity, and identity is what people share. Statistics inform; identity travels. <span class="src">(Night Owl needs the hour-band in O6; if it can’t be sourced, the flagship example falls back to an always-computable axis — §6 badges &amp; §4.)</span></p>
+
+  <div class="principle">
+    <div class="pl">The insight most teams miss — and the one rule everything obeys</div>
+    <div class="pt">We named it a “marksheet.” Marks imply judgment. Wrapped works because <u>no one feels bad</u>.</div>
+    <p>If a struggling student opens a marksheet and sees low marks or a poor rank, we manufacture <b>shame</b> and push away the exact students we’re trying to retain — the opposite of the goal. So the non-negotiable principle: <b>every student must finish the wrap feeling proud.</b></p>
+    <p>This isn’t a slogan — it changes real decisions: lead with <b>effort</b>, not <b>outcome</b>; never show rank or “weakest subject” to a struggling student; encouraging copy for the quiet; tier copy that is <b>always</b> positively framed; hide-name ON by default on shares. Because everyone now gets a wrap, this rule is <i>more</i> load-bearing, not less — the no-shame display groups in §6 are how one experience serves a top student and a barely-active one without either feeling judged.</p>
+  </div>
+  <h4>Operating the principle — one experience, four no-shame groups</h4>
+  <p class="lead">Classification is <b>computable and checked top-down</b> (Strong first), so earning any badge lifts a student out of “just starting”. Same engine, emphasised differently.</p>
+  <table>
+    <tr><th>Group</th><th>How a student lands here</th><th>Lead with</th><th>Never show</th></tr>
+    <tr><td><b>Strong</b></td><td>Earned <b>3+ badges</b>, or top <b>20%</b> of the video pool</td><td>All earned badges · a positive “top X%” · best subject</td><td>— let them flex</td></tr>
+    <tr><td><b>Middle</b></td><td>Earned <b>1–2 badges</b></td><td>Effort badges · hours · active days</td><td>rank · peer compare</td></tr>
+    <tr><td><b>Low</b></td><td><b>0 badges</b> but some real activity</td><td>Effort stats + optional near-miss nudge</td><td>rank · “weakest” anything · empty shelf</td></tr>
+    <tr><td><b>Just starting</b></td><td>Almost no activity</td><td>Warm welcome wrap + welcome/loyalty marker</td><td>charts · totals · any comparison</td></tr>
+  </table>
+  <p class="src">Standing is only ever shown as a positive “top X%,” and only to Strong students — never a numeric class rank, never to the others. The data layer supports this via badge counts, the video pool percentile, <code>min_show</code> floors and the learner stamp (§4, §6).</p>
+
+  <h3>The highest-leverage point in the whole product</h3>
+  <p class="lead">Every unit of value is gated by <b>one tap</b>. Acquisition is downstream of share, share is downstream of finish, finish is downstream of open — and open is <b>one banner on the home screen</b>. Win the tap and everything is possible; lose it and the rest is zero. So we over-invest in the banner (personal number + launch push + first-open coachmark) and A/B the hook hardest.</p>
+  <div class="leverage">
+    <div class="lv hot"><b>The tap</b>home banner</div><div class="ar">→</div>
+    <div class="lv">open<br>the story</div><div class="ar">→</div>
+    <div class="lv">finish<br>to marksheet</div><div class="ar">→</div>
+    <div class="lv">share<br>the card</div><div class="ar">→</div>
+    <div class="lv hot"><b>return + acquire</b>the prize</div>
+  </div>
+
+  <h3>The prize — sizing (illustrative)</h3>
+  <div class="mathrow">
+    <div class="m"><b>full base</b><span>all students w/ a row</span></div><div class="x">× open</div>
+    <div class="m"><b>~45%</b><span>open</span></div><div class="x">× 60%</div>
+    <div class="m"><b>finish</b><span>reach marksheet</span></div><div class="x">× 20%</div>
+    <div class="m"><b>shared cards</b><span>into the ICP</span></div><div class="x">× reach</div>
+    <div class="m"><b>↑ Jan</b><span>return + signups</span></div>
+  </div>
+  <p class="src">Three value streams off one build: <b>retention</b> (Jan return-lift, measured hardest on the paid sub-cohort), <b>acquisition</b> (student-made ads into the exact ICP, now including free/trial sharers), <b>brand affinity</b> (Shikho remembers your year). Percentages are targets to beat, not forecasts — see §7.3. With “everyone” eligible, the funnel’s top is the whole active base, not just ~25k paid; keep the paid sub-cohort tagged so retention is read cleanly (§7.3).</p>
+
+  <h3>The one number — and the guardrails</h3>
+  <div class="nstar">
+    <div class="nl">North Star</div>
+    <div class="nt">January-2027 return-lift: got-banner vs a randomized hold-out (intent-to-treat), read on the whole cohort and again on the paid sub-cohort</div>
+    <p>Inputs we steer weekly: <b>open → finish → share</b>. We don’t optimise a vanity metric; we optimise whether <i>reflected pride brings students back</i>.</p>
+    <p><b>Clean read — the confound:</b> opening is voluntary, so openers are already more engaged; a raw “finishers vs non-openers” gap <i>overstates</i> lift. We debias with a <b>randomized hold-out</b> — suppress the banner for a small random slice and compare <b>intent-to-treat</b> (got-banner vs held-out), not just openers vs non-openers.</p>
+  </div>
+  <div class="ggrid gg3">
+    <div class="cc warn"><div class="ct">Guardrail · no shame</div><div class="cb"><b>Low-group finish-rate ≥ overall finish-rate.</b> If strugglers bail before the end, the experience is judging them — fix before scaling. This is our shame-sensor.</div></div>
+    <div class="cc warn"><div class="ct">Guardrail · no harm</div><div class="cb">Zero rise in opt-outs / complaints; no privacy incident. A viral loop that leaks a minor’s data is a loss, not a win.</div></div>
+    <div class="cc warn"><div class="ct">Guardrail · honest shares</div><div class="cb">Shared cards are accurate &amp; privacy-safe by default (QA gate + name-hidden). We never buy reach with a wrong or over-exposing card.</div></div>
+  </div>
+
+  <h3>What we are deliberately NOT doing — and why</h3>
+  <div class="ggrid gg2">
+    <div class="cc open"><div class="ct">iOS / web</div><div class="cb">Android-only v1. Ship fast to the highest-intent surface; widen once the bet is proven.</div></div>
+    <div class="cc open"><div class="ct">Friends / leaderboard compare inside the wrap</div><div class="cb">Direct peer-compare is the fastest route to shame — it violates the one rule. Deferred, maybe never.</div></div>
+    <div class="cc open"><div class="ct">In-app card editing · pre-2024 history</div><div class="cb">Scope and data cost without changing the core bet. V2 candidates.</div></div>
+    <div class="cc open"><div class="ct">Real-time compute</div><div class="cb">Precompute nightly — correctness, speed and cost all win; the wrap is a reflection, not a live dashboard.</div></div>
+  </div>
+
+  <h3>How it dies — pre-mortem</h3>
+  <table>
+    <tr><th>#</th><th>Failure mode</th><th>Mitigation · where</th></tr>
+    <tr><td>1</td><td><b>Shame</b> — a weak student feels judged and churns</td><td>Effort-first framing · the four no-shame groups above · encouraging copy · no rank on the low end — <span class="own o-prod">US</span> <span class="own o-des">DES</span></td></tr>
+    <tr><td>2</td><td><b>Nobody taps</b> — the banner is ignored → everything is zero</td><td>Personal number in the headline · launch push · first-open coachmark · A/B the hook (§2.2 / §7.3) — <span class="own o-prod">US</span> <span class="own o-and">AND</span></td></tr>
+    <tr><td>3</td><td><b>Feels generic</b> — a stats recap, not personal</td><td>Lead on the learner-type <i>identity</i>, not numbers · real per-student data — measure finish-rate — <span class="own o-prod">US</span></td></tr>
+    <tr><td>4</td><td><b>Wrong / embarrassing data on a public card</b></td><td>QA gate <code>t10</code> · privacy-safe share default · non-enumerable id (§6) — <span class="own o-dag">DAG</span> <span class="own o-be">BE</span></td></tr>
+    <tr><td>5</td><td><b>Not ready in time</b> — data gaps at cut-off</td><td>Precompute + <code>is_available</code> gate + the open decisions with owners/dates (§6 · §7.4)</td></tr>
+    <tr><td>6</td><td><b>Opening to everyone dilutes the paid retention read</b></td><td>Tag the paid sub-cohort; report the North Star on both the full cohort and paid-only, so the retention signal stays legible — <span class="own o-prod">US</span></td></tr>
+  </table>
+
+  <h3>What we’re really testing (so we learn, not just ship)</h3>
+  <ul>
+    <li><b>Does pride drive return?</b> — the North Star A/B: got-banner vs a held-out comparable group in January.</li>
+    <li><b>Does the hook drive the tap?</b> — banner copy A (personal number) vs C (generic). The tap is the whole funnel’s gate.</li>
+    <li><b>Does identity drive sharing?</b> — learner-type slide on/off; measure finish &amp; share rate. If identity travels, doubling down on the stamp is the roadmap.</li>
+    <li><b>Does opening it to free/trial convert?</b> — track signup/upgrade from free &amp; trial sharers vs a held-out slice.</li>
+    <li><b>Are we shaming anyone?</b> — low-group finish-rate as a standing guardrail metric, watched from day one.</li>
+  </ul>
+  <p class="rec"><b>The ask:</b> align on the bet and the one rule (every student finishes proud). If we agree there, the rest of this doc is a faithful, build-ready execution of it — and the only open items are the dated data decisions in §6 / §7.4.</p>
+</section>
+
+<!-- ===================== OVERVIEW ===================== -->
+<section class="panel" id="t0">
+  <h2>Context — what we’re replacing, and when</h2>
+  <p class="lead">The Wrap is <b>not a new place in the app</b> — it replaces the existing year-review entry on the <b>real Shikho home</b>. Today that slot holds the <b>“তোমার ২০২৫ Shikho জার্নি!”</b> banner. In December it becomes <b>“তোমার ২০২৬ খাতা”</b>, which opens the Wrap story (Direction B “Marksheet”). <b style="color:var(--magenta)">Live the last week of December 2026 (26–31 Dec).</b> The banner now shows to <b>every</b> student with a built row, not paid only.</p>
+
+  <div class="tl">
+    <div><b>Nov 2026</b>now · planning</div>
+    <div><b>Nov–Dec</b>pipeline + Android</div>
+    <div><b>~18 Dec</b>Play Store submit</div>
+    <div><b>20 Dec</b>data cut-off</div>
+    <div class="hot"><b>26–31 Dec</b>LIVE</div>
+    <div><b>Jan 2027</b>measure return</div>
+  </div>
+  <p class="src" style="margin-top:4px">Home = the real app (<code>Homepage Redesign 2026</code>); the Wrap story (Direction B) opens from the banner slot and ships inside this same app.</p>
+
+  <h3 id="show" style="margin-top:24px">2.1 What we want to show — content checklist for the UI team</h3>
+  <p class="lead">The Wrap turns a student’s year into a short, proud story. This is exactly what each student sees, and why. Full interactive reference: <a class="protolink sm" href="https://shikho-year-end-wrap.vercel.app/?v=b" target="_blank">▶ prototype ?v=b</a></p>
+  <ul class="showlist">
+    <li><b>Who they are</b> — name · class · section — so it feels like <i>theirs</i> from screen one.</li>
+    <li><b>How much they studied</b> — total hours shown as school days (e.g. ১৪২ ঘণ্টা → ২৪ স্কুল দিন), so the number means something.</li>
+    <li><b>How regular they were</b> — active days + longest streak on a calendar grid — the backbone of the pride.</li>
+    <li><b>Live classes</b> — joined vs held, with an attendance title (ফার্স্ট বেঞ্চার) — rewards showing up.</li>
+    <li><b>Quizzes</b> — how many, rising through the year, with an “almost a champion” nudge.</li>
+    <li><b>Video</b> — minutes watched shown as movies (e.g. ২,৮৬০ মিনিট → ২৪টা সিনেমা) — a scale they feel.</li>
+    <li><b>What kind of learner they were</b> — one rubber-stamp personality (নিয়মিত পড়ুয়া…) — the “I learned something about myself” moment, different per student.</li>
+    <li><b>Their best subject</b> — from quiz/exam accuracy — specific and personal.</li>
+    <li><b>Their badge collection</b> — “তোমার অর্জন”: every badge earned, together, with a count headline.</li>
+    <li><b>A marksheet to share</b> — all of it on one Shikho card, with a hide-name toggle — the viral payoff.</li>
+    <li><b>Returning students:</b> years with Shikho (loyalty). &nbsp;<b>Quiet students:</b> the same wrap, with encouraging copy instead of empty charts — nobody feels bad.</li>
+  </ul>
+
+  <h3 id="banner" style="margin-top:24px">2.2 The banner — the one thing students must tap</h3>
+  <p class="lead">If they don’t tap, nothing else matters. It sits in the <b>home slot the ২০২৫ journey holds today</b>, shown to every student with a built row, with a <b>“new ✦”</b> marker. Recommended design, shown live:</p>
+  <div class="banner-mock">
+    <div class="bm-icon">২০২৬</div>
+    <div class="bm-text">
+      <div class="bm-title">নিশাত, তোমার ২০২৬ খাতা তৈরি! 🔥</div>
+      <div class="bm-sub">সারা বছরের পড়ার গল্প — ১৮৭ দিনের পরিশ্রম এক খাতায়</div>
+      <span class="bm-cta">আমার খাতা দেখি →</span>
+    </div>
+    <div class="bm-new">new ✦</div>
+  </div>
+  <h4>Copy — three options, ranked</h4>
+  <table>
+    <tr><th>Option</th><th>Headline (Bangla)</th><th>Sub · CTA</th><th>Why it works</th></tr>
+    <tr><td><b>★ A (use this)</b></td><td><b>[নাম], তোমার ২০২৬ খাতা তৈরি! 🔥</b> + a live number</td><td>সারা বছরের পড়ার গল্প — [১৮৭] দিনের পরিশ্রম এক খাতায় · <b>আমার খাতা দেখি →</b></td><td>Name + a real number from <i>their</i> data = the highest click-through (Spotify’s playbook)</td></tr>
+    <tr><td>B</td><td><b>তুমি এ বছর কেমন পড়ুয়া ছিলে? 🎓</b></td><td>তোমার ২০২৬-এর পড়ার ব্যক্তিত্ব জানো · <b>জেনে নাও →</b></td><td>Curiosity about self — teases the learner-type stamp</td></tr>
+    <tr><td>C (fallback)</td><td><b>তোমার ২০২৬ খাতা তৈরি!</b></td><td>সারা বছরের পড়ার গল্প এক খাতায় · <b>খাতা খোলো →</b></td><td>Simple “it’s ready” — for quiet students with no big number to show</td></tr>
+  </table>
+  <p>Ship <b>A</b> with the student’s name and their biggest honest number (active days, else hours). If they have no number clearing a config floor (e.g. active_days ≥ 20, else hours ≥ 15), fall back to <b>C</b> so it never feels thin (corner case B-02, §6).</p>
+  <h4>How it grabs attention &amp; where it lives</h4>
+  <ul>
+    <li><b>A real personal number in the headline</b> (১৮৭ দিন / ১৪২ ঘণ্টা) — not a generic “your wrap is here”.</li>
+    <li><b>“new ✦” pill</b> and a gentle one-time shimmer on first load, then it rests (no annoying loop).</li>
+    <li><b>Home slot</b>, directly below the profile card — <code>:feature:home</code> → <code>PaidUserScreen.kt</code> (and the equivalent free/trial home surface), gated on <code>is_available</code> + min app version.</li>
+    <li><b>Launch push</b> on 26 Dec (existing notifications module): “[নাম], তোমার ২০২৬ খাতা তৈরি! 🎉 সারা বছরের গল্প দেখো।”</li>
+    <li><b>First-open coachmark</b> — a one-time pulse + tooltip on the <b>খাতা খোলো</b> button (“তোমার বছর তৈরি — এখানে ট্যাপ করো”). The whole card is tappable.</li>
+  </ul>
+</section>
+<!-- ===================== SCREENS ===================== -->
+<section class="panel" id="t1">
+  <h2>Screen map — what each screen needs, where it’s built</h2>
+  <p class="deck">A student taps <b>তোমার ২০২৬ খাতা</b> on home. It opens a full-screen, tap-through story — like Spotify Wrapped, styled as a Shikho notebook (খাতা) — walking them through their year and ending on a <b>marksheet they can share</b>. The deck is <b>7 slides + banner</b> (8 with favourite teacher). The server sends the order in <code>payload.slides[]</code>, so Product can reorder or drop a slide <b>without an app release</b>.</p>
+  <table>
+    <tr><th>#</th><th>Screen</th><th>What it is (plain)</th><th>Items on the screen</th></tr>
+    <tr><td>0</td><td>Home banner</td><td>The card on home that opens the story</td><td>notebook “২০২৬” icon · title তোমার ২০২৬ খাতা · one-line subtitle · “খাতা খোলো” button · a “new” dot</td></tr>
+    <tr><td>1</td><td>Cover</td><td>A notebook cover with the student’s name — makes it theirs</td><td>“বার্ষিক খাতা” tag · big ২০২৬ · name / class / section · Shikho logo · bird mascot · share button</td></tr>
+    <tr><td>2</td><td>Study time</td><td>Total hours studied, made real as school days</td><td>title মোট পড়ার সময় · big ১৪২ ঘণ্টা · the ÷6 maths line · day-mark strip · mascot</td></tr>
+    <tr><td>3</td><td>Attendance</td><td>Live classes joined vs held, plus an attendance title</td><td>title লাইভ ক্লাসের হাজিরা · “৬৩/৭২” · register grid · মোট ক্লাস / মোট হাজির · ফার্স্ট বেঞ্চার badge</td></tr>
+    <tr><td>4</td><td>Quizzes</td><td>Quizzes done across the year, as a rising graph</td><td>title কুইজের হিসাব · ১৪৮টা · monthly curve · “আর ২টা হলেই চ্যাম্পিয়ন” nudge · কুইজ যোদ্ধা badge</td></tr>
+    <tr><td>5</td><td>Video</td><td>Minutes watched, shown as movies</td><td>title ভিডিও দেখা · ২,৮৬০ মিনিট · film-strip cells · ভিডিও ম্যারাথনার badge</td></tr>
+    <tr><td>6</td><td>Learner type</td><td>The signature screen — a stamp naming their study style, plus active days &amp; streak</td><td>title তোমার পড়ার ধরন · tap-to-stamp · নিয়মিত পড়ুয়া stamp · “১৮৭ দিন” · activity grid · streak “টানা ২৩ দিন”</td></tr>
+    <tr><td>6.5</td><td>Badge collection</td><td>“তোমার অর্জন” — every badge earned, together</td><td>count headline “তুমি Nটি ব্যাজ জিতেছ! 🏅” · badge shelf in prestige order · tap-for-how-you-earned-it</td></tr>
+    <tr><td>7</td><td>Marksheet (share)</td><td>Everything on one shareable Shikho marksheet</td><td>মার্কশিট ২০২৬ header · serial · date · name/class/section · result rows · badges · signature · barcode · নাম-লুকাও toggle · শেয়ার করো</td></tr>
+  </table>
+
+  <h3>3.1 The technical map — data → Android → backend, per screen</h3>
+  <p class="lead">For each screen: the <b style="color:var(--blue)">data</b> it needs, the <b style="color:var(--green)">Android</b> component, the <b style="color:var(--amber)">backend</b> path, and the <b style="color:var(--purple)">logic &amp; copy rules</b>. Status pills: <span class="pill p-have">HAVE</span> ready · <span class="pill p-build">BUILD</span> derive · <span class="pill p-pipe">PIPE</span> move to warehouse.</p>
+
+  <h4>Banner — the entry hook</h4>
+  <div class="ggrid gg2">
+    <div class="cc info"><div class="ct">Data</div><div class="cb"><code>is_available</code> (bool) + the student’s name &amp; biggest honest number. <b>Gate:</b> render only if <code>is_available=true</code> <b>and</b> app ≥ min version. <b>Compute:</b> none.</div></div>
+    <div class="cc ok"><div class="ct">Android</div><div class="cb"><code>:feature:home</code> → <code>PaidUserScreen.kt</code> (+ free/trial home). Add <code>WrapBannerCard</code> (mirror <code>ReportCardStatusWidget</code>); <code>OnYearWrapClicked</code> → new <code>@Serializable WrapRoute</code> in <code>HomeScreenNavigation.kt</code>.</div></div>
+    <div class="cc warn"><div class="ct">Backend</div><div class="cb">GraphQL <code>getIfYearWrapExist</code> (mirror <code>GetIfYearlyReviewExist</code>) → reads <code>wrap_2026.is_available</code>.</div></div>
+    <div class="cc open"><div class="ct">Logic &amp; copy</div><div class="cb">Headline inserts <b>name + biggest honest number</b> (active_days, else hours). Below the config floor → copy C. Shown to any student with <code>is_available=true</code>.</div></div>
+  </div>
+
+  <h4>1 · Cover — personalisation</h4>
+  <div class="ggrid gg2">
+    <div class="cc info"><div class="ct">Data <span class="pill p-have">HAVE</span></div><div class="cb"><code>Students.fist_name</code>, <code>Students.class</code>, <code>Students.study_group</code>. Read as-is, current profile snapshot. <span class="note" style="display:inline;padding:2px 6px;margin:0"><code>fist_name</code> is the real column spelling — do not “correct” it.</span></div></div>
+    <div class="cc ok"><div class="ct">Android</div><div class="cb"><code>:feature:quarterreview</code> → new <code>MarksheetCoverComponent</code> (extend <code>StudentYearlyOverviewComponent</code>). Bangla via <code>getBengaliNumber()</code>.</div></div>
+    <div class="cc warn"><div class="ct">Backend</div><div class="cb"><code>payload.profile</code> · DAG <code>t1_cohort</code>.</div></div>
+    <div class="cc open"><div class="ct">Logic &amp; copy</div><div class="cb">Pure print — name / class / section verbatim. If a field is empty, <b>drop that line</b> (never render a blank or “null”).</div></div>
+  </div>
+
+  <h4>2 · Study time — pride &amp; scale</h4>
+  <div class="ggrid gg2">
+    <div class="cc info"><div class="ct">Data <span class="pill p-have">HAVE</span></div><div class="cb"><code>total_study_seconds</code> = SUM of all <code>*_duration</code> in <code>user_activity_duration_agg</code>; <code>school_days</code> = round(total ÷ 21600). Also <code>study_by_type_seconds</code> (7) + <code>study_by_month_seconds[12]</code>. Window 2026-01-01→cut-off.</div></div>
+    <div class="cc ok"><div class="ct">Android</div><div class="cb"><code>StudyTimeComponent</code> (reuse <code>YearlyQuarterHourComponent</code> layout).</div></div>
+    <div class="cc warn"><div class="ct">Backend</div><div class="cb"><code>payload.stats.total_study_seconds</code>, <code>study_school_days</code> · DAG <code>t2_engagement</code>.</div></div>
+    <div class="cc open"><div class="ct">Logic &amp; copy</div><div class="cb"><b>hours</b>=round(sec/3600); <b>“≈ N স্কুল দিন”</b>=round(hours/6). Headline tier (config): ≥200h “অসাধারণ পরিশ্রম” · 50–199h default · &lt;50h “শুরুটা দারুণ”. <b>Hide</b> if total &lt; the study-time <code>min_show</code>.</div></div>
+  </div>
+
+  <h4>3 · Attendance — reward &amp; status</h4>
+  <div class="ggrid gg2">
+    <div class="cc info"><div class="ct">Data <span class="pill p-have">HAVE</span></div><div class="cb"><b>joined</b>=count <code>student_attendees</code> where stay ≥ GREATEST(600s, 30% of class); <b>held</b>=count <code>lessons</code> (<code>content_type=LiveClass</code>) by program, <b>from the student’s join date</b>; <b>rate</b>=joined÷held (clamp ≤1). Join on <code>content_id</code> (or <code>room_id</code> if empty).</div></div>
+    <div class="cc ok"><div class="ct">Android</div><div class="cb">reuse <code>LiveClassReviewComponent</code>, re-skin to হাজিরা grid.</div></div>
+    <div class="cc warn"><div class="ct">Backend</div><div class="cb"><code>payload.stats.live_class{joined,held,rate}</code> + <code>badges[]</code> · DAG <code>t3_attendance</code> + <code>t7</code>.</div></div>
+    <div class="cc open"><div class="ct">Logic &amp; copy</div><div class="cb">Title/badge by tier (config): ≥85% <b>ফার্স্ট বেঞ্চার</b> · 60–84% নিয়মিত উপস্থিতি · &lt;60% encouraging line, no badge. One tick per <i>held</i> class, filled for joined. <b>Hide</b> if held &lt; 5.</div></div>
+  </div>
+
+  <h4>4 · Quizzes — momentum</h4>
+  <div class="ggrid gg2">
+    <div class="cc info"><div class="ct">Data <span class="pill p-have">HAVE</span></div><div class="cb"><b>completed</b>=<code>mcq_user_quiz_daily.quiz_completed</code> (cross-check <code>user_activity_duration_agg.quiz_count</code>); <b>by_month[12]</b> cumulative; <b>questions/correct/hard</b>=<code>mcq_user_chapter_daily.total_questions/total_correct/hard_question_correct</code>.</div></div>
+    <div class="cc ok"><div class="ct">Android</div><div class="cb">new <code>QuizReviewComponent</code> (reuse <code>WeeklyReviewComponent</code> chart pattern).</div></div>
+    <div class="cc warn"><div class="ct">Backend</div><div class="cb"><code>payload.stats.quiz</code> + Quiz-Warrior badge · DAG <code>t4_quiz</code>.</div></div>
+    <div class="cc open"><div class="ct">Logic &amp; copy</div><div class="cb"><b>“আর Xটা হলেই চ্যাম্পিয়ন”</b> near-miss: <code>X=next_tier−count</code>, show only when <code>0 &lt; X ≤ 5</code>. If count ≥ top tier → “<b>তুমি কুইজ চ্যাম্পিয়ন! 🏆</b>”. Graph = cumulative quizzes by month.</div></div>
+  </div>
+
+  <h4>5 · Video — relatable scale</h4>
+  <div class="ggrid gg2">
+    <div class="cc info"><div class="ct">Data <span class="pill p-have">HAVE</span></div><div class="cb"><b>minutes</b>=(<code>recorded_videos_duration</code>+<code>animated_videos_duration</code>)÷60; <b>count</b>=the two <code>*_count</code>; <b>movies</b>=minutes÷120. Watch time = content position reached (1.5×/2× not penalised), counted once per video.</div></div>
+    <div class="cc ok"><div class="ct">Android</div><div class="cb">new <code>VideoReviewComponent</code> (film-strip; same pager slide pattern).</div></div>
+    <div class="cc warn"><div class="ct">Backend</div><div class="cb"><code>payload.stats.video{minutes,count}</code> + Video-Marathoner badge · DAG <code>t2</code>.</div></div>
+    <div class="cc open"><div class="ct">Logic &amp; copy</div><div class="cb"><b>“≈ N টা সিনেমা”</b>=round(minutes/120). One cell per movie-equivalent. Badge <b>ভিডিও ম্যারাথনার</b> by the video pool percentile (§6). <b>Hide</b> if minutes &lt; <code>min_show</code>.</div></div>
+  </div>
+
+  <h4>6 · Learner type — identity, the signature moment</h4>
+  <div class="ggrid gg2">
+    <div class="cc info"><div class="ct">Data <span class="pill p-build">BUILD</span></div><div class="cb">active dates + streak + <b>cohort-relative axis scores</b> → one stamp (self-balancing; §4.2b &amp; §7.1).</div></div>
+    <div class="cc ok"><div class="ct">Android</div><div class="cb">reuse <code>LongestStreakComponent</code> + new <code>LearnerStampComponent</code> (tap-to-stamp; activity grid).</div></div>
+    <div class="cc warn"><div class="ct">Backend</div><div class="cb"><code>payload.learner_type</code> + <code>stats.active_days/avg_days_per_week/longest_streak/active_dates</code> · DAG <code>t5</code>+<code>t7</code>.</div></div>
+    <div class="cc open"><div class="ct">Logic &amp; copy</div><div class="cb">Stamp = cohort-relative type (§4.2b). Streak callout “{start} থেকে {end}, টানা {days} দিন” only if <code>longest_streak ≥ 3</code>. Quiet student → the activity visual softens to encouraging copy; the stamp is <b>always</b> present.</div></div>
+  </div>
+
+  <h4>6.5 · Badge collection — “তোমার অর্জন”</h4>
+  <div class="ggrid gg2">
+    <div class="cc info"><div class="ct">Data <span class="pill p-build">BUILD</span></div><div class="cb">all 11 badges computed by the DAG from the student’s own window activity (§6 roster), highest tier only each.</div></div>
+    <div class="cc ok"><div class="ct">Android</div><div class="cb">new <code>BadgeCollectionComponent</code> — a shelf in prestige order; tap a badge → one-line “how you earned it” with the student’s own number.</div></div>
+    <div class="cc warn"><div class="ct">Backend</div><div class="cb"><code>payload.badges[]</code> · DAG <code>t7_badges</code>.</div></div>
+    <div class="cc open"><div class="ct">Logic &amp; copy</div><div class="cb">Count headline “তুমি <b>N</b>টি ব্যাজ জিতেছ! 🏅” (exactly one → “তোমার প্রথম ব্যাজ!”). Earned none → warm forward-looking copy, no empty shelf. The collection and the marksheet never disagree.</div></div>
+  </div>
+
+  <h4>7 · Marksheet (share) — payoff</h4>
+  <div class="ggrid gg2">
+    <div class="cc info"><div class="ct">Data <span class="pill p-have">HAVE</span></div><div class="cb">all stats + <code>badges[]</code> + <code>top_subject</code> (accuracy by <code>subject_name</code>, subject-native, no time-rebuild).</div></div>
+    <div class="cc ok"><div class="ct">Android</div><div class="cb">new <code>MarksheetShareComponent</code>; reuse <code>ReviewBottomInfoComponent</code> + <code>Capturable</code>→<code>shareBitmap()</code> (already in module); নাম-লুকাও toggle swaps name/rank layer <b>before</b> capture.</div></div>
+    <div class="cc warn"><div class="ct">Backend</div><div class="cb"><code>POST /report-card/share</code> (reuse ST-25781) → <code>short_url</code> via Mask · subject from DAG <code>t6</code>.</div></div>
+    <div class="cc open"><div class="ct">Logic &amp; copy</div><div class="cb">Each result row prints <b>only if its stat exists</b> (no <code>top_subject</code> → no “বছরের বিষয়” row). Badges listed from <code>badges[]</code>. Serial “{YY}-{program}-{seq}”, date = <code>cutoff_date</code>. <b>“কার্ডে নাম লুকাও” defaults ON</b> for the shared copy.</div></div>
+  </div>
+
+  <h3>3.2 What else we can add — enhancement slides</h3>
+  <p class="lead">Slides beyond the 7. P0 = the CEO’s explicit asks. Effort: S ≤2d · M ≤1wk · L &gt;1wk (one engineer). Several map to existing <code>:feature:quarterreview</code> pages, so effort is low.</p>
+  <table>
+    <tr><th>Pri</th><th>Slide</th><th>Shows</th><th>Source</th><th>Status</th><th>Effort</th></tr>
+    <tr><td>P0</td><td>প্রিয় শিক্ষক</td><td>Most-attended teacher (CEO ask)</td><td><code>teacher_attendees</code>⋈<code>Teachers</code></td><td><span class="pill p-have">HAVE</span></td><td>M</td></tr>
+    <tr><td>P0</td><td>সেরা বিষয় — পরীক্ষায়</td><td>Best subject by marks (CEO ask)</td><td><code>model_test_session</code> / live-exam</td><td><span class="pill p-pipe">PIPE</span></td><td>M</td></tr>
+    <tr><td>P1</td><td>পারফরম্যান্স স্কোর</td><td>Overall score — a page last year</td><td><code>results-reporting</code></td><td><span class="pill p-have">HAVE</span></td><td>S</td></tr>
+    <tr><td>P1</td><td>বছরের সেরা দিন</td><td>Biggest single study day</td><td><code>user_activity_duration_agg</code> max/day</td><td><span class="pill p-have">HAVE</span></td><td>S</td></tr>
+    <tr><td>P1</td><td>শিখোর সাথে N বছর</td><td>Loyalty / years with Shikho</td><td><code>Transactions</code> (from 2024)</td><td><span class="pill p-gap">VERIFY</span></td><td>S</td></tr>
+    <tr><td>P2</td><td>শিখো AI-কে N প্রশ্ন</td><td>AI usage</td><td><code>gen_ai_conversations</code></td><td><span class="pill p-pipe">PIPE</span></td><td>S</td></tr>
+    <tr><td>P3</td><td>গত বছরের চেয়ে ভালো</td><td>Improvement vs the 1st half of the year</td><td>1st-half vs 2nd-half accuracy</td><td><span class="pill p-have">HAVE</span></td><td>M</td></tr>
+  </table>
+  <div class="rec"><b>Launch cut:</b> add <b>প্রিয় শিক্ষক</b> (data ready, asked for) → 8-slide deck + the badge collection. Hold best-subject-by-marks as P0-stretch (needs <code>model_test_session</code> piped by ~10 Dec). The rest = v2, so the deck stays 8–9 slides, not 15.</div>
+</section>
+<!-- ===================== BACKEND & DATA ===================== -->
+<section class="panel" id="t2">
+  <h2>Backend &amp; data pipeline</h2>
+  <p class="lead">We calculate each student’s whole wrap <b>ahead of time</b>, not when they open the app. A nightly Airflow job computes every student’s numbers for the window <b>1 Jan → 20 Dec 2026</b> and stores each as one row. On open, the app simply <b>reads that ready-made row — instantly</b>; no live maths. (The heavy joins on every tap, for the whole base, would be far too slow.) The run on the night of <b>20 Dec</b> produces the final version that goes live 26–31 Dec.</p>
+
+  <h3>4.1 Where the data comes from (provenance)</h3>
+  <p class="lead">The wrap reads one warehouse — <code>datafuse</code> (Postgres) — fed by the whole platform. It never touches the source services directly, so it can’t slow the app, exams or live classes.</p>
+  <ul>
+    <li><b>Live event stream.</b> Each microservice (exam, live-exam, academic-program, live-class…) emits domain events over <b>NATS JetStream / gRPC</b>; the <b>KPI service</b> mirrors them into <code>datafuse</code>.</li>
+    <li><b>Nightly aggregation (Airflow, <code>data_pipeline_bronze</code>).</b> DAGs roll raw activity into <code>user_activity_duration_agg</code> (7 activity-type durations), <code>mcq_user_*_daily</code> (quiz / question / subject), every morning ~06:00–07:00 BD.</li>
+    <li><b>Operational stores not yet in the warehouse</b> (MongoDB): AI chats, model-test detail, QR scans. These are the GET-sources — §4.5 pipes them in.</li>
+  </ul>
+  <div class="reversal"><b>Gamification badges are no longer a source.</b> The earlier plan read learning badges from the <code>gamification</code> service; it’s unused ~3 years with no reliable live list, so the wrap reads <b>nothing</b> from it. All 11 badges are computed in this DAG from warehouse activity (§4.2 t7).</div>
+
+  <h4>Source-of-truth map — every metric to its origin</h4>
+  <table>
+    <tr><th>Wrap metric</th><th>Origin service</th><th>Origin → warehouse</th><th>Reuse (existing job)</th></tr>
+    <tr><td>Study time (7 types) · video mins/count</td><td>academic-program · video</td><td>activity events → <code>user_activity_duration_agg</code></td><td><code>user_activity_duration_agg_dag</code></td></tr>
+    <tr><td>Live-class attendance · fav teacher</td><td>live-class (teachmint)</td><td>NATS → <code>student_/teacher_attendees</code></td><td><code>kpi_to_crm_events_lca_dag</code></td></tr>
+    <tr><td>Quizzes · questions · correct · hard</td><td>live-exam (MCQ)</td><td>Mongo → <code>mcq_user_*_daily</code></td><td><code>mcq_session_agg_to_kpi_dag</code></td></tr>
+    <tr><td><b>Best / weakest subject</b></td><td>live-exam</td><td><code>mcq_user_chapter_daily.subject_name</code> accuracy</td><td><b><code>practice-quiz-subject-wise-event_dag</code> already computes highest/lowest subject</b></td></tr>
+    <tr><td>Active days · streak</td><td>all of the above</td><td><code>user_activity_duration_agg.activity_date</code></td><td>new (derive in DAG)</td></tr>
+    <tr><td>Best subject by exam marks</td><td>live-exam</td><td><code>model_test_session</code> (Mongo) → agg</td><td><code>live_exam_agg_to_crm_dag</code></td></tr>
+    <tr><td>AI usage · QR scans</td><td>gen-ai · qr-quiz</td><td>Mongo → pipe (§4.5)</td><td><code>mongodb-to-postgres-sync</code> pattern</td></tr>
+    <tr><td>Profile · years-with-Shikho</td><td>core</td><td><code>Students</code> · <code>Transactions</code></td><td>user-sync</td></tr>
+  </table>
+
+  <h3>4.2 Table <code>datafuse.wrap_2026</code> &amp; config</h3>
+<pre><span class="k">CREATE TABLE</span> datafuse.wrap_2026 (
+  user_id         <span class="t">varchar</span>  <span class="k">NOT NULL</span>,   program_id <span class="t">varchar</span> <span class="k">NOT NULL</span>,   <span class="c">-- program_id = PRIMARY program; '0' for free/no-enrolment</span>
+  is_available    <span class="t">boolean</span>  <span class="k">NOT NULL DEFAULT</span> <span class="k">false</span>,   <span class="c">-- flipped true only after the t10 QA gate</span>
+  display_group   <span class="t">varchar(16)</span>,                   <span class="c">-- strong | middle | low | just_starting (no-shame group, §6)</span>
+  learner_type    <span class="t">varchar(32)</span>,
+  active_days <span class="t">int</span>, longest_streak <span class="t">int</span>, total_study_sec <span class="t">bigint</span>,
+  live_joined <span class="t">int</span>, live_held <span class="t">int</span>, quiz_completed <span class="t">int</span>, video_minutes <span class="t">int</span>,
+  top_subject_id  <span class="t">varchar</span>,  account_type <span class="t">varchar(8)</span>,   <span class="c">-- paid | trial | free (for the retention read, not a gate)</span>
+  schema_version  <span class="t">varchar(8)</span> <span class="k">NOT NULL DEFAULT</span> <span class="s">'2.0'</span>,
+  payload         <span class="t">jsonb</span>    <span class="k">NOT NULL</span>,          <span class="c">-- full response, client reads verbatim</span>
+  generated_at    <span class="t">timestamptz</span> <span class="k">NOT NULL DEFAULT</span> now(),
+  <span class="k">PRIMARY KEY</span> (user_id, program_id));
+<span class="k">CREATE INDEX</span> ON datafuse.wrap_2026 (is_available);
+
+<span class="c">-- config: all thresholds change with NO app release (SC-1737 requirement)</span>
+<span class="k">CREATE TABLE</span> datafuse.wrap_badge_config (
+  badge_code <span class="t">varchar</span>, tier <span class="t">varchar</span>, basis <span class="t">varchar</span>,  <span class="c">-- relative | milestone | rate | personal | factual</span>
+  threshold <span class="t">numeric</span>, min_floor <span class="t">numeric</span>, label_bn <span class="t">text</span>, prestige <span class="t">int</span>,
+  <span class="k">PRIMARY KEY</span>(badge_code,tier));
+<span class="k">CREATE TABLE</span> datafuse.wrap_type_rule (axis <span class="t">varchar</span>, code <span class="t">varchar</span>,
+  predicate <span class="t">text</span>, label_bn <span class="t">text</span>, priority <span class="t">int</span>, <span class="k">PRIMARY KEY</span>(axis,code));</pre>
+
+  <h4>4.2a The 11-badge roster — all self-computed (config seed)</h4>
+  <p class="lead">Each badge is earned from the student’s own window activity at its <b>highest reached tier only</b>. Four <b>bases</b> set the bar: <b>Relative</b> (rank vs peers — raw time drifts year to year), <b>Milestone</b> (a round chase-able number), <b>Rate</b> (already a %, so an absolute cut is meaningful), <b>Personal</b> (vs the student’s own year / subjects, never peers). Thresholds live in config; final Bangla names are a brand pass — the <i>rules</i> are what’s fixed.</p>
+  <table>
+    <tr><th>#</th><th>Badge (top · second)</th><th>Earned by</th><th>Top tier</th><th>Second</th><th>Basis</th><th>Min floor</th></tr>
+    <tr><td>1</td><td><b>ভিডিও ম্যারাথনার</b> · নিয়মিত দর্শক</td><td>Video watched (by time)</td><td>Top 15% of video pool</td><td>Top 50%</td><td>Relative</td><td>30 min</td></tr>
+    <tr><td>2</td><td><b>অধ্যবসায়ী</b> · অধ্যয়নপ্রিয়</td><td>Total study time</td><td>Top 15%</td><td>Top 50%</td><td>Relative</td><td>some</td></tr>
+    <tr><td>3</td><td><b>ফার্স্ট বেঞ্চার</b> · নিয়মিত উপস্থিতি</td><td>Live-class attendance</td><td>85%+</td><td>60–84%</td><td>Rate</td><td>5 held</td></tr>
+    <tr><td>4</td><td><b>কুইজ যোদ্ধা</b> · কুইজ প্রেমী</td><td>Distinct quizzes completed</td><td>100+</td><td>50–99</td><td>Milestone</td><td>—</td></tr>
+    <tr><td>5</td><td><b>প্রশ্নবীর</b> · প্রশ্নপ্রেমী</td><td>Questions answered</td><td>1000+</td><td>500–999</td><td>Milestone</td><td>—</td></tr>
+    <tr><td>6</td><td><b>নির্ভুল পড়ুয়া</b> · মনোযোগী পড়ুয়া</td><td>Answer accuracy</td><td>85%+</td><td>70–84%</td><td>Rate</td><td>50 q</td></tr>
+    <tr><td>7</td><td><b>বিষয় সেরা</b></td><td>Accuracy in strongest subject</td><td>85%+ in top subject</td><td>—</td><td>Personal</td><td>50 q in subject</td></tr>
+    <tr><td>8</td><td><b>সক্রিয় তারকা</b> · সক্রিয় পড়ুয়া</td><td>Total active days</td><td>150+ days</td><td>75–149</td><td>Milestone</td><td>—</td></tr>
+    <tr><td>9</td><td><b>স্ট্রিক মাস্টার</b> · ধারাবাহিক পড়ুয়া</td><td>Longest consecutive-day run</td><td>21+ days</td><td>7–20</td><td>Milestone</td><td>—</td></tr>
+    <tr><td>10</td><td><b>উন্নতির তারকা</b></td><td>Did clearly better in H2 than H1</td><td>Measurable improvement</td><td>—</td><td>Personal</td><td>data in both halves</td></tr>
+    <tr><td>11</td><td><b>শিখোর সাথে N বছর</b></td><td>Returning paid student (loyalty)</td><td>N years (from 2024)</td><td>—</td><td>Factual</td><td>paid an earlier year</td></tr>
+  </table>
+  <p class="note"><b>Prestige order</b> (shelf + card): ভিডিও ম্যারাথনার · অধ্যবসায়ী · ফার্স্ট বেঞ্চার · কুইজ যোদ্ধা · প্রশ্নবীর · নির্ভুল পড়ুয়া · বিষয় সেরা · সক্রিয় তারকা · স্ট্রিক মাস্টার · উন্নতির তারকা · শিখোর সাথে N বছর. Artworks ship inside the app (fixed for the year); config retunes thresholds/labels with no release, but a brand-new badge’s artwork needs an app update. More badges = more ways to be recognised — deliberate, so almost every active student earns ≥1. Full qualifying rules &amp; worked examples: §6 badges.</p>
+
+  <h3>4.2b DAG <code>wrap_2026_build_dag_v2_0</code> — task graph</h3>
+  <table>
+    <tr><th>Task</th><th>Does</th><th>Reads</th></tr>
+    <tr><td><code>t1_cohort</code></td><td><b>all student accounts</b> minus staff/test/deleted; one row per (user, primary program); tag account_type</td><td><code>Students</code>,<code>Transactions</code>,enrolment</td></tr>
+    <tr><td><code>t2_engagement</code></td><td>study time by type/month, video, quiz_count</td><td><code>user_activity_duration_agg</code></td></tr>
+    <tr><td><code>t3_attendance</code></td><td>joined(≥min-stay)/held/rate; fav teacher</td><td><code>student_/teacher_attendees</code>,<code>lessons</code></td></tr>
+    <tr><td><code>t4_quiz</code></td><td>completed, questions, correct, hard, monthly</td><td><code>mcq_user_*_daily</code></td></tr>
+    <tr><td><code>t5_days_streak</code></td><td>active dates + streak; union AI/QR days</td><td>agg + piped sources</td></tr>
+    <tr><td><code>t6_subject</code></td><td>best/weakest subject by accuracy</td><td><code>mcq_user_chapter_daily</code></td></tr>
+    <tr><td><code>t7a_pools</code></td><td><b>cohort percentiles</b> for the relative badges (video, study-time) over non-staff accounts</td><td>t2 outputs</td></tr>
+    <tr><td><code>t7_badges</code></td><td>assign the 11 badges (highest tier each) + learner stamp + display_group</td><td><code>wrap_badge_config</code>,<code>wrap_type_rule</code>,t7a</td></tr>
+    <tr><td><code>t8_assemble</code></td><td>build <code>payload</code> jsonb + set display_group</td><td>—</td></tr>
+    <tr><td><code>t9_upsert</code></td><td>UPSERT (never append), <code>is_available=false</code></td><td>—</td></tr>
+    <tr><td><code>t10_qa_gate</code></td><td>outlier/null guard; flip <code>is_available=true</code> only for sane rows</td><td>—</td></tr>
+  </table>
+
+  <h3>4.3 Per-task computation — the queries</h3>
+  <p class="lead">All queries run on <code>datafuse</code> over <b>2026-01-01 → 2026-12-20</b>, scoped to the <code>cohort</code> from t1. Most assemble tables that already exist; verify column names marked <code>?</code> with <code>information_schema</code> before coding.</p>
+<pre><span class="c">-- t1 · cohort — EVERYONE (paid, trial, free); exclude only staff/test/deleted.</span>
+<span class="c">-- One row per student at their PRIMARY program (most-active 2026, tie → most recent). Free/no-enrol → program '0'.</span>
+<span class="k">CREATE TEMP TABLE</span> cohort <span class="k">AS</span>
+<span class="k">SELECT</span> s.id <span class="k">AS</span> user_id,
+       <span class="k">COALESCE</span>(p.primary_program, <span class="s">'0'</span>) <span class="k">AS</span> program_id,
+       <span class="k">CASE WHEN</span> paid.ok  <span class="k">THEN</span> <span class="s">'paid'</span>
+            <span class="k">WHEN</span> trial.ok <span class="k">THEN</span> <span class="s">'trial'</span> <span class="k">ELSE</span> <span class="s">'free'</span> <span class="k">END</span> <span class="k">AS</span> account_type
+<span class="k">FROM</span> "Students" s
+<span class="k">LEFT JOIN</span> primary_program p <span class="k">ON</span> p.user_id = s.id     <span class="c">-- most-active program in 2026</span>
+<span class="k">WHERE</span> s.is_staff <span class="k">IS NOT TRUE</span> <span class="k">AND</span> s.is_test <span class="k">IS NOT TRUE</span>
+  <span class="k">AND</span> s.deleted_at <span class="k">IS NULL</span>
+  <span class="k">AND</span> s.created_at &lt;= <span class="s">'2026-12-20'</span>;     <span class="c">-- accounts created after cut-off have no 2026 window → no wrap (W-E4)</span>
+<span class="c">-- "paid"/"trial" flags: enrolment of that type whose coverage OVERLAPS the window (not payment-date-in-window).</span>
+<span class="c">-- These only set account_type + loyalty; they are NOT an eligibility gate (everyone is in the cohort).</span>
+
+<span class="c">-- t2 · engagement</span>
+<span class="k">SELECT</span> user_id,
+  <span class="k">SUM</span>(recorded_videos_duration + animated_videos_duration + live_class_duration
+    + quiz_duration + live_exam_duration + model_test_duration + smart_note_duration) <span class="k">AS</span> total_study_sec,
+  <span class="k">SUM</span>(recorded_videos_duration + animated_videos_duration) <span class="k">AS</span> video_sec,
+  <span class="k">SUM</span>(recorded_videos_count + animated_videos_count)       <span class="k">AS</span> video_count,
+  <span class="k">SUM</span>(quiz_count) <span class="k">AS</span> quiz_count_agg
+<span class="k">FROM</span> user_activity_duration_agg
+<span class="k">WHERE</span> activity_date <span class="k">BETWEEN</span> <span class="s">'2026-01-01'</span> <span class="k">AND</span> <span class="s">'2026-12-20'</span>
+<span class="k">GROUP BY</span> user_id;   <span class="c">-- study_by_month[12]: add date_trunc('month',activity_date); by_type: one SUM per *_duration</span>
+
+<span class="c">-- t3 · attendance (min-stay = 10 min OR 30% of class; held scoped to on/after the student's join date — W-AT1)</span>
+<span class="k">WITH</span> att <span class="k">AS</span> (            <span class="c">-- aggregate rejoins BEFORE the min-stay test; MAX() de-fans co-taught classes</span>
+  <span class="k">SELECT</span> sa.user_id, ta.content_id, <span class="k">SUM</span>(sa.duration) stay, <span class="k">MAX</span>(ta.duration) class_len
+  <span class="k">FROM</span> student_attendees sa
+  <span class="k">JOIN</span> teacher_attendees ta <span class="k">ON</span> ta.content_id = <span class="k">COALESCE</span>(<span class="k">NULLIF</span>(sa.content_id,<span class="s">''</span>), sa.room_id)
+  <span class="k">GROUP BY</span> sa.user_id, ta.content_id),
+joined <span class="k">AS</span> (<span class="k">SELECT</span> user_id, <span class="k">COUNT</span>(*) joined <span class="k">FROM</span> att
+  <span class="k">WHERE</span> stay &gt;= <span class="k">GREATEST</span>(600, 0.30*class_len) <span class="k">GROUP BY</span> user_id),
+held <span class="k">AS</span> (<span class="k">SELECT</span> c.user_id, <span class="k">COUNT</span>(*) held <span class="k">FROM</span> cohort c
+  <span class="k">JOIN</span> enrolment e <span class="k">ON</span> e.user_id=c.user_id <span class="k">AND</span> e.program_id=c.program_id
+  <span class="k">JOIN</span> lessons l <span class="k">ON</span> l.academic_program_id=c.program_id <span class="k">AND</span> l.content_type=<span class="s">'LiveClass'</span>
+    <span class="k">AND</span> l.start_time <span class="k">BETWEEN</span> <span class="k">GREATEST</span>(e.enrolment_start,<span class="s">'2026-01-01'</span>) <span class="k">AND</span> <span class="s">'2026-12-20'</span>
+  <span class="k">GROUP BY</span> c.user_id)
+<span class="k">SELECT</span> c.user_id, j.joined, h.held, <span class="k">LEAST</span>(j.joined::numeric/<span class="k">NULLIF</span>(h.held,0),1) rate
+<span class="k">FROM</span> cohort c <span class="k">LEFT JOIN</span> joined j <span class="k">USING</span>(user_id) <span class="k">LEFT JOIN</span> held h <span class="k">USING</span>(user_id);
+
+<span class="c">-- t5 · active days + longest streak (gaps-and-islands; Asia/Dhaka dates — W-T1)</span>
+<span class="k">WITH</span> d <span class="k">AS</span> (<span class="k">SELECT DISTINCT</span> user_id, activity_date <span class="k">FROM</span> user_activity_duration_agg
+         <span class="k">WHERE</span> activity_date <span class="k">BETWEEN</span> <span class="s">'2026-01-01'</span> <span class="k">AND</span> <span class="s">'2026-12-20'</span> ),  <span class="c">-- UNION AI/QR days once piped</span>
+g <span class="k">AS</span> (<span class="k">SELECT</span> user_id, activity_date,
+     activity_date - (<span class="k">ROW_NUMBER</span>() <span class="k">OVER</span>(<span class="k">PARTITION BY</span> user_id <span class="k">ORDER BY</span> activity_date))::int grp <span class="k">FROM</span> d),
+runs <span class="k">AS</span> (<span class="k">SELECT</span> user_id, grp, <span class="k">COUNT</span>(*) len, <span class="k">MIN</span>(activity_date) s, <span class="k">MAX</span>(activity_date) e
+      <span class="k">FROM</span> g <span class="k">GROUP BY</span> user_id, grp)
+<span class="k">SELECT DISTINCT ON</span>(user_id) user_id, len longest_streak, s streak_start, e streak_end
+<span class="k">FROM</span> runs <span class="k">ORDER BY</span> user_id, len <span class="k">DESC</span>;
+<span class="c">-- active_days = COUNT(DISTINCT activity_date); avg_days_per_week = active_days / weeks_since_first_activity (W-LT2)</span>
+
+<span class="c">-- t6 · best / weakest subject (subject-native accuracy — no time rebuild)</span>
+<span class="k">WITH</span> subj <span class="k">AS</span> (<span class="k">SELECT</span> user_id, subject_name,
+    <span class="k">SUM</span>(total_correct)::numeric/<span class="k">NULLIF</span>(<span class="k">SUM</span>(total_questions),0) accuracy, <span class="k">SUM</span>(total_questions) q
+  <span class="k">FROM</span> mcq_user_chapter_daily
+  <span class="k">WHERE</span> «day»? <span class="k">BETWEEN</span> <span class="s">'2026-01-01'</span> <span class="k">AND</span> <span class="s">'2026-12-20'</span>
+    <span class="k">AND</span> lower(subject_name) <span class="k">NOT IN</span> (<span class="s">'orientation'</span>,<span class="s">'orientation and guideline'</span>)
+  <span class="k">GROUP BY</span> user_id, subject_name)
+<span class="k">SELECT DISTINCT ON</span>(user_id) user_id, subject_name top_subject, accuracy
+<span class="k">FROM</span> subj <span class="k">WHERE</span> q &gt;= :min_questions <span class="k">ORDER BY</span> user_id, accuracy <span class="k">DESC</span>;  <span class="c">-- weakest = ORDER BY accuracy ASC</span></pre>
+
+  <h4>t7a · pools &amp; t7 · the 11 badges</h4>
+<pre><span class="c">-- t7a · cohort percentiles for the RELATIVE badges (computed over non-staff accounts with activity)</span>
+<span class="k">SELECT</span> user_id,
+  <span class="k">percent_rank</span>() <span class="k">OVER</span>(<span class="k">ORDER BY</span> video_sec) video_pct,     <span class="c">-- pool = students with 30+ min video (W-VD1)</span>
+  <span class="k">percent_rank</span>() <span class="k">OVER</span>(<span class="k">ORDER BY</span> total_study_sec) study_pct
+<span class="k">FROM</span> student_metrics <span class="k">WHERE</span> video_sec &gt;= 1800;   <span class="c">-- study pool = any activity</span>
+
+<span class="c">-- t7 · assign each badge at its HIGHEST reached tier (config-driven; one row per earned badge)</span>
+<span class="c">--   relative  : video_pct/study_pct ≥ threshold (0.85 top-tier, 0.50 second) AND min_floor met</span>
+<span class="c">--   milestone : metric ≥ threshold (quizzes, questions, active_days, streak)</span>
+<span class="c">--   rate      : rate ≥ threshold AND min_floor questions/classes (accuracy, attendance)</span>
+<span class="c">--   personal  : improvement (H2 &gt; H1 by margin) ; best-subject accuracy ≥ 0.85 w/ ≥50 q</span>
+<span class="c">--   factual   : distinct paid years from 2024 (loyalty)</span>
+<span class="c">-- Earn none → badges[] empty → the collection shows warm forward copy (never an empty shelf, W-BG1).</span>
+
+<span class="c">-- display_group (§6 no-shame, checked TOP-DOWN, mutually exclusive):</span>
+<span class="c">--   strong        = badge_count &gt;= 3 OR video_pct &gt;= 0.80</span>
+<span class="c">--   middle        = badge_count IN (1,2)</span>
+<span class="c">--   low           = badge_count = 0 AND active_days &gt;= 5</span>
+<span class="c">--   just_starting = otherwise</span></pre>
+
+  <h4>t7b · Learner-type stamp — cohort-relative, self-balancing</h4>
+  <p class="lead">One stamp per student, chosen <b>relative to the cohort</b>, so the types spread ~evenly whatever the raw distribution looks like (§7.1 R1):</p>
+  <ol>
+    <li>Per student compute each <b>axis</b>: <code>rhythm</code>=active_days/weeks · <code>intensity</code>=total_study_sec · <code>clock</code>=night_share <i>(needs an hour-band; drop if absent — O6)</i> · <code>method</code>=practice_share vs video_share · <code>focus</code>=top_subject_share.</li>
+    <li>Per axis, compute cohort μ and σ; then <code>z = (x − μ)/σ</code>. Baseline <b>excludes “just starting”</b> students so near-zero activity can’t drag μ/σ.</li>
+    <li>Stamp = the axis of <b>largest |z|</b>, mapped via <code>wrap_type_rule</code> (z&gt;0 → high label, z&lt;0 → its opposite).</li>
+    <li>If every |z| &lt; 0.5 → <code>balanced</code> (ভারসাম্যপূর্ণ). <b>Nobody gets a blank.</b> Deterministic tie-break by config priority, so reruns are stable.</li>
+  </ol>
+<pre><span class="c"># Orchestration (Airflow, data_pipeline_bronze)</span>
+schedule_interval = <span class="s">"30 7 * * *"</span>          <span class="c"># after the 06–07 BD aggregations; run Dec 1 → 20</span>
+default_args = { <span class="s">"retries"</span>:2, <span class="s">"retry_delay"</span>:10m, <span class="s">"on_failure_callback"</span>:alert_slack }
+ExternalTaskSensor(user_activity_duration_agg_dag_v1_0); ExternalTaskSensor(mcq_session_agg_to_kpi_dag_v1_0)
+t1_cohort &gt;&gt; [t2_engagement,t3_attendance,t4_quiz,t5_days_streak,t6_subject] &gt;&gt; t7a_pools &gt;&gt; t7_badges &gt;&gt; t8_assemble &gt;&gt; t9_upsert &gt;&gt; t10_qa_gate</pre>
+
+  <h3>4.4 Read API &amp; response contract</h3>
+  <p class="lead">Follow the existing report-card transport: a GraphQL query exposed through the gateway (like <code>getYearlyReview</code>, which <code>:feature:quarterreview</code> already calls). The resolver just reads the stored row — O(1), no computation, &lt;150ms p95 off the 24h cache.</p>
+<pre><span class="c"># GraphQL (gateway → gRPC to analytics, which already reads datafuse)</span>
+<span class="k">type</span> Query {
+  yearWrap(year: Int!): WrapPayload        <span class="c"># null if not available</span>
+  yearWrapExists(year: Int!): Boolean!     <span class="c"># cheap banner gate</span>
+}
+<span class="k">type</span> WrapPayload { schemaVersion:String!  isAvailable:Boolean!  displayGroup:String!  cutoffDate:String!
+  profile:WrapProfile!  learnerType:LearnerType  stats:WrapStats!
+  badges:[Badge!]!  slides:[Slide!]!  share:ShareConfig! }
+<span class="c"># states: no row → yearWrap=null + yearWrapExists=false · row not ready → isAvailable=false ("coming soon")</span>
+<span class="c"># NOTE: there is no NOT_ELIGIBLE path any more — every non-staff student gets a row. 24h cache · 100/min rate-limit.</span></pre>
+<pre>{ <span class="s">"schema_version"</span>:<span class="s">"2.0"</span>, <span class="s">"is_available"</span>:<span class="k">true</span>, <span class="s">"display_group"</span>:<span class="s">"strong"</span>, <span class="s">"cutoff_date"</span>:<span class="s">"2026-12-20"</span>,
+  <span class="s">"profile"</span>:{<span class="s">"first_name"</span>:<span class="s">"নিশাত"</span>,<span class="s">"class"</span>:<span class="s">"নবম"</span>,<span class="s">"study_group"</span>:<span class="s">"বিজ্ঞান"</span>,<span class="s">"years_with_shikho"</span>:3},
+  <span class="s">"learner_type"</span>:{<span class="s">"code"</span>:<span class="s">"regular_studier"</span>,<span class="s">"label_bn"</span>:<span class="s">"নিয়মিত পড়ুয়া"</span>,<span class="s">"axis"</span>:<span class="s">"rhythm"</span>},
+  <span class="s">"stats"</span>:{<span class="s">"active_days"</span>:187,<span class="s">"avg_days_per_week"</span>:3.7,
+    <span class="s">"longest_streak"</span>:{<span class="s">"days"</span>:23,<span class="s">"start"</span>:<span class="s">"2026-08-02"</span>,<span class="s">"end"</span>:<span class="s">"2026-08-24"</span>},
+    <span class="s">"total_study_seconds"</span>:511200,<span class="s">"study_school_days"</span>:24,
+    <span class="s">"live_class"</span>:{<span class="s">"joined"</span>:63,<span class="s">"held"</span>:72,<span class="s">"rate"</span>:0.875},
+    <span class="s">"quiz"</span>:{<span class="s">"completed"</span>:148,<span class="s">"by_month"</span>:[12],<span class="s">"questions"</span>:720,<span class="s">"correct"</span>:612},
+    <span class="s">"video"</span>:{<span class="s">"minutes"</span>:2860,<span class="s">"count"</span>:134},
+    <span class="s">"top_subject"</span>:{<span class="s">"name_bn"</span>:<span class="s">"পদার্থবিজ্ঞান"</span>,<span class="s">"accuracy"</span>:0.88} <span class="c">// null if thin</span>},
+  <span class="s">"badges"</span>:[{<span class="s">"code"</span>:<span class="s">"video_marathoner"</span>,<span class="s">"label_bn"</span>:<span class="s">"ভিডিও ম্যারাথনার"</span>,<span class="s">"tier"</span>:<span class="s">"top"</span>,<span class="s">"earned_with"</span>:<span class="s">"৪৮ ঘণ্টা ভিডিও"</span>}, …],
+  <span class="s">"slides"</span>:[{<span class="s">"type"</span>:<span class="s">"cover"</span>,<span class="s">"order"</span>:1}, … {<span class="s">"type"</span>:<span class="s">"badges"</span>,<span class="s">"order"</span>:8},{<span class="s">"type"</span>:<span class="s">"marksheet"</span>,<span class="s">"order"</span>:9}],
+  <span class="s">"share"</span>:{<span class="s">"card_default_hide_name"</span>:<span class="k">true</span>} }</pre>
+
+  <h3>4.5 GET-source pipes (into datafuse first)</h3>
+  <p class="lead">Three signals live in operational stores. Each is piped with the existing <code>mongodb-to-postgres-sync</code> pattern — one small DAG per source, ~1 day each. <b>Deadline: in <code>datafuse</code> by ~10 Dec</b>, else the signal drops from v1 and the wrap degrades gracefully.</p>
+  <table>
+    <tr><th>Signal</th><th>Service · store</th><th>Wrap use</th></tr>
+    <tr><td>AI usage (“N questions”)</td><td>gen-ai · Mongo conversations</td><td>active-day union + an optional AI slide</td></tr>
+    <tr><td>Best subject by exam</td><td>live-exam · <code>model_test_session</code> (Mongo)</td><td>P0-stretch enhancement slide</td></tr>
+    <tr><td>QR / book scans</td><td>live-exam (qr-quiz) · <code>qr_scan_logs</code></td><td>active-day union</td></tr>
+  </table>
+  <p class="src">Model-test results are eventually consistent (gated by <code>result_publish_time</code>, published on NATS <code>LESSON.ModelTest.&lt;id&gt;.VALIDATED</code>) — the nightly DAG reads settled results, so there’s no race. <b>No gamification pipe</b> — badges are self-computed.</p>
+
+  <h3>4.6 Reliability, idempotency &amp; observability</h3>
+  <p class="lead">The existing aggregation DAGs are <b>at-most-once, no retries, no alerting</b> (documented silent-gap limitation). The wrap is launch-critical and share-facing, so it is stricter — full QA gate and edge handling in §6.8.</p>
+  <table>
+    <tr><th>Concern</th><th>Requirement</th></tr>
+    <tr><td>Idempotency</td><td><b>UPSERT</b> on <code>(user_id, program_id)</code> — never append (don’t inherit the MCQ-agg append-mode dup bug). Reruns are safe.</td></tr>
+    <tr><td>Retries &amp; partial upstream</td><td>Airflow <code>retries ≥ 2</code> with backoff; <code>ExternalTaskSensor</code> waits per source — a missing source day → <b>fail fast</b>, never ship a half cohort.</td></tr>
+    <tr><td>QA gate <code>t10</code></td><td>Row stays <code>is_available=false</code> until it passes <b>all</b>: no NULL headline stat · study ≤ 24h/day · <code>0 ≤ rate ≤ 1</code> · <code>streak ≤ active_days</code> · no negatives · a learner stamp present · a display_group set. Failures quarantined <i>with a reason</i>.</td></tr>
+    <tr><td>Freshness &amp; final run</td><td>Runs after upstreams finish (~07:30 BD). Locked run = night of <b>20 Dec</b>; if it fails, serve the last good run and re-run before 26 Dec — go-live is gated by <code>is_available</code>, not the timestamp.</td></tr>
+    <tr><td>Observability</td><td>Per-run: cohort size · rows built · quarantined by reason · % filling each slide · stamp &amp; badge histograms · display_group split. Alert on quarantine spikes or cohort drops.</td></tr>
+  </table>
+</section>
+<!-- ===================== ANDROID ===================== -->
+<section class="panel" id="t3">
+  <h2>Android — extend the existing native module</h2>
+  <div class="rec"><b>The build is an extension, not a greenfield.</b> <code>:feature:quarterreview</code> already ships an animated story: <code>QuarterReviewScreen</code> + <code>QuarterReviewParentContainer</code>, pages (<code>StudentOverview</code>, <code>LiveClassReview</code>, <code>LiveTestReview</code>, <code>SubjectWiseReview</code>, <code>LongestStreak</code>, <code>WeeklyActivity</code>, <code>MonthlyReview</code>, <code>PerformanceScore</code>), page nav (<code>ReviewInteractionComponent</code>), share (<code>ReviewBottomInfoComponent</code> → <code>dev.shreyaspatil.capturable</code> → <code>shareBitmap()</code>), Lottie loading, and <code>year_report_share</code> events. We re-skin to Direction B and add the stamp, the badge collection, and the marksheet.</div>
+
+  <h3>5.1 Where each piece lives</h3>
+  <table>
+    <tr><th>Piece</th><th>Module / file</th><th>Action</th></tr>
+    <tr><td>Home banner</td><td><code>:feature:home</code> → <code>PaidUserScreen.kt</code> (+ free/trial home), <code>HomeScreenNavigation.kt</code></td><td>add <code>WrapBannerCard</code> + <code>OnYearWrapClicked</code> (mirror <code>ReportCardStatusWidget</code>). Shown to <b>every</b> student with <code>is_available</code>, not paid only.</td></tr>
+    <tr><td>Nav route</td><td><code>DashBoardActivity</code> Nav3 (<code>@Serializable</code> routes)</td><td>add <code>WrapRoute</code>; <code>navigateToRoute(WrapRoute)</code></td></tr>
+    <tr><td>Story host</td><td><code>:feature:quarterreview</code> → <code>QuarterReviewParentContainer</code></td><td>add a <code>WrapParentContainer</code> variant / mode flag</td></tr>
+    <tr><td>Slides</td><td>same module, <code>…/*Component.kt</code></td><td>re-skin existing + add <code>LearnerStampComponent</code>, <code>BadgeCollectionComponent</code>, <code>MarksheetShareComponent</code>, <code>MarksheetCoverComponent</code></td></tr>
+    <tr><td>Data layer</td><td><code>AcademicProgramRepository.getYearlyReview()</code> pattern</td><td>add <code>getYearWrap()</code> use case → GraphQL</td></tr>
+    <tr><td>Availability</td><td><code>GetIfYearlyReviewExistUseCase</code> pattern</td><td>add <code>GetIfYearWrapExistUseCase</code> → gates the banner</td></tr>
+    <tr><td>Share</td><td><code>ReviewBottomInfoComponent</code> + <code>Capturable</code></td><td>capture <code>MarksheetShareComponent</code> → fixed 1080×1920 PNG → <code>shareBitmap()</code>; respect নাম-লুকাও</td></tr>
+    <tr><td>Bengali text</td><td><code>getBengaliNumber()</code>, <code>getBengaliPositionString()</code></td><td>reuse</td></tr>
+  </table>
+
+  <h3>5.2 Client state machine</h3>
+  <table>
+    <tr><th>State</th><th>Trigger</th><th>UI (precedent in app)</th></tr>
+    <tr><td>Hidden</td><td><code>exists:false</code> (no row — staff/test/post-cutoff signup) OR app &lt; min version</td><td>no banner</td></tr>
+    <tr><td>Coming soon</td><td><code>is_available=false</code></td><td>banner → “শীঘ্রই আসছে” sheet</td></tr>
+    <tr><td>Loading</td><td>fetch in flight</td><td>Lottie “তোমার ২০২৬ খাতা তৈরি হচ্ছে!” (existing review loader)</td></tr>
+    <tr><td>Ready</td><td>payload present</td><td>the full story (8–9 slides); quiet students get encouraging copy inside the same deck</td></tr>
+    <tr><td>Error / Offline</td><td>network / 5xx</td><td>retry; app has <b>no report cache today</b> → add an optional Room cache for replay</td></tr>
+  </table>
+  <p class="src">report-card has <b>no offline caching</b> (known limitation) and errors show a generic “Something went wrong!” toast with no retry. For the Wrap, add a Room cache of <code>payload</code> + a real retry — a share feature that dies on a flaky network loses the viral moment (W-SV2).</p>
+
+  <h3>5.3 Analytics events</h3>
+  <p><code>wrap_opened</code> · <code>wrap_slide_viewed{index,type}</code> · <code>wrap_completed</code> · <code>wrap_shared{card,hide_name}</code> · <code>wrap_coming_soon_tap</code> · <code>wrap_badge_tapped{code}</code>. Dispatch via the existing <code>ctSingleEvent()</code>/<code>EventRepository</code> (CleverTap/Firebase), same as <code>year_report_share</code>. Tag each event with <code>display_group</code> and <code>account_type</code> so the no-shame guardrail and the paid-cohort retention read are measurable.</p>
+
+  <h3>5.4 Share &amp; the viral loop</h3>
+  <ul>
+    <li><b>Targets:</b> Android share sheet → WhatsApp, Facebook/Messenger, Instagram story, copy-link. The marksheet goes as a <b>1080×1920 PNG</b> (story ratio) + the short link.</li>
+    <li><b>What a non-Shikho friend sees</b> on opening the link: the public marksheet page with a prominent <b>“তুমিও তোমার খাতা বানাও — Shikho-তে শুরু করো”</b> CTA → Play Store / sign-up. Badges are safe to show publicly (positive, no private data).</li>
+    <li><b>Attribution:</b> the share <code>short_code</code> carries a referrer, so sign-ups from a shared card are credited (ties into the existing referral system). With free/trial students now sharing too, tag the sharer’s <code>account_type</code> to read conversion lift.</li>
+  </ul>
+
+  <h3>5.5 Privacy of the public card</h3>
+  <ul>
+    <li>The shared card is <b>login-less and public</b>, so it defaults to the <b>privacy-safe version</b>: no school, no address, no rank; first name optional (নাম-লুকাও on by default). These are students, many minors — treat the URL as PII-exposing.</li>
+    <li><code>report_id</code> must be a <b>non-enumerable random id</b> (never sequential or user id) so cards can’t be scraped. Card is <b>revocable</b> on request / account deletion (W-SH3).</li>
+  </ul>
+
+  <h3>5.6 Motion &amp; accessibility</h3>
+  <ul>
+    <li><b>Motion:</b> slides auto-advance ~5s (tap-right skip, tap-left back, hold to pause — the prototype’s rule); numbers count up, the stamp drops with a bounce, charts draw left→right. One animation per slide, 300–600ms, reusing the module’s transitions.</li>
+    <li><b>Accessibility:</b> Bengali numerals via <code>getBengaliNumber()</code>; respect system font-scale; AA contrast on the gradient slides; TalkBack descriptions on each stat, badge, and the share button. The wrap renders Bangla regardless of app locale (W-MS4).</li>
+  </ul>
+</section>
+<!-- ===================== CORNER CASES ===================== -->
+<section class="panel" id="t8">
+<style>
+.s8h{font-size:19px;color:var(--navy);border-top:2px solid var(--line);padding-top:20px;margin:34px 0 2px;letter-spacing:-.01em}
+.s8h .nn{color:var(--magenta);font-weight:800;margin-right:9px}
+.s8sub{font-size:13px;color:var(--ink-2);margin:2px 0 12px;max-width:82ch}
+.cases{display:grid;gap:10px;margin:14px 0}
+.case{display:flex;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:13px 15px;border-left:4px solid var(--line);align-items:flex-start}
+.case .ic{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:800}
+.case .cbody{flex:1;min-width:0}
+.case .cid{font-size:10px;font-weight:800;letter-spacing:.05em;color:var(--ink-3);text-transform:uppercase}
+.case .ctitle{font-weight:800;font-size:13.6px;color:var(--ink);margin:1px 0 5px;line-height:1.3}
+.case .csee{font-size:12.6px;color:var(--ink-2);line-height:1.58}
+.case .csee b{color:var(--ink)}.case .csee code{font-size:11.4px}
+.case .crule{font-size:12px;color:var(--ink-2);margin-top:6px;background:var(--sunken);border-radius:8px;padding:7px 10px;line-height:1.5;display:flex;gap:8px;align-items:flex-start}
+.case .crule b{color:var(--navy)}.case .crule .rl{flex:none;font-weight:800;color:var(--navy);text-transform:uppercase;font-size:9.5px;letter-spacing:.05em;margin-top:2px}
+.case.err{border-left-color:var(--red)}.case.err .ic{background:var(--red-bg);color:var(--red)}
+.case.wait{border-left-color:var(--ink-3)}.case.wait .ic{background:#EEF0F5;color:var(--ink-2)}
+.case.info{border-left-color:var(--blue)}.case.info .ic{background:var(--blue-bg);color:var(--blue)}
+.case.data{border-left-color:var(--amber)}.case.data .ic{background:var(--amber-bg);color:var(--amber)}
+.case.ok{border-left-color:var(--green)}.case.ok .ic{background:var(--green-bg);color:var(--green)}
+.caselegend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-2);margin:8px 0 2px}
+.caselegend span{display:inline-flex;align-items:center;gap:5px}
+.caselegend i{width:14px;height:14px;border-radius:50%;display:inline-block}
+.matrix td:first-child{font-weight:700;color:var(--ink)}
+.yes{color:var(--green);font-weight:800}.nope{color:var(--ink-3);font-weight:700}
+</style>
+  <h2>Corner cases — the build contract</h2>
+  <p class="deck">The earlier tabs define the <i>experience</i>. This tab is the <b>build contract</b>: every case that could silently produce a wrong number, show an empty screen, or make a student feel judged — each described <b>where it happens</b>, with what the student sees and the rule that fixes it, in the style of our signup edge-case spec. Written so engineering and QA can build without another meeting. Nothing here blocks the <i>design</i>; the open items block the final <b>data build</b> and are collected at the end (§6.9) and in §7.4.</p>
+  <div class="caselegend">
+    <span><i style="background:#FAE3E8"></i> wrong number, guarded</span>
+    <span><i style="background:#FAEFD3"></i> data check / verify</span>
+    <span><i style="background:#E7ECFB"></i> routing / behaviour</span>
+    <span><i style="background:#EEF0F5"></i> timing / not-ready</span>
+    <span><i style="background:#E3F1E8"></i> handled cleanly</span>
+  </div>
+
+  <!-- A -->
+  <h3 class="s8h"><span class="nn">6.1</span>Who gets a wrap</h3>
+  <p class="s8sub"><b>The rule, stated once:</b> every student account gets the full wrap — paid, trial or free. Membership is not payment-gated. Only staff/test/deleted accounts and post-cutoff signups are out. One template; thin sections show encouraging copy.</p>
+  <div class="cases">
+    <div class="case info"><div class="ic">✦</div><div class="cbody"><div class="cid">E-01 · Free / trial student</div><div class="ctitle">A never-paid or trial student opens the app</div><div class="csee"><b>Sees:</b> the same full wrap as a paid student, using whatever activity they have; thin sections show encouraging copy, not empty charts. A proud card to share — and a reason to convert.</div><div class="crule"><span class="rl">rule</span><div>No paid gate. <code>account_type</code> is recorded for the retention read only, never to hide the wrap. <span class="own o-be">BE</span></div></div></div></div>
+    <div class="case info"><div class="ic">↻</div><div class="cbody"><div class="cid">E-02 · Expired / lapsed paid course</div><div class="ctitle">Paid during 2026 but the course has since ended</div><div class="csee"><b>Sees:</b> a normal wrap for the window they were active. These lapsed-but-engaged students are the prime re-activation target.</div><div class="crule"><span class="rl">rule</span><div>Eligibility is judged over the window, not on launch day; expiry never removes the wrap. <span class="own o-dag">DAG t1</span></div></div></div></div>
+    <div class="case ok"><div class="ic">⊘</div><div class="cbody"><div class="cid">E-03 · Staff / teacher / test / internal</div><div class="ctitle">A non-student account</div><div class="csee"><b>Sees:</b> nothing — excluded. Also kept out of the badge percentile pools and learner-type baselines so they can’t skew the cuts.</div><div class="crule"><span class="rl">rule</span><div>Filtered in <code>t1_cohort</code> <b>before</b> any pool/baseline is taken. <span class="own o-dag">DAG t1</span></div></div></div></div>
+    <div class="case wait"><div class="ic">⏳</div><div class="cbody"><div class="cid">E-04 · Account created after 20 Dec</div><div class="ctitle">Signed up during / after launch week</div><div class="csee"><b>Sees:</b> no 2026 wrap — there’s no window activity to reflect. No banner until they have window activity; they start fresh for 2027.</div><div class="crule"><span class="rl">rule</span><div><code>created_at ≤ 2026-12-20</code> is required in <code>t1</code>. <span class="own o-dag">DAG t1</span></div></div></div></div>
+    <div class="case info"><div class="ic">▦</div><div class="cbody"><div class="cid">E-05 · Multiple paid programs</div><div class="ctitle">A student enrolled in several courses</div><div class="csee"><b>Sees:</b> one banner, opening the <b>primary</b> program (most-active in 2026, tie → most recent). Per-user stats (days, streak, study, video) are lifetime; per-program stats (attendance, that program’s quizzes) use the primary.</div><div class="crule"><span class="rl">decide</span><div>Confirm the primary-program rule &amp; how ST-25781 picked last year. <span class="own o-be">BE</span> <span class="own o-prod">US</span> <span class="pill p-dec">O1</span></div></div></div></div>
+    <div class="case ok"><div class="ic">৳</div><div class="cbody"><div class="cid">E-06 · Refund after launch</div><div class="ctitle">A student refunds or lets a course lapse after launch</div><div class="csee"><b>Sees:</b> no change — the wrap isn’t payment-gated, so they keep it and their badges. (Account <i>deletion</i> is different — see SH-03.)</div><div class="crule"><span class="rl">rule</span><div>Wrap persists; only loyalty years exclude a fully-refunded year. <span class="own o-be">BE</span></div></div></div></div>
+    <div class="case data"><div class="ic">⧉</div><div class="cbody"><div class="cid">E-07 · Duplicate accounts</div><div class="ctitle">One student has more than one account</div><div class="csee"><b>Sees:</b> a single wrap — accounts merge to one; else the most-active account gets it. Avoids two half-wraps for the same person.</div><div class="crule"><span class="rl">decide</span><div>Confirm the merge key / fallback. <span class="own o-be">BE</span> <span class="own o-bi">BI</span> <span class="pill p-dec">O2</span></div></div></div></div>
+  </div>
+
+  <!-- B -->
+  <h3 class="s8h"><span class="nn">6.2</span>Window &amp; time</h3>
+  <p class="s8sub">Every number counts only activity in <b>1 Jan – 20 Dec 2026, Bangladesh time</b>. Getting the day boundary wrong silently corrupts active-days, streaks and night-owl.</p>
+  <div class="cases">
+    <div class="case err"><div class="ic">⏱</div><div class="cbody"><div class="cid">T-01 · Timezone</div><div class="ctitle">A 00:00–06:00 session lands on the wrong calendar day</div><div class="csee"><b>Breaks:</b> active-days, streak, monthly and night-owl if bucketed in UTC. A late-night study session rolls back a day.</div><div class="crule"><span class="rl">rule</span><div>Bucket every day/month/hour in <b>Asia/Dhaka</b>. Confirm whether <code>activity_date</code> is already BST (the app-usage badge computes in UTC+6). <span class="own o-dag">DAG</span> <span class="own o-bi">BI</span> <span class="pill p-dec">O3</span></div></div></div></div>
+    <div class="case info"><div class="ic">✂</div><div class="cbody"><div class="cid">T-02 · The cut-off</div><div class="ctitle">Activity after 20 Dec</div><div class="csee"><b>Sees:</b> it doesn’t count this year. Cut-off is inclusive to <code>20 Dec 23:59:59</code>; the story is a fixed snapshot of the year to that moment.</div><div class="crule"><span class="rl">rule</span><div>Window end hard-coded in every query. <span class="own o-dag">DAG</span></div></div></div></div>
+    <div class="case wait"><div class="ic">⟳</div><div class="cbody"><div class="cid">T-03 · Late-settling results</div><div class="ctitle">A model-test result validates after the locked run</div><div class="csee"><b>Sees:</b> it isn’t included — the nightly DAG reads only settled results as of the run.</div><div class="crule"><span class="rl">rule</span><div>Final locked run = night of 20 Dec; eventual-consistency handled by reading settled rows only. <span class="own o-dag">DAG</span></div></div></div></div>
+  </div>
+
+  <!-- C -->
+  <h3 class="s8h"><span class="nn">6.3</span>The banner — the one tap</h3>
+  <div class="cases">
+    <div class="case data"><div class="ic">Aa</div><div class="cbody"><div class="cid">B-01 · Name null / emoji / very long</div><div class="ctitle">The headline name token is missing or odd</div><div class="csee"><b>Sees:</b> copy <b>C</b> (no name token) instead of “null”; names &gt; ~18 chars are truncated on the card.</div><div class="crule"><span class="rl">rule</span><div>Fall back to copy C when <code>fist_name</code> is empty/invalid. <span class="own o-and">AND</span> <span class="own o-be">BE</span></div></div></div></div>
+    <div class="case info"><div class="ic">#</div><div class="cbody"><div class="cid">B-02 · Unimpressive “biggest number”</div><div class="ctitle">A quiet student’s best number is small (e.g. 6 active days)</div><div class="csee"><b>Sees:</b> copy <b>C</b> (“it’s ready”) instead of copy A — we never put a thin number in the hook.</div><div class="crule"><span class="rl">rule</span><div>Use copy A only if the headline number clears a config floor (e.g. active_days ≥ 20, else hours ≥ 15). <span class="own o-be">BE</span> <span class="own o-prod">US</span></div></div></div></div>
+    <div class="case wait"><div class="ic">▾</div><div class="cbody"><div class="cid">B-03 · App too old to render</div><div class="ctitle">An old client can’t draw the story</div><div class="csee"><b>Sees:</b> no banner — it’s gated on a minimum app version, so nobody taps into a broken story.</div><div class="crule"><span class="rl">decide</span><div>Set the minimum supported version. <span class="own o-and">AND</span> <span class="pill p-dec">O9</span></div></div></div></div>
+  </div>
+
+  <!-- D -->
+  <h3 class="s8h"><span class="nn">6.4</span>The numbers, screen by screen</h3>
+  <p class="s8sub">Where a single stat could be wrong, the rule that keeps it honest. Grouped by the slide it appears on.</p>
+  <h4 style="margin:12px 0 2px">Cover &amp; study time</h4>
+  <div class="cases">
+    <div class="case ok"><div class="ic">—</div><div class="cbody"><div class="cid">C-01 · Empty profile field</div><div class="ctitle">A student has no class or section set</div><div class="csee"><b>Sees:</b> that line is dropped from the cover — never a blank or “null”.</div><div class="crule"><span class="rl">rule</span><div>Omit empty profile lines. <span class="own o-and">AND</span></div></div></div></div>
+    <div class="case data"><div class="ic">🗓</div><div class="cbody"><div class="cid">C-02 · Stale class</div><div class="ctitle"><code>Students.class</code> shows last year’s class</div><div class="csee"><b>Sees:</b> their current class — we use the current profile snapshot, not a stale value.</div><div class="crule"><span class="rl">decide</span><div>Confirm whether <code>class</code> updates yearly. <span class="own o-bi">BI</span> <span class="own o-prod">US</span> <span class="pill p-dec">O11</span></div></div></div></div>
+    <div class="case data"><div class="ic">×</div><div class="cbody"><div class="cid">ST-01 · Duration units</div><div class="ctitle">A duration column is in ms, not seconds</div><div class="csee"><b>Breaks:</b> a wrong unit 1000×’s study time → an absurd “school days” number.</div><div class="crule"><span class="rl">rule</span><div>Confirm every <code>*_duration</code> is seconds before coding. <span class="own o-bi">BI</span> <span class="pill p-dec">O4</span></div></div></div></div>
+    <div class="case err"><div class="ic">24</div><div class="cbody"><div class="cid">ST-02/03 · Impossible study time</div><div class="ctitle">A negative/null duration, or &gt; 24h in one day</div><div class="csee"><b>Guarded:</b> negative/null rows are dropped from the sum; &gt; 24h/day quarantines the whole row — it stays <code>is_available=false</code> until fixed, never shown.</div><div class="crule"><span class="rl">rule</span><div>Drop in <code>t2</code>; the 24h cap is a <code>t10</code> QA-gate check. <span class="own o-dag">DAG</span></div></div></div></div>
+  </div>
+  <h4 style="margin:16px 0 2px">Attendance</h4>
+  <div class="cases">
+    <div class="case err"><div class="ic">÷</div><div class="cbody"><div class="cid">AT-01 · Mid-year enrollee’s denominator</div><div class="ctitle">A student who joined in June is measured against the whole year’s classes</div><div class="csee"><b>Breaks the no-shame rule:</b> an inflated <code>held</code> makes their rate unfairly low. <b>Fixed:</b> <code>held</code> is scoped to classes on/after <i>their</i> join date.</div><div class="crule"><span class="rl">rule</span><div><code>held</code> counted from <code>GREATEST(enrolment_start, 2026-01-01)</code>. <span class="own o-dag">DAG t3</span> <span class="pill p-dec">O5</span></div></div></div></div>
+    <div class="case err"><div class="ic">⇆</div><div class="cbody"><div class="cid">AT-02 · Rejoins &amp; co-teaching</div><div class="ctitle">A student drops and rejoins one class; two teachers co-teach it</div><div class="csee"><b>Breaks:</b> one class counted as many. <b>Fixed:</b> aggregate <code>student_attendees</code> per class <i>before</i> the min-stay test; <code>MAX()</code> de-fans co-taught classes.</div><div class="crule"><span class="rl">rule</span><div>Dedup on the natural key; attended = joined live, stayed ≥ 10 min or 30%. <span class="own o-dag">DAG t3</span></div></div></div></div>
+    <div class="case ok"><div class="ic">%</div><div class="cbody"><div class="cid">AT-03 · Rate &gt; 100% / 0 classes</div><div class="ctitle">Pre-system classes under-count <code>held</code>, or a student had no classes</div><div class="csee"><b>Sees:</b> rate clamped to 100%; a zero-class student sees “--”, never a NaN arc. A recorded-only course hides the attendance slide entirely.</div><div class="crule"><span class="rl">rule</span><div>Clamp ≤ 1; div-by-zero → “--”; <code>held &lt; 5</code> hides the slide. <span class="own o-dag">DAG</span> <span class="own o-and">AND</span></div></div></div></div>
+  </div>
+  <h4 style="margin:16px 0 2px">Quizzes, video &amp; learner type</h4>
+  <div class="cases">
+    <div class="case data"><div class="ic">≈</div><div class="cbody"><div class="cid">QZ-01 · Two quiz sources disagree</div><div class="ctitle"><code>mcq_user_quiz_daily</code> and <code>quiz_count</code> differ</div><div class="csee"><b>Rule:</b> <code>mcq_user_quiz_daily</code> is authoritative; <code>quiz_count</code> is a cross-check. Only submitted, distinct quizzes count (retakes once; auto-submit on timeout counts).</div><div class="crule"><span class="rl">rule</span><div>Pick the authoritative source, de-dup retakes. <span class="own o-dag">DAG t4</span></div></div></div></div>
+    <div class="case info"><div class="ic">▶</div><div class="cbody"><div class="cid">VD-01/02 · Video pool &amp; watch time</div><div class="ctitle">Near-zero watchers could distort the percentile; playback speed</div><div class="csee"><b>Rule:</b> the video badge pool is students with <b>30+ min</b>, so quiet students don’t distort the cut. Watch time = content position reached (1.5×/2× not penalised), counted once per video (no rewatch farming).</div><div class="crule"><span class="rl">rule</span><div>Pool floor 30 min; content-time not wall-clock. <span class="own o-dag">DAG t7a</span></div></div></div></div>
+    <div class="case ok"><div class="ic">◈</div><div class="cbody"><div class="cid">LT-01/02/03 · Stamp always resolves</div><div class="ctitle">A student has thin or flat data on some axes</div><div class="csee"><b>Sees:</b> always exactly one stamp. A dimension we can’t measure (e.g. no graded questions) is skipped for them; if nothing stands out → <b>ভারসাম্যপূর্ণ</b>. <code>avg_days_per_week</code> uses weeks since first activity, so mid-year joiners aren’t penalised.</div><div class="crule"><span class="rl">rule</span><div><code>NULLIF(σ,0)</code> guards flat axes; arg-max over available axes; Balanced default. <span class="own o-dag">DAG t7b</span></div></div></div></div>
+    <div class="case data"><div class="ic">🌙</div><div class="cbody"><div class="cid">LT-04 · Night-owl needs an hour band</div><div class="ctitle">The flagship “রাতজাগা পড়ুয়া” stamp depends on time-of-day data</div><div class="csee"><b>Risk:</b> raw <code>user_activities.date</code> has a silent <code>now()</code> fallback on bad client dates → untrustworthy hours. If no reliable agg hour-band exists, the Clock axis drops and Strategy’s flagship example changes with it.</div><div class="crule"><span class="rl">decide</span><div>Secure a trustworthy hour-band (agg bands, not raw). <span class="own o-dag">DAG</span> <span class="own o-bi">BI</span> <span class="pill p-dec">O6</span></div></div></div></div>
+  </div>
+
+  <!-- E -->
+  <h3 class="s8h"><span class="nn">6.5</span>Badges — fairness &amp; the no-shame display</h3>
+  <p class="s8sub">All 11 badges are self-computed (roster &amp; tiers in §4.2a). These are the cross-cutting cases that keep them fair and keep nobody feeling judged.</p>
+  <div class="cases">
+    <div class="case ok"><div class="ic">0</div><div class="cbody"><div class="cid">BG-01 · Earned no badges</div><div class="ctitle">A student clears no badge threshold</div><div class="csee"><b>Sees:</b> no empty shelf — warm forward copy “২০২৭-এ তোমার প্রথম ব্যাজ অপেক্ষা করছে” plus the welcome/loyalty marker. Nothing reads as failure.</div><div class="crule"><span class="rl">rule</span><div>Empty <code>badges[]</code> → the collection renders the encouraging state. <span class="own o-and">AND</span></div></div></div></div>
+    <div class="case data"><div class="ic">⚠</div><div class="cbody"><div class="cid">BG-02/03 · Unreliable badge source</div><div class="ctitle">One badge’s source is bad for a student, or a whole source breaks before the final run</div><div class="csee"><b>Sees:</b> per student → that badge simply isn’t shown for them (no error, no guess). Whole source down → that badge is withdrawn <b>for everyone</b> (never partially awarded) and the other 10 still ship.</div><div class="crule"><span class="rl">rule</span><div>Never partial-award; the wrap is never blocked by one badge. <span class="own o-dag">DAG</span></div></div></div></div>
+    <div class="case info"><div class="ic">▲</div><div class="cbody"><div class="cid">BG-04/05 · Many badges · near-miss</div><div class="ctitle">A student earns several, or just misses one</div><div class="csee"><b>Sees:</b> all earned badges together, <b>highest tier only</b> per badge, in prestige order. One optional positive near-miss nudge — only if within <b>5 quizzes / 5 pts attendance / 3 days streak / 5 percentile video</b>.</div><div class="crule"><span class="rl">rule</span><div>Highest tier per badge; near-miss is encouraging only. <span class="own o-and">AND</span></div></div></div></div>
+    <div class="case info"><div class="ic">↗</div><div class="cbody"><div class="cid">BG-06/07 · Improvement &amp; loyalty</div><div class="ctitle">“Did better than H1”, and “N years with Shikho”</div><div class="csee"><b>Sees:</b> improvement is shown <b>only positively</b> — never “you got worse”, and not awarded if either half is too thin. Loyalty counts distinct paid years from <b>2024</b> (records start then), non-consecutive years count, a fully-refunded year doesn’t; trial/free = none.</div><div class="crule"><span class="rl">decide</span><div>Pre-2024 tenure under-counts → cap “since 2024” or confirm history. <span class="own o-bi">BI</span> <span class="pill p-dec">O11</span></div></div></div></div>
+    <div class="case ok"><div class="ic">⊘</div><div class="cbody"><div class="cid">BG-08 · Pools exclude non-students</div><div class="ctitle">Staff/test accounts could skew the relative cuts</div><div class="csee"><b>Rule:</b> they’re removed before the video percentile and learner-type baselines, so the “top 15%” line reflects real students only.</div><div class="crule"><span class="rl">rule</span><div>Pools built on the <code>t1</code> cohort (non-staff). <span class="own o-dag">DAG t7a</span></div></div></div></div>
+  </div>
+  <h4 style="margin:16px 0 2px">The four no-shame display groups</h4>
+  <p class="s8sub">Same badge engine, emphasised differently by how the year went. Checked <b>top-down (Strong first), mutually exclusive</b> — so earning any badge lifts a student out of “just starting”. Standing is only ever a positive “top X%”, shown only to Strong.</p>
+  <table class="matrix">
+    <tr><th>Group</th><th>How they land here</th><th>Lead with</th><th>Never show</th></tr>
+    <tr><td><b>Strong</b></td><td>3+ badges, or top 20% video pool</td><td>all badges · a positive “top X%” · best subject</td><td><span class="nope">— flex</span></td></tr>
+    <tr><td><b>Middle</b></td><td>1–2 badges</td><td>effort badges · hours · active days</td><td>rank · peer compare</td></tr>
+    <tr><td><b>Low</b></td><td>0 badges, some activity</td><td>effort stats + optional near-miss</td><td>rank · “weakest” anything · empty shelf</td></tr>
+    <tr><td><b>Just starting</b></td><td>almost no activity</td><td>warm welcome + welcome/loyalty marker</td><td>charts · totals · any comparison</td></tr>
+  </table>
+
+  <!-- F -->
+  <h3 class="s8h"><span class="nn">6.6</span>The marksheet &amp; share</h3>
+  <div class="cases">
+    <div class="case ok"><div class="ic">—</div><div class="cbody"><div class="cid">MS-01/02 · Missing row / zero value</div><div class="ctitle">A marksheet row has no data, or a stat is 0</div><div class="csee"><b>Sees:</b> the row is omitted entirely (no <code>top_subject</code> → no “বছরের বিষয়” row); a 0/absent number renders “--”, never “0”.</div><div class="crule"><span class="rl">rule</span><div>Omit empty rows; “--” precedent (ST-29843). <span class="own o-and">AND</span></div></div></div></div>
+    <div class="case info"><div class="ic">🙈</div><div class="cbody"><div class="cid">MS-03 · Hide-name toggle</div><div class="ctitle">A student turns on নাম-লুকাও before sharing</div><div class="csee"><b>Sees:</b> the name/school/rank layer is swapped out <b>before</b> the bitmap is captured, so the shared PNG truly hides it (not just the on-screen view).</div><div class="crule"><span class="rl">rule</span><div>Swap layer pre-capture; hide-name defaults ON for the shared copy. <span class="own o-and">AND</span></div></div></div></div>
+    <div class="case ok"><div class="ic">⤓</div><div class="cbody"><div class="cid">SH-01/02 · Shortener down · odd device</div><div class="ctitle">Mask is unavailable, or the device scales the bitmap oddly</div><div class="csee"><b>Sees:</b> if Mask is down, the card shares with the PNG + full URL and a soft note — never blocked. The bitmap is captured at a <b>fixed 1080×1920</b>, not device-scaled, avoiding the report-card scaling bug.</div><div class="crule"><span class="rl">rule</span><div>Graceful share fallback; fixed capture size. <span class="own o-be">BE</span> <span class="own o-and">AND</span></div></div></div></div>
+    <div class="case err"><div class="ic">🔒</div><div class="cbody"><div class="cid">SH-03 · Deletion after a card was shared (minor’s PII)</div><div class="ctitle">A student deletes their account after sharing a public card</div><div class="csee"><b>Result:</b> the <code>wrap_2026</code> row is deleted <b>and</b> the Mask short-link is revoked so the public URL 404s — cascaded on account deletion. A shared card is never left live for a deleted minor.</div><div class="crule"><span class="rl">rule</span><div>Revoke + 404 on deletion; <code>report_id</code> is a non-enumerable random id. <span class="own o-be">BE</span></div></div></div></div>
+    <div class="case info"><div class="ic">📌</div><div class="cbody"><div class="cid">SH-04 · Re-run after a share</div><div class="ctitle">The 20-Dec fallback re-runs after a student already shared</div><div class="csee"><b>Result:</b> a shared card is pinned to the <code>generated_at</code> it was captured from; a re-run issues a new <code>report_id</code> and never mutates an already-shared card in place.</div><div class="crule"><span class="rl">rule</span><div>Immutable shared cards; new run → new id. <span class="own o-be">BE</span></div></div></div></div>
+    <div class="case info"><div class="ic">অ</div><div class="cbody"><div class="cid">MS-04 · English app locale</div><div class="ctitle">A student has the app set to English</div><div class="csee"><b>Sees:</b> the wrap in Bangla regardless — numerals via <code>getBengaliNumber()</code>. It’s a Bangla-first artefact, not locale-switched.</div><div class="crule"><span class="rl">rule</span><div>Force Bangla rendering in the wrap. <span class="own o-and">AND</span></div></div></div></div>
+  </div>
+
+  <!-- G -->
+  <h3 class="s8h"><span class="nn">6.7</span>Pipeline, serve &amp; launch</h3>
+  <div class="cases">
+    <div class="case info"><div class="ic">⟲</div><div class="cbody"><div class="cid">PL-01 · UPSERT mid-story</div><div class="ctitle">The nightly run replaces a row while a student is mid-story</div><div class="csee"><b>Sees:</b> the open session continues from the Room/payload cache; the new row is picked up on next open — the payload is never swapped under an open deck.</div><div class="crule"><span class="rl">rule</span><div>Serve open sessions from cache; UPSERT never mutates mid-session. <span class="own o-be">BE</span> <span class="own o-and">AND</span></div></div></div></div>
+    <div class="case wait"><div class="ic">!</div><div class="cbody"><div class="cid">PL-02 · The 20-Dec run fails</div><div class="ctitle">The final locked build doesn’t complete</div><div class="csee"><b>Result:</b> launch serves the last good run and a re-run fires before 26 Dec. Go-live is gated by <code>is_available</code>, not a timestamp — a half-built cohort never ships.</div><div class="crule"><span class="rl">decide</span><div>Fix the fallback window + rollout ramp. <span class="own o-dag">DAG</span> <span class="own o-prod">US</span> <span class="pill p-dec">O10</span></div></div></div></div>
+    <div class="case ok"><div class="ic">⏻</div><div class="cbody"><div class="cid">PL-03 · Post-launch bug</div><div class="ctitle">Something’s wrong after go-live</div><div class="csee"><b>Result:</b> flip <code>is_available=false</code> = instant hide, no app release. Rollout is phased: enable for a small % first, watch crash/finish rates, then ramp. Submit to Play Store ~18 Dec; the flag controls go-live 26–31 Dec.</div><div class="crule"><span class="rl">rule</span><div>Go-live is a server flag, not a build. <span class="own o-be">BE</span> <span class="own o-prod">US</span></div></div></div></div>
+  </div>
+  <div class="note"><b>Rule of thumb for “who owns a case”:</b> bad <b>data</b> → the DAG (the <code>t10</code> QA gate is the backstop). Missing-but-valid data → the <b>empty-state UI</b> (Android). Not-ready / not-generated → <b>API code</b> (Backend). Every case above maps to exactly one of these three. <b>Not a typo:</b> <code>Students.fist_name</code> is the real column spelling — do not “correct” it to <code>first_name</code> in code.</div>
+
+  <!-- 6.9 open decisions -->
+  <h3 class="s8h"><span class="nn">6.9</span>Open decisions — owned &amp; dated</h3>
+  <p class="s8sub">Every <span class="pill p-dec">DECIDE</span> above, in one place. <b>None blocks the design</b> (Tabs 1–5 ship under any answer) — they block the final <b>data build</b>, so each needs an owner before the 10 Dec pipe deadline / 20 Dec cut-off. The two biggest former unknowns — eligibility and badges — are now <b>decided</b> (everyone; 11 self-computed).</p>
+  <table>
+    <tr><th>#</th><th>Decision / check</th><th>Why it matters</th><th>Owner</th><th>By</th></tr>
+    <tr><td>O1</td><td>Primary-program rule for multi-program students</td><td>Which wrap the banner opens</td><td><span class="own o-be">BE</span> <span class="own o-prod">US</span></td><td>pre-build</td></tr>
+    <tr><td>O2</td><td>Duplicate-account merge key (one wrap per real student)</td><td>Avoids two half-wraps for one person</td><td><span class="own o-be">BE</span> <span class="own o-bi">BI</span></td><td>pre-build</td></tr>
+    <tr><td>O3</td><td><code>activity_date</code> timezone (BST vs UTC)</td><td>Active-days, streak, monthly, night-owl correctness</td><td><span class="own o-dag">DAG</span> <span class="own o-bi">BI</span></td><td>pre-build</td></tr>
+    <tr><td>O4</td><td>Duration units confirmed (seconds vs ms)</td><td>A wrong unit 1000×’s study time</td><td><span class="own o-bi">BI</span></td><td>pre-build</td></tr>
+    <tr><td>O5</td><td>Rejoin aggregation · <code>held</code> from join date</td><td>Attendance count &amp; rate correctness (no-shame)</td><td><span class="own o-dag">DAG</span> <span class="own o-bi">BI</span></td><td>pre-build</td></tr>
+    <tr><td>O6</td><td>Night-owl hour-band source (or drop the Clock axis)</td><td>Whether the রাতজাগা stamp ships (Strategy flagship)</td><td><span class="own o-dag">DAG</span> <span class="own o-bi">BI</span></td><td>pre-build</td></tr>
+    <tr><td>O7</td><td>Learner-tag Bengali labels + optional low-side tags</td><td>Final stamp wording (axes already locked)</td><td><span class="own o-prod">US</span> <span class="own o-des">DES</span></td><td>pre-build</td></tr>
+    <tr><td>O8</td><td><code>subject_name</code> canonicalisation + best-subject fallback</td><td>Best-subject slide correctness</td><td><span class="own o-bi">BI</span> <span class="own o-prod">US</span></td><td>pre-build</td></tr>
+    <tr><td>O9</td><td>Minimum supported app version for the banner</td><td>Old clients can’t render the story</td><td><span class="own o-and">AND</span></td><td>pre-release</td></tr>
+    <tr><td>O10</td><td>Failed-20-Dec-run fallback window + rollout ramp</td><td>Launch safety</td><td><span class="own o-dag">DAG</span> <span class="own o-prod">US</span></td><td>pre-launch</td></tr>
+    <tr><td>O11</td><td><code>class</code> updated yearly? · years-with-Shikho pre-2024 history</td><td>Cover accuracy · loyalty claim</td><td><span class="own o-bi">BI</span></td><td>pre-build</td></tr>
+  </table>
+  <p class="rec"><b>Bottom line:</b> the design is decision-complete. These 11 owned, dated data questions are all that stand between here and a lockable nightly build — and none of them blocks the design review.</p>
+</section>
+<!-- ===================== DECISIONS & GROUNDING ===================== -->
+<section class="panel" id="t7">
+  <h2>Decisions &amp; grounding</h2>
+
+  <h3>7.1 Key design choices (these remove the remaining unknowns)</h3>
+  <p class="lead">Three choices make the design <b>correct under every outcome</b>, so the open numbers only need tuning, never a go/no-go.</p>
+  <div class="cc open" style="margin:12px 0"><div class="ct">R1 · Learner-type → cohort-relative, even by construction</div><div class="cb"><b>Design:</b> z-score each axis per student; the stamp = the axis where the student is furthest from the cohort median. Because it’s relative, stamps spread ~evenly no matter how skewed any single raw metric is. <b>Branches:</b> even spread → ship · one axis dominates → drop it from the arg-max set (config) · all flat → Balanced. <b>All three ship on time.</b></div></div>
+  <div class="cc open" style="margin:12px 0"><div class="ct">R2 · Best subject → subject-native accuracy, not time reconstruction</div><div class="cb"><b>Design:</b> strongest subject = highest accuracy in <code>mcq_user_chapter_daily</code> grouped by <code>subject_name</code> (filter “orientation”, require ≥ min questions) — a real subject column, no 3-log rebuild. Exactly SC-1737’s method. <b>Fallback:</b> too few graded questions → “most-practised subject” by question count, still subject-native. Time-by-subject is demoted to an optional slide.</div></div>
+  <div class="cc open" style="margin:12px 0"><div class="ct">R3 · AI/QR active days → additive, never load-bearing</div><div class="cb"><b>Design:</b> <code>active_days</code> ships from the warehouse set alone; AI/QR/eBook days are a bonus union that only increases the number if piped. <b>Branch:</b> not piped by 10 Dec → number is class/quiz/video-based; feature unaffected, copy is true either way.</div></div>
+
+  <h3>7.2 Decision log</h3>
+  <table>
+    <tr><th>#</th><th>Decision</th><th>Call</th></tr>
+    <tr><td>D1</td><td>Story rendering</td><td><b>Extend native <code>:feature:quarterreview</code></b> — not WebView, not greenfield</td></tr>
+    <tr><td>D2</td><td>Compute model</td><td><b>Precompute</b> nightly into <code>wrap_2026</code></td></tr>
+    <tr><td>D3</td><td>Surfaces</td><td><b>Android only.</b> No web portal. Prototype = design reference</td></tr>
+    <tr><td>D4</td><td>Read transport</td><td>GraphQL <code>getYearWrap</code> (reuse the review data-layer)</td></tr>
+    <tr><td>D5</td><td>প্রিয় শিক্ষক + badge collection at launch?</td><td><b>Yes</b> (8–9 slide deck)</td></tr>
+    <tr><td>D6</td><td>Data window</td><td><b>1 Jan → 20 Dec 2026</b> (locked). Activity after 20 Dec does not count.</td></tr>
+    <tr><td>D7</td><td>iOS</td><td>No iOS repo confirmed — if any exists, it consumes §4.4</td></tr>
+    <tr><td>D8</td><td>Release gate</td><td>Submit to Play Store ~18 Dec; a remote kill-switch + server <code>is_available</code> control go-live</td></tr>
+    <tr><td style="color:var(--magenta);font-weight:800">R-E</td><td><b>Who gets a wrap</b></td><td><b>Everyone</b> (paid + trial + free); one template; thin sections → encouraging copy. <span class="src">Reverses the earlier “paid-only + Fresh Start” decision (confirmed 2026-11-10).</span></td></tr>
+    <tr><td style="color:var(--magenta);font-weight:800">R-B</td><td><b>Where badges come from</b></td><td><b>11 self-computed badges</b>; the gamification service is dead — read nothing from it. <span class="src">Reverses the earlier “4 wrap badges + read gamification (O7)” decision (confirmed 2026-11-10).</span></td></tr>
+  </table>
+
+  <h3>7.3 Success metrics &amp; targets</h3>
+  <table>
+    <tr><th>Metric</th><th>Definition</th><th>Launch target (proposed)</th></tr>
+    <tr><td>Open rate</td><td>opened ÷ students with a built row</td><td>≥ 45%</td></tr>
+    <tr><td>Finish rate</td><td>reached the marksheet ÷ opened</td><td>≥ 60%</td></tr>
+    <tr><td>Low-group finish rate</td><td>finish rate among the “Low” display group</td><td><b>≥ overall</b> (shame-sensor guardrail)</td></tr>
+    <tr><td>Share rate</td><td>shared ÷ finished</td><td>≥ 20%</td></tr>
+    <tr><td>Jan return lift</td><td>active days in Jan-2027: <b>got-banner vs randomized hold-out</b> (intent-to-treat) — reported on the full cohort <b>and</b> the paid sub-cohort</td><td>+10% relative</td></tr>
+    <tr><td>Acquisition from free/trial sharers</td><td>signups/upgrades credited to a free- or trial-student’s shared card</td><td>set with growth</td></tr>
+  </table>
+  <p class="src">Instrumented by the Android events (§5.3), tagged with <code>display_group</code> and <code>account_type</code>. Targets are proposed baselines to beat. <b>A/B at launch:</b> banner copy A vs C; the learner-type slide on/off; the banner held-out slice for the clean return-lift read.</p>
+
+  <h3>7.4 Sources &amp; confidence — the grounding pass</h3>
+  <p class="lead">What every claim rests on, and what is still an assumption. Build-blocking assumptions are the dated decisions in §6.9; the rest degrade gracefully.</p>
+  <h4>Verified against a real source</h4>
+  <table>
+    <tr><th>Claim</th><th>Source</th></tr>
+    <tr><td>Last year’s review ships as native <code>:feature:quarterreview</code> (animated pages, <code>Capturable</code> bitmap share, <code>GetIfYearlyReviewExist</code> gate, <code>year_report_share</code> events)</td><td>ST-25781 (deployed) · Android codebase</td></tr>
+    <tr><td>Warehouse spine: <code>user_activity_duration_agg</code> (7 activity-type durations), <code>mcq_user_*_daily</code>; nightly Airflow ~06–07 BD; KPI mirrors NATS/gRPC events into <code>datafuse</code></td><td>SC-1737 · data-aggregators / kpi specs</td></tr>
+    <tr><td><b>Best/weakest subject</b> is derivable subject-native from <code>mcq_user_chapter_daily.subject_name</code> accuracy (no time rebuild)</td><td>SC-1737 “Subjects &amp; chapters”</td></tr>
+    <tr><td>Enrolment is per <code>(user_id, academic_program_id)</code>, types Paid/Trial; trial expires after TRIAL_DURATION; PALO paid-subscribe revokes trial then creates Paid (no double-count)</td><td>academic-program/enrollment spec · ST-29932</td></tr>
+    <tr><td>Predecessor review &amp; rank are per-programme; study time / active days / streak / video / quizzes are per-user (no programme column in the agg)</td><td>analytics/results-reporting · warehouse grain</td></tr>
+    <tr><td>Existing aggregation DAGs are at-most-once, no retries/alerting (silent-gap limitation) — the wrap must be stricter</td><td>CRM-sync / aggregation DAG specs</td></tr>
+    <tr><td><code>m1_baseline_model</code> is a lead-conversion scorer (XGBoost), <b>not</b> learner segmentation — no model to reuse; its data-dictionary is the authoritative activity-feature vocabulary</td><td>ShikhoTech ML repo · shikho-spec</td></tr>
+    <tr><td>results-reporting bugs <b>not</b> to inherit: fake last-week rank, hardcoded-0 animated-lessons / practice-quizzes, device-scaled share bitmap</td><td>results-reporting known limitations</td></tr>
+  </table>
+  <h4>Assumptions &amp; to-confirm (tagged <span class="pill p-gap">VERIFY</span> in-doc)</h4>
+  <table>
+    <tr><th>Assumption</th><th>Risk if wrong</th><th>Resolves at</th></tr>
+    <tr><td>Day/hour columns are Asia/Dhaka (or convertible)</td><td>active-days, streak, night-owl wrong</td><td>O3</td></tr>
+    <tr><td><code>*_duration</code> columns are seconds, not ms</td><td>study time 1000× off</td><td>O4</td></tr>
+    <tr><td><code>lessons.start_time</code> exists &amp; covers pre-system classes; rejoin key stable</td><td>attendance count/rate off</td><td>O5</td></tr>
+    <tr><td>A trustworthy time-of-day hour-band exists</td><td>night-owl stamp can’t ship; Strategy flagship changes</td><td>O6</td></tr>
+    <tr><td><code>subject_name</code> is canonical / de-duped</td><td>best-subject slide noisy</td><td>O8</td></tr>
+    <tr><td>Loyalty history before 2024 is recoverable</td><td>“N years” under-counts long tenure</td><td>O11</td></tr>
+    <tr><td>The “everyone” cohort’s compute cost / row count is acceptable at full-base scale</td><td>nightly run time &amp; storage</td><td>pre-build load test <span class="own o-dag">DAG</span></td></tr>
+    <tr><td>A free/trial home surface exists to host the banner (not only <code>PaidUserScreen</code>)</td><td>free/trial students can’t see the banner</td><td>pre-build <span class="own o-and">AND</span></td></tr>
+  </table>
+  <p class="note"><b>On the two reversals:</b> “everyone gets a wrap” and “11 self-computed badges” come from the Nov-4 business-logic decision and were confirmed 2026-11-10. They widen cohort size and compute (load-test before locking) and remove the dependency on the dead gamification service — a net simplification for correctness, at the cost of two new verifies above.</p>
+
+  <p class="src" style="margin-top:28px">Example numbers are illustrative. <code>:feature:quarterreview</code>, <code>:feature:home</code>, the <code>Capturable</code> share and the analytics endpoints exist today; <code>wrap_2026</code>, the DAG and <code>getYearWrap</code> are to be built. This document supersedes the earlier <code>wrap-2026-prd.html</code>, <code>wrap-scoping.html</code> and the badge reference files — it folds them into one source of truth.</p>
+</section></div>
+<script>
+  (function(){var t=document.getElementById('tabs');if(!t)return;
+    t.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+      var id=b.getAttribute('data-t');
+      [].forEach.call(t.querySelectorAll('button'),function(x){x.classList.toggle('on',x===b)});
+      [].forEach.call(document.querySelectorAll('.panel'),function(p){p.classList.toggle('on',p.id===id)});
+      window.scrollTo({top:0,behavior:'smooth'});});})();
+</script>
+</body>
+</html>

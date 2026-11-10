@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrap 2026 — flow &amp; corner cases</title>
+<link rel="stylesheet" href="shared/app.css">
+<script src="shared/app.js"></script>
+<style>
+/* wrap-specific, on top of the shared system */
+.scr.story{background:var(--hdrbg);color:#fff}
+.story .sb{color:#fff}
+.wp{flex:1 0 auto;display:flex;flex-direction:column;padding:8px 22px 26px;gap:10px}
+.wp .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#CDB8FF}
+.wp .big{font-size:58px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.wp .big.sm{font-size:40px}
+.wp .headline{font-size:20px;font-weight:800;line-height:1.3}
+.wp .subline{font-size:14px;color:#D8D5EE;line-height:1.5}
+.wp .maths{font-size:13px;color:#CDB8FF;font-weight:600}
+.wp .spacer{flex:1 0 8px}
+.glass{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px}
+.daygrid{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:4px}
+.daygrid i{aspect-ratio:1;border-radius:3px;background:rgba(255,255,255,.14)}
+.daygrid i.on{background:#FFC93C}
+.filmstrip{display:flex;flex-wrap:wrap;gap:4px}
+.filmstrip i{width:20px;height:28px;border-radius:3px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22)}
+.filmstrip i.on{background:#E2008D}
+.curve{display:flex;align-items:flex-end;gap:5px;height:84px;margin-top:6px}
+.curve i{flex:1;background:linear-gradient(180deg,#E2008D,#7a1c9c);border-radius:4px 4px 0 0;min-height:6px}
+.wbadge{display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--mag-d);font-weight:800;font-size:13px;border-radius:999px;padding:7px 13px;align-self:flex-start}
+.wbadge svg{color:var(--mag)}
+.nudge{font-size:13px;font-weight:700;color:#FFC93C}
+/* stamp */
+.stamp{align-self:center;margin:10px 0;border:3px solid #FFC93C;color:#FFC93C;border-radius:16px;padding:14px 22px;transform:rotate(-7deg);
+  font-size:26px;font-weight:800;text-align:center;box-shadow:0 0 0 3px rgba(255,201,60,.18) inset;background:rgba(255,201,60,.06)}
+.stamp small{display:block;font-size:11px;letter-spacing:.1em;font-weight:700;color:#FFE6A0;text-transform:uppercase}
+.tapstamp{align-self:center}
+/* badge shelf */
+.shelf{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.shelf .b{width:92px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:12px 8px;text-align:center}
+.shelf .b .bi{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--mag);display:grid;place-items:center;margin:0 auto 6px}
+.shelf .b .bn{font-size:11px;font-weight:700;line-height:1.25}
+.shelf .b.locked{opacity:.4}
+.shelf .b.locked .bi{background:rgba(255,255,255,.2);color:#fff}
+/* marksheet (light card on a light screen) */
+.msheet{background:#fff;color:var(--ink);border-radius:14px;border:2px solid var(--line);padding:0;overflow:hidden;margin:2px 0}
+.msheet .mh{background:var(--hdrbg);color:#fff;padding:12px 14px;text-align:center}
+.msheet .mh .t{font-size:17px;font-weight:800;letter-spacing:.02em}
+.msheet .mh .s{font-size:11px;color:#D8D5EE}
+.msheet .mmeta{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);padding:8px 14px;border-bottom:1px solid var(--line)}
+.msheet table{width:100%;border-collapse:collapse;font-size:12.5px}
+.msheet td{padding:7px 14px;border-bottom:1px solid var(--line)}
+.msheet td:last-child{text-align:right;font-weight:700}
+.msheet .mbadges{display:flex;flex-wrap:wrap;gap:5px;padding:10px 14px}
+.msheet .mbadges .mb{font-size:10.5px;font-weight:700;background:#EEEAFB;color:var(--mag-d);border-radius:999px;padding:3px 9px}
+.msheet .mfoot{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-top:1px solid var(--line)}
+.msheet .barcode{height:26px;width:90px;background:repeating-linear-gradient(90deg,#16205C 0 2px,#fff 2px 4px)}
+.togglerow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin:2px 0}
+.switch{width:44px;height:26px;border-radius:999px;background:#D5D8E4;position:relative;flex:0 0 auto;transition:background .18s}
+.switch.on{background:var(--ok)}
+.switch i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .18s}
+.switch.on i{left:21px}
+/* inline alert / corner-case note (the signup su-alert pattern) */
+.wa{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:8px 0;color:var(--ink)}
+.wa .ic{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#FDECEF;color:#C8102E}
+.wa.wait .ic{background:#EEF0F5;color:var(--ink2)}
+.wa.ok .ic{background:var(--okbg);color:var(--okt)}
+.wa.info .ic{background:#E7ECFB;color:var(--blue)}
+.wa .tx{flex:1;min-width:0;font-size:12.5px;line-height:1.5}
+.wa .tx b{font-weight:800}
+.wa .tx .cid{font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:2px}
+/* home banner (light home) */
+.homehdr{background:var(--hdrbg);color:#fff;padding:16px 18px 20px}
+.homehdr .hi{font-size:13px;color:#D8D5EE}.homehdr .hn{font-size:19px;font-weight:800}
+.wrapbanner{position:relative;margin:14px;border-radius:18px;overflow:hidden;background:linear-gradient(120deg,#3A1C9C,#1E2B99 55%,#E2008D);color:#fff;padding:15px 16px;display:flex;align-items:center;gap:13px;box-shadow:0 10px 24px rgba(58,28,156,.3);cursor:pointer}
+.wrapbanner .bi{flex:0 0 48px;height:60px;border-radius:10px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-weight:800}
+.wrapbanner .bt{font-weight:800;font-size:15px;line-height:1.3}
+.wrapbanner .bs{font-size:12px;color:#EAD9F6;opacity:.92;margin:3px 0 8px}
+.wrapbanner .bcta{display:inline-block;background:#fff;color:var(--mag-d);font-weight:800;font-size:12px;padding:5px 11px;border-radius:999px}
+.wrapbanner .bnew{position:absolute;top:10px;right:12px;background:var(--live);font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px}
+.homecards{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+.homecards .hc{height:70px;border-radius:14px;background:#fff;border:1px solid var(--line)}
+.flowfoot{display:flex;gap:8px;padding:10px 16px 16px;margin-top:auto}
+.flowfoot .btn3d{flex:1}
+.capbadge{display:inline-block;font-size:10.5px;font-weight:800;color:#CDB8FF;border:1px solid #4a3f7a;border-radius:999px;padding:2px 8px;margin-left:6px}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="cap" id="cap">Wrap 2026 — the flow</div>
+  <div class="phone" id="phone">
+
+    <!-- HOME + banner -->
+    <section class="scr on" id="s-home">
+      <div class="sb"></div>
+      <div class="homehdr"><div class="hi">হোম</div><div class="hn" id="homeName">নিশাত</div></div>
+      <div class="wrapbanner" id="wrapBanner" data-show="s-cover">
+        <div class="bi">২০২৬</div>
+        <div style="flex:1;min-width:0">
+          <div class="bt" id="bnTitle"></div>
+          <div class="bs" id="bnSub"></div>
+          <span class="bcta" id="bnCta">আমার খাতা দেখি →</span>
+        </div>
+        <div class="bnew">new ✦</div>
+      </div>
+      <div id="bannerNote"></div>
+      <div class="homecards"><div class="hc"></div><div class="hc"></div></div>
+    </section>
+
+    <!-- COVER -->
+    <section class="scr story" id="s-cover">
+      <div class="sb"></div>
+      <div class="wp">
+        <div class="eyebrow">বার্ষিক খাতা</div>
+        <div class="big">২০২৬</div>
+        <div id="coverLines"></div>
+        <div class="spacer"></div>
+        <div class="sublink muted" style="color:#CDB8FF;font-size:12px">শিখো • তোমার বছরের গল্প</div>
+      </div>
+      <div class="flowfoot"><button class="btn3d block" data-show="s-study">শুরু করো →</button></div>
+    </section>
+
+    <!-- STUDY TIME -->
+    <section class="scr story" id="s-study">
+      <div class="sb"></div>
+      <div class="wp" id="studyBody"></div>
+      <div class="flowfoot"><button class="btn-ghost" data-show="s-cover" style="flex:0 0 52px">←</button><button class="btn3d block" data-show="s-attend">পরের পাতা →</button></div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section class="scr story" id="s-attend">
+      <div class="sb"></div>
+      <div class="wp" id="attendBody"></div>
+      <div class="flowfoot"><button class="btn-ghost" data-show="s-study" style="flex:0 0 52px">←</button><button class="btn3d block" data-show="s-quiz">পরের পাতা →</button></div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="scr story" id="s-quiz">
+      <div class="sb"></div>
+      <div class="wp" id="quizBody"></div>
+      <div class="flowfoot"><button class="btn-ghost" data-show="s-attend" style="flex:0 0 52px">←</button><button class="btn3d block" data-show="s-video">পরের পাতা →</button></div>
+    </section>
+
+    <!-- VIDEO -->
+    <section class="scr story" id="s-video">
+      <div class="sb"></div>
+      <div class="wp" id="videoBody"></div>
+      <div class="flowfoot"><button class="btn-ghost" data-show="s-quiz" style="flex:0 0 52px">←</button><button class="btn3d block" data-show="s-learner">পরের পাতা →</button></div>
+    </section>
+
+    <!-- LEARNER TYPE -->
+    <section class="scr story" id="s-learner">
+      <div class="sb"></div>
+      <div class="wp" id="learnerBody"></div>
+      <div class="flowfoot"><button class="btn-ghost" data-show="s-video" style="flex:0 0 52px">←</button><button class="btn3d block" data-show="s-badges">পরের পাতা →</button></div>
+    </section>
+
+    <!-- BADGES -->
+    <section class="scr story" id="s-badges">
+      <div class="sb"></div>
+      <div class="wp" id="badgesBody"></div>
+      <div class="flowfoot"><button class="btn-ghost" data-show="s-learner" style="flex:0 0 52px">←</button><button class="btn3d block" data-show="s-marksheet">মার্কশিট →</button></div>
+    </section>
+
+    <!-- MARKSHEET -->
+    <section class="scr" id="s-marksheet">
+      <div class="sb"></div>
+      <div class="bar"><button class="back" data-show="s-badges" data-own></button><h1>মার্কশিট ২০২৬</h1></div>
+      <div style="padding:12px 14px 20px;display:flex;flex-direction:column;gap:10px" id="marksheetBody"></div>
+    </section>
+
+    <!-- coming soon sheet -->
+    <div class="sheet" id="sh-soon">
+      <h3>শীঘ্রই আসছে</h3>
+      <p class="muted" style="margin-top:8px;font-size:13px">তোমার ২০২৬ খাতা এখনো তৈরি হচ্ছে। ২৬ ডিসেম্বর থেকে দেখতে পাবে।</p>
+      <button class="btn3d block" data-close style="margin-top:16px">ঠিক আছে</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var bn=App.bn, esc=App.esc, ic=App.icon, S=App.state;
+  function g(k,d){ var v=S.get(k); return v===undefined||v===null?d:v; }
+
+  /* ---- archetypes ---- */
+  var PROF={
+    strong:{days:187,streak:23,studyH:142,aj:63,ah:72,quiz:148,qT:720,qC:612,vmin:2860,top:{s:'পদার্থবিজ্ঞান',acc:88},group:'strong',stamp:['নিয়মিত পড়ুয়া','নিয়মিত'],
+      badges:['video_marathoner','diligent','first_bencher','quiz_warrior','question_hero','accurate','subject_best','active_star','streak_master']},
+    middle:{days:70,streak:6,studyH:40,aj:30,ah:60,quiz:55,qT:300,qC:210,vmin:600,top:{s:'গণিত',acc:74},group:'middle',stamp:['পরিশ্রমী','পরিশ্রম'],
+      badges:['quiz_warrior','active_star']},
+    quiet:{days:12,streak:3,studyH:8,aj:8,ah:40,quiz:5,qT:60,qC:33,vmin:90,top:null,group:'low',stamp:['অনুসন্ধানী','অনুসন্ধান'],
+      badges:[]},
+    fresh:{days:2,streak:1,studyH:1,aj:1,ah:20,quiz:0,qT:0,qC:0,vmin:8,top:null,group:'just_starting',stamp:['নতুন শুরু','স্বাগতম'],
+      badges:[]}
+  };
+  var PRESTIGE=['video_marathoner','diligent','first_bencher','quiz_warrior','question_hero','accurate','subject_best','active_star','streak_master'];
+  var BADGE={
+    video_marathoner:{bn:'ভিডিও ম্যারাথনার',ic:'play',how:function(m){return bn(Math.round(m.vmin/60))+' ঘণ্টা ভিডিও';}},
+    diligent:{bn:'অধ্যবসায়ী',ic:'book',how:function(m){return bn(m.studyH)+' ঘণ্টা পড়া';}},
+    first_bencher:{bn:'ফার্স্ট বেঞ্চার',ic:'check',how:function(m){return bn(m.aj)+'/'+bn(m.ah)+' ক্লাসে উপস্থিত';}},
+    quiz_warrior:{bn:'কুইজ যোদ্ধা',ic:'quiz',how:function(m){return bn(m.quiz)+' কুইজ';}},
+    question_hero:{bn:'প্রশ্নবীর',ic:'star',how:function(m){return bn(m.qT)+' প্রশ্ন';}},
+    accurate:{bn:'নির্ভুল পড়ুয়া',ic:'check',how:function(m){return bn(Math.round(m.qC/m.qT*100))+'% সঠিক';}},
+    subject_best:{bn:'বিষয় সেরা',ic:'crown',how:function(m){return m.top?m.top.s:'';}},
+    active_star:{bn:'সক্রিয় তারকা',ic:'calendar',how:function(m){return bn(m.days)+' দিন সক্রিয়';}},
+    streak_master:{bn:'স্ট্রিক মাস্টার',ic:'heart',how:function(m){return 'টানা '+bn(m.streak)+' দিন';}}
+  };
+
+  /* ---- the model from the toggles ---- */
+  function model(){
+    var p=g('w-prof','strong'), m={}; var src=PROF[p]||PROF.strong;
+    for(var k in src) m[k]=src[k];
+    m.badges=src.badges.slice();
+    m.acct=g('w-acct','paid');
+    m.years = m.acct==='paid'?3:0;
+    // name
+    var nm=g('w-name','ok');
+    m.nameRaw = nm==='missing'?'':(nm==='long'?'আব্দুল্লাহ আল মামুন রহমান':'নিশাত');
+    // enrolment affects attendance
+    m.enrol=g('w-enrol','full');
+    if(m.enrol==='recorded'){ m.ah=0; m.aj=0; }
+    else if(m.enrol==='mid'){ m.ah=34; m.aj=Math.min(m.aj,30); } // held scoped from June join
+    m.rate = m.ah>0 ? Math.min(m.aj/m.ah,1) : null;
+    m.acc = m.qT>0 ? Math.round(m.qC/m.qT*100) : null;
+    m.movies = Math.round(m.vmin/120);
+    m.schoolDays = Math.round(m.studyH/6);
+    return m;
+  }
+  function nameOr(m){ return m.nameRaw || 'শিক্ষার্থী'; }
+  function waHtml(kind,id,html){ var map={err:'alert',wait:'clock',ok:'check',info:'info'};
+    return '<div class="wa '+kind+'"><span class="ic">'+ic(map[kind]||'info',15)+'</span><div class="tx"><span class="cid">'+id+'</span>'+html+'</div></div>'; }
+
+  /* ---- captions ---- */
+  var CAPS={
+    's-home':['Home — the banner (the one tap)','Everyone with a built row sees it. Copy A needs a name + a number past the floor, else copy C (B-01/B-02).'],
+    's-cover':['1 · Cover','Name / class / section. An empty field drops its line, never a blank (C-01).'],
+    's-study':['2 · Study time','Hours → school days. Below the show-floor the chart is replaced by encouraging copy (ST / quiet).'],
+    's-attend':['3 · Attendance','Joined vs held. Held is scoped to the student’s join date; recorded-only courses hide the slide (AT-01/03).'],
+    's-quiz':['4 · Quizzes','A rising graph + a near-miss nudge only when within 5 of the next tier (QZ).'],
+    's-video':['5 · Video','Minutes → movies. Flip Network to see loading / offline with retry (SV / App.load).'],
+    's-learner':['6 · Learner type','Exactly one stamp, always. Quiet & just-starting students still get one (LT-01).'],
+    's-badges':['6.5 · Badge collection — তোমার অর্জন','All earned badges together. Zero badges → warm forward copy, never an empty shelf (BG-01).'],
+    's-marksheet':['7 · Marksheet (share)','Rows with no data are omitted; নাম-লুকাও hides the name before capture; shortener-down still shares (MS/SH).']
+  };
+
+  /* ---- demo panel per screen ---- */
+  var T_PROF={label:'Student',key:'w-prof',values:['strong','middle','quiet','fresh'],names:['Strong','Middle','Low','Just starting']};
+  var T_ACCT={label:'Account',key:'w-acct',values:['paid','trial','free'],names:['Paid','Trial','Free']};
+  function demoFor(id){
+    var T=[T_PROF,T_ACCT], A=[], note='';
+    if(id==='s-home'){ T.push({label:'Name',key:'w-name',values:['ok','missing','long'],names:['Normal','Missing','Very long']});
+      note='Copy A = name + a number past the floor (active_days ≥ 20, else hours ≥ 15). Otherwise copy C. Missing/odd name → copy C, never “null”.'; }
+    if(id==='s-attend'){ T.push({label:'Enrolment',key:'w-enrol',values:['full','mid','recorded'],names:['Full year','Mid-year join','Recorded-only']});
+      note='Held is counted from the student’s own join date (AT-01). A recorded-only course has no live classes → the slide is hidden.'; }
+    if(id==='s-video'){ T.push({label:'Network',key:'sim',values:['ok','slow','offline'],names:['Normal','Slow','Offline']});
+      note='Network drives the shared loader. Offline shows the retry state; the wrap never dies silently on a flaky network (SV-2).'; }
+    if(id==='s-marksheet'){ T.push({label:'Share',key:'w-share',values:['ok','maskdown'],names:['Works','Shortener down']});
+      A.push({label:(g('w-hide',true)?'নাম দেখাও':'নাম লুকাও'),fn:function(){ S.set('w-hide',!g('w-hide',true)); render('s-marksheet'); }});
+      note='নাম-লুকাও swaps the name layer BEFORE capture (MS-03). If Mask is down, the card still shares as PNG + full link (SH-01).'; }
+    App.demo({toggles:T,actions:A,note:note,onChange:function(key){
+      if(key==='sim' && App.current()==='s-video'){ showVideo(); return; }
+      render(App.current());
+    }});
+  }
+
+  /* ---- renderers ---- */
+  function render(id){
+    var m=model();
+    if(id==='s-home') renderHome(m);
+    if(id==='s-cover') renderCover(m);
+    if(id==='s-study') document.getElementById('studyBody').innerHTML=studyHtml(m);
+    if(id==='s-attend') document.getElementById('attendBody').innerHTML=attendHtml(m);
+    if(id==='s-quiz') document.getElementById('quizBody').innerHTML=quizHtml(m);
+    if(id==='s-video') document.getElementById('videoBody').innerHTML=videoHtml(m);
+    if(id==='s-learner') document.getElementById('learnerBody').innerHTML=learnerHtml(m);
+    if(id==='s-badges') document.getElementById('badgesBody').innerHTML=badgesHtml(m);
+    if(id==='s-marksheet') renderMarksheet(m);
+  }
+
+  function renderHome(m){
+    document.getElementById('homeName').textContent=nameOr(m);
+    var big = m.days>=20 ? (bn(m.days)+' দিন') : (m.studyH>=15 ? (bn(m.studyH)+' ঘণ্টা') : null);
+    var useA = m.nameRaw && big;
+    var bnTitle=document.getElementById('bnTitle'), bnSub=document.getElementById('bnSub');
+    if(useA){ bnTitle.textContent=nameOr(m)+', তোমার ২০২৬ খাতা তৈরি! 🔥'; bnSub.textContent='সারা বছরের গল্প — '+big+'ের পরিশ্রম'; }
+    else{ bnTitle.textContent='তোমার ২০২৬ খাতা তৈরি!'; bnSub.textContent='সারা বছরের পড়ার গল্প এক খাতায়'; }
+    var note='', why= !m.nameRaw ? 'নাম নেই → কপি C (কখনো “null” নয়)।' : (!big ? 'বড় সংখ্যা ফ্লোরের নিচে → কপি C।' : 'নাম + বড় সংখ্যা → কপি A।');
+    document.getElementById('bannerNote').innerHTML = waHtml(useA?'ok':'info','B-01/B-02 · banner copy', '<b>'+(useA?'Copy A':'Copy C')+'</b> — '+why+' Account: <b>'+m.acct+'</b> (everyone gets a wrap).');
+  }
+  function renderCover(m){
+    var cls='ক্লাস ৯', sec='বিজ্ঞান';
+    var lines='';
+    lines += '<div class="headline">'+esc(nameOr(m))+'</div>';
+    if(cls) lines+='<div class="subline">'+esc(cls)+'</div>';
+    if(sec) lines+='<div class="subline">'+esc(sec)+'</div>';
+    if(!m.nameRaw) lines+=waHtml('info','C-01 · empty field','নামের লাইন বাদ — খালি/“null” দেখানো হয় না।');
+    document.getElementById('coverLines').innerHTML=lines;
+  }
+  function studyHtml(m){
+    if(m.studyH<5){ return heading('মোট পড়ার সময়')+encourage('এ বছর শুরুটা হলো — ২০২৭-এ আরও বড় গল্প গড়বে।')+waHtml('info','min_show','স্টাডি-টাইম ফ্লোরের নিচে → চার্টের বদলে উৎসাহ-বার্তা।'); }
+    var h=heading('মোট পড়ার সময়');
+    h+='<div class="big">'+bn(m.studyH)+' <span style="font-size:24px">ঘণ্টা</span></div>';
+    h+='<div class="maths">÷৬ = প্রায় '+bn(m.schoolDays)+' স্কুল দিন</div>';
+    h+='<div class="glass"><div class="daygrid">'+cells(Math.min(m.schoolDays,28),28)+'</div></div>';
+    var tier = m.studyH>=200?'অসাধারণ পরিশ্রম!':(m.studyH>=50?'দারুণ ধারাবাহিকতা':'শুরুটা দারুণ');
+    h+='<div class="headline">'+tier+'</div>';
+    return h;
+  }
+  function attendHtml(m){
+    if(m.enrol==='recorded'){ return heading('লাইভ ক্লাসের হাজিরা')+encourage('তোমার কোর্সটি রেকর্ডেড — লাইভ ক্লাস নেই, তাই হাজিরা দেখানো হয়নি।')+waHtml('ok','AT-03 · recorded-only','লাইভ ক্লাস ০ → স্লাইড লুকানো, “--” নয় NaN।'); }
+    if(m.ah<5){ return heading('লাইভ ক্লাসের হাজিরা')+encourage('এখনো কম ক্লাস — ২০২৭-এ হাজিরা খাতা ভরবে।')+waHtml('info','min_show','held < ৫ → স্লাইড লুকানো।'); }
+    var h=heading('লাইভ ক্লাসের হাজিরা');
+    h+='<div class="big sm">'+bn(m.aj)+'<span style="font-size:22px;color:#CDB8FF">/'+bn(m.ah)+'</span></div>';
+    h+='<div class="glass"><div class="daygrid">'+cells(m.aj,m.ah>28?28:m.ah)+'</div></div>';
+    var rate=Math.round(m.rate*100);
+    if(rate>=85) h+='<span class="wbadge">'+ic('check',16)+'ফার্স্ট বেঞ্চার</span>';
+    else if(rate>=60) h+='<div class="headline">নিয়মিত উপস্থিতি 👏</div>';
+    else h+='<div class="headline">ধীরে ধীরে হাজিরা বাড়ছে</div>';
+    if(m.enrol==='mid') h+=waHtml('ok','AT-01 · mid-year join','held জুনের ভর্তির তারিখ থেকে গোনা — তাই রেট অন্যায়ভাবে কম নয়।');
+    return h;
+  }
+  function quizHtml(m){
+    var h=heading('কুইজের হিসাব');
+    if(m.quiz<=0) return h+encourage('এখনো কুইজ শুরু হয়নি — একটা করলেই শুরু!');
+    h+='<div class="big sm">'+bn(m.quiz)+' <span style="font-size:20px">কুইজ</span></div>';
+    h+='<div class="glass"><div class="curve">'+curve(m.quiz)+'</div></div>';
+    var next=150, X=next-m.quiz;
+    if(m.quiz>=150) h+='<div class="nudge">তুমি কুইজ চ্যাম্পিয়ন! 🏆</div>';
+    else if(X>0&&X<=5) h+='<div class="nudge">আর '+bn(X)+'টা হলেই চ্যাম্পিয়ন!</div>';
+    if(m.quiz>=100) h+='<span class="wbadge">'+ic('quiz',16)+'কুইজ যোদ্ধা</span>';
+    return h;
+  }
+  function videoHtml(m){
+    if(m.vmin<30) return heading('ভিডিও দেখা')+encourage('ভিডিও শুরু করলেই এখানে তোমার সিনেমা-হিসাব জমবে।')+waHtml('info','min_show','ভিডিও ফ্লোরের নিচে → স্লাইড লুকানো।');
+    var h=heading('ভিডিও দেখা');
+    h+='<div class="big sm">'+bn(m.vmin)+' <span style="font-size:20px">মিনিট</span></div>';
+    h+='<div class="maths">÷১২০ = প্রায় '+bn(m.movies)+'টা সিনেমা</div>';
+    h+='<div class="glass"><div class="filmstrip">'+cellsFilm(Math.min(m.movies,24))+'</div></div>';
+    if(m.vmin>=1500) h+='<span class="wbadge">'+ic('play',16)+'ভিডিও ম্যারাথনার</span>';
+    return h;
+  }
+  function learnerHtml(m){
+    var h=heading('তোমার পড়ার ধরন');
+    h+='<div class="stamp in">'+esc(m.stamp[0])+'<small>'+esc(m.stamp[1])+'</small></div>';
+    if(m.days>=5){
+      h+='<div class="glass"><div class="row" style="justify-content:space-between"><b>'+bn(m.days)+' দিন সক্রিয়</b>';
+      if(m.streak>=3) h+='<span class="pill dark">টানা '+bn(m.streak)+' দিন</span>'; h+='</div>';
+      h+='<div class="daygrid" style="grid-template-columns:repeat(18,1fr);margin-top:8px">'+cells(Math.min(m.days,54),54)+'</div></div>';
+    } else { h+=encourage('তোমার যাত্রা সবে শুরু — ২০২৭-এ পুরো গল্প।'); }
+    h+=waHtml('ok','LT-01 · always one stamp','কোনো শিক্ষার্থী কখনো স্ট্যাম্প ছাড়া নয় — কম ডেটা হলেও একটি থাকে।');
+    return h;
+  }
+  function badgesHtml(m){
+    var earned=m.badges, h=heading('তোমার অর্জন');
+    if(earned.length===0){
+      h+=encourage(m.group==='just_starting'?'২০২৭-এ তোমার প্রথম ব্যাজ অপেক্ষা করছে 🏅':'প্রায় পেয়ে গিয়েছিলে! আর একটু হলেই প্রথম ব্যাজ।');
+      h+=waHtml('ok','BG-01 · no badges','খালি শেলফ নয় — উৎসাহব্যঞ্জক বার্তা + ওয়েলকাম/লয়ালটি মার্কার।');
+      return h;
+    }
+    h+='<div class="headline">তুমি '+bn(earned.length)+(earned.length===1?'টি ব্যাজ জিতেছ!':'টি ব্যাজ জিতেছ! 🏅')+'</div>';
+    var set={}; earned.forEach(function(c){set[c]=1;});
+    var shelf='';
+    PRESTIGE.forEach(function(c){ if(!set[c]) return; var b=BADGE[c];
+      shelf+='<div class="b"><div class="bi">'+ic(b.ic,22)+'</div><div class="bn">'+esc(b.bn)+'</div></div>'; });
+    h+='<div class="shelf">'+shelf+'</div>';
+    h+='<div class="subline">গ্রুপ: <b style="color:#fff">'+m.group+'</b> — নো-শেম ডিসপ্লে (§6)।</div>';
+    return h;
+  }
+  function renderMarksheet(m){
+    var hide=g('w-hide',true), share=g('w-share','ok');
+    var rows='';
+    rows+='<tr><td>নাম</td><td>'+(hide?'<span class="muted">লুকানো</span>':esc(nameOr(m)))+'</td></tr>';
+    rows+='<tr><td>সক্রিয় দিন</td><td>'+bn(m.days)+'</td></tr>';
+    rows+='<tr><td>পড়ার সময়</td><td>'+bn(m.studyH)+' ঘণ্টা</td></tr>';
+    if(m.ah>0) rows+='<tr><td>হাজিরা</td><td>'+bn(m.aj)+'/'+bn(m.ah)+'</td></tr>';
+    if(m.quiz>0) rows+='<tr><td>কুইজ</td><td>'+bn(m.quiz)+'</td></tr>';
+    if(m.vmin>=30) rows+='<tr><td>ভিডিও</td><td>'+bn(m.vmin)+' মিনিট</td></tr>';
+    if(m.top) rows+='<tr><td>বছরের বিষয়</td><td>'+esc(m.top.s)+' · '+bn(m.top.acc)+'%</td></tr>';
+    if(m.years>0) rows+='<tr><td>শিখোর সাথে</td><td>'+bn(m.years)+' বছর</td></tr>';
+    var badges=''; m.badges.forEach(function(c){ badges+='<span class="mb">'+esc(BADGE[c].bn)+'</span>'; });
+    var html='<div class="msheet"><div class="mh"><div class="t">মার্কশিট ২০২৬</div><div class="s">শিখো • বার্ষিক খাতা</div></div>'+
+      '<div class="mmeta"><span>Serial: ২৬-০৯-০০৭</span><span>২০ ডিসেম্বর ২০২৬</span></div>'+
+      '<table>'+rows+'</table>'+(badges?'<div class="mbadges">'+badges+'</div>':'')+
+      '<div class="mfoot"><span class="muted" style="font-size:11px">শিখো স্বাক্ষর</span><span class="barcode"></span></div></div>';
+    html+='<div class="togglerow"><div><b style="font-size:13px">কার্ডে নাম লুকাও</b><div class="muted" style="font-size:11px">শেয়ার করা কপিতে ডিফল্ট চালু</div></div>'+
+      '<div class="switch '+(hide?'on':'')+'" id="hideSw"></div></div>';
+    if(m.badges.length===0 && m.group==='just_starting') html+=waHtml('ok','BG-01','ব্যাজ নেই — তবু গর্বের কার্ড; নাম ডিফল্ট লুকানো।');
+    html+='<button class="btn3d block" id="shareBtn">'+ic('download',18)+' শেয়ার করো</button>';
+    html+='<div id="shareNote"></div>';
+    document.getElementById('marksheetBody').innerHTML=html;
+    document.getElementById('hideSw').addEventListener('click',function(){ S.set('w-hide',!g('w-hide',true)); render('s-marksheet'); });
+    document.getElementById('shareBtn').addEventListener('click',function(){
+      if(share==='maskdown'){ App.toast('শর্ট-লিংক তৈরি হয়নি — ছবি + পুরো লিংক শেয়ার হলো');
+        document.getElementById('shareNote').innerHTML=waHtml('ok','SH-01 · shortener down','Mask ডাউন → PNG + পুরো URL শেয়ার, ব্লক নয়।'); }
+      else { App.toast('শেয়ার শিট খুলছে…');
+        document.getElementById('shareNote').innerHTML=waHtml('info','MS-03 · hide-name','নাম '+(hide?'লুকানো':'দেখানো')+' — ক্যাপচারের আগে লেয়ার সোয়াপ।'); }
+    });
+  }
+
+  /* ---- video network sim via the shared loader ---- */
+  function showVideo(){
+    var el=document.getElementById('videoBody'); el.innerHTML='';
+    App.load(el, 650, function(cond){ el.innerHTML=videoHtml(model()); }, {page:'wrap',
+      err:{offline:{title:'ভিডিও আনা যায়নি',text:'সংযোগ দেখে আবার চেষ্টা করো।'}} });
+  }
+
+  /* ---- small builders ---- */
+  function heading(t){ return '<div class="eyebrow">'+esc(t)+'</div>'; }
+  function encourage(t){ return '<div class="headline" style="margin-top:8px">'+esc(t)+'</div><div class="daygrid" style="opacity:.4;margin-top:10px">'+cells(0,28)+'</div>'; }
+  function cells(on,total){ var s=''; for(var i=0;i<total;i++) s+='<i'+(i<on?' class="on"':'')+'></i>'; return s; }
+  function cellsFilm(on){ var s=''; for(var i=0;i<24;i++) s+='<i'+(i<on?' class="on"':'')+'></i>'; return s; }
+  function curve(q){ var s='', base=Math.max(q/12,1); for(var i=0;i<12;i++){ var h=Math.min(10+i*(70/11)*(q/148),80); s+='<i style="height:'+h+'%"></i>'; } return s; }
+
+  /* ---- wire it up ---- */
+  document.addEventListener('app:show',function(e){
+    var id=e.detail.id;
+    var c=CAPS[id]; if(c) document.getElementById('cap').innerHTML=esc(c[0])+'<p>'+esc(c[1])+'</p>';
+    demoFor(id);
+    if(id==='s-video') showVideo(); else render(id);
+  });
+  // first screen
+  (function(){ var id=App.current()||'s-home';
+    var c=CAPS[id]; if(c) document.getElementById('cap').innerHTML=esc(c[0])+'<p>'+esc(c[1])+'</p>';
+    demoFor(id); render(id);
+  })();
+})();
+</script>
+</body>
+</html>

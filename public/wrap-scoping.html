@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrap 2026 — Engineering Scoping & Edge Cases</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#F9F8F5;--paper:#FFFFFF;--sunken:#F1EFEA;--ink:#1A1D26;--ink-2:#4B5060;--ink-3:#7C8090;
+    --line:#E3E0D8;--line-2:#EEECE6;--navy:#354894;--magenta:#C2257F;--green:#2C7A4B;--green-bg:#E3F1E8;
+    --amber:#9A6A06;--amber-bg:#FAEFD3;--blue:#2563A8;--blue-bg:#E7ECFB;--red:#B8304B;--red-bg:#FAE3E8;--purple:#5a4a9a;--purple-bg:#EDEBF6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);padding:26px 18px 90px;
+    font-family:"Hind Siliguri","Noto Sans Bengali",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:15px;line-height:1.62}
+  .wrap{max-width:1000px;margin:0 auto}
+  .kick{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:700}
+  h1{font-size:24px;margin:5px 0 4px}
+  .sub{color:var(--ink-2);font-size:14px;margin:0 0 6px;max-width:82ch}
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0 8px}
+  .copy{appearance:none;border:1px solid var(--navy);background:var(--navy);color:#fff;font-weight:700;
+    font-size:12.5px;padding:8px 16px;border-radius:999px;cursor:pointer;white-space:nowrap;font-family:inherit}
+  .copy:hover{background:#2a3a7a}.copy.ok{background:var(--green);border-color:var(--green)}
+  .legend{font-size:11.5px;color:var(--ink-3);display:flex;gap:12px;flex-wrap:wrap}
+  h2{font-size:18px;color:var(--navy);border-top:2px solid var(--line);padding-top:18px;margin:30px 0 2px;letter-spacing:-.01em}
+  h2 .nn{color:var(--magenta);font-weight:800;margin-right:8px}
+  .rule{font-size:13.3px;color:var(--ink-2);margin:4px 0 10px;max-width:84ch}
+  .rule b{color:var(--ink)}
+  table{border-collapse:collapse;width:100%;font-size:12.6px;background:var(--paper);
+    border:1px solid var(--line);border-radius:9px;overflow:hidden;margin:10px 0}
+  th,td{text-align:left;padding:8px 11px;border-bottom:1px solid var(--line-2);vertical-align:top}
+  th{background:#EEF0F7;color:var(--navy);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em}
+  tr:last-child td{border-bottom:0}
+  td:first-child{font-weight:600;color:var(--ink)}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.4px;
+    background:var(--sunken);padding:1px 5px;border-radius:4px;color:var(--navy)}
+  .bn{font-weight:600}
+  .pill{display:inline-block;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap;letter-spacing:.02em}
+  .v{background:var(--green-bg);color:var(--green)}
+  .d{background:var(--purple-bg);color:var(--purple)}
+  .w{background:var(--amber-bg);color:var(--amber)}
+  .src{font-size:11px;color:var(--ink-3);margin-top:2px}
+  .note{font-size:12.8px;background:var(--sunken);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:8px;padding:11px 14px;margin:12px 0}
+  .note b{color:var(--amber)}
+  .rec{font-size:12.8px;background:var(--green-bg);border:1px solid #bfe0cc;border-left:3px solid var(--green);border-radius:8px;padding:11px 14px;margin:12px 0}
+  .rec b{color:var(--green)}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:#fff;
+    font-size:13px;padding:9px 16px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap" id="doc">
+  <div class="kick">Shikho Year-End Wrap 2026 · Android</div>
+  <h1>Engineering Scoping &amp; Edge Cases</h1>
+  <p class="sub">The build contract for backend + data. Every corner case tech is likely to raise, answered up front — grounded in the real services so there’s no guessing. <span class="pill v">VERIFIED</span> = confirmed from the codebase/tech-spec this is written against; <span class="pill d">DECIDE</span> = open product/eng call (listed in §12); <span class="pill w">WATCH</span> = known trap to avoid.</p>
+  <p class="src">Grounded in: <code>academic-program</code> (enrollment), <code>analytics</code> (results-reporting, public-report-card, leaderboard), <code>gamification</code> (badges), <code>kpi</code> + <code>data-aggregators</code> (activity), and SC-1737 / ST-25781.</p>
+  <div class="toolbar">
+    <button class="copy" id="copyBtn">Copy whole doc (text)</button>
+    <span class="legend"><span class="pill v">VERIFIED</span> from code · <span class="pill d">DECIDE</span> open · <span class="pill w">WATCH</span> trap</span>
+  </div>
+
+  <!-- 1 -->
+  <h2><span class="nn">1</span>Eligibility &amp; cohort — who gets a wrap</h2>
+  <p class="rule"><b>Rule:</b> one wrap for every student with an <b>active paid enrolment overlapping the window (1 Jan–20 Dec 2026)</b>, minus test/internal accounts. Judged over the window, not on launch day.</p>
+  <table>
+    <tr><th>Edge case / question</th><th>Handling (decision)</th><th>Grounding</th></tr>
+    <tr><td>What counts as “paid”?</td><td>An <code>academic_program_enrollment</code> row of <code>type="Paid"</code> whose coverage overlaps the window. Not “payment date inside 2026”. <span class="pill d">O1</span></td><td class="src"><span class="pill v">VERIFIED</span> enrollment is per <code>(user_id, academic_program_id)</code>, types Paid/Trial</td></tr>
+    <tr><td>Trial-only / free-program users</td><td>Excluded in v1. <code>type="Trial"</code> expires after <code>TRIAL_DURATION</code> (7 days); free-program/partner (MyGP/PALO) enrolments are tagged, not Paid.</td><td class="src"><span class="pill v">VERIFIED</span> trial expiry + <code>tag</code>/<code>partner_campaign_id</code></td></tr>
+    <tr><td>Paid in 2025 for a 2026 course</td><td><b>Include.</b> Cohort = enrolment overlap, so a Dec-2025 purchase covering 2026 qualifies. (The naive “tran_date in 2026” filter would wrongly drop them.) <span class="pill d">O1</span></td><td class="src">enrolment coverage, not payment date</td></tr>
+    <tr><td>Expired / lapsed course, but active in window</td><td><b>Eligible</b> for the window they were active — prime re-activation target.</td><td class="src">per-window eligibility</td></tr>
+    <tr><td>Trial→Paid upgrade (incl. PALO)</td><td>Treated as Paid. PALO paid-subscribe <b>revokes</b> the existing trial then creates a fresh Paid row — so no double-count.</td><td class="src"><span class="pill v">VERIFIED</span> PALO revoke-then-paid (ST-29932)</td></tr>
+    <tr><td>Refund / chargeback</td><td>Not Paid at cut-off → excluded. Refunded after cut-off, before launch → suppressed at serve. <span class="pill d">O3</span></td><td class="src">—</td></tr>
+    <tr><td>Backlog / repurchase / last-month / QR enrolment flags</td><td>Still Paid → eligible. These flags (<code>is_backlog</code>, <code>is_repurchase</code>, <code>is_last_month</code>, <code>is_qr</code>) don’t change eligibility, only billing state.</td><td class="src"><span class="pill v">VERIFIED</span> enrolment state flags</td></tr>
+    <tr><td>Test / teacher / internal accounts</td><td>Filtered in <code>t1_cohort</code> <b>before</b> any cohort average (they skew learner-type z-scores).</td><td class="src">—</td></tr>
+    <tr><td>Duplicate / merged student records</td><td>Dedupe to the surviving <code>user_id</code> before build. One human = one wrap.</td><td class="src">—</td></tr>
+    <tr><td>Paid, zero activity</td><td>Eligible → <code>is_fresh_start=true</code>, 2-slide deck. Never excluded.</td><td class="src">—</td></tr>
+  </table>
+
+  <!-- 2 -->
+  <h2><span class="nn">2</span>Multiple programme enrolments (tech’s question)</h2>
+  <p class="rule"><b>Verified:</b> a student <b>can</b> hold several programme enrolments, and the platform already keys everything per <code>(user_id, academic_program_id)</code> — enrolment rows, the old quarter/year review (route takes a programme identifier), and rank (<code>PhaseRank_*</code>/<code>SubjectRank_*</code>). So one wrap row per <code>(student, programme)</code> is consistent with how Shikho already works.</p>
+  <p class="rule"><b>The nuance to decide:</b> not every metric is per-programme —</p>
+  <table>
+    <tr><th>Metric</th><th>Granularity</th><th>Why</th></tr>
+    <tr><td>Study time · active days · streak · video · quizzes</td><td><b>Per student</b> (same across all their programmes)</td><td class="src"><span class="pill v">VERIFIED</span> warehouse aggregate grouped by <code>user_id</code> (no programme split); mcq tables per user</td></tr>
+    <tr><td>Live-class attendance (joined/held) · classes</td><td><b>Per programme</b></td><td class="src"><span class="pill v">VERIFIED</span> <code>lessons</code> by <code>academic_program_id</code></td></tr>
+    <tr><td>Rank / percentile · favourite teacher</td><td><b>Per programme</b></td><td class="src"><span class="pill v">VERIFIED</span> per-phase/subject rank in results-reporting</td></tr>
+  </table>
+  <div class="rec"><b>Recommendation (→ O2):</b> ship <b>one wrap per student</b>. Use whole-year per-student totals for the big numbers, and for the per-programme bits (attendance, rank, favourite teacher) use the <b>primary programme = the one most-active in 2026</b> (most active days / study time; tie → most recent enrolment). Keep PK <code>(user_id, program_id)</code> where <code>program_id</code> = that primary. One clean story per student; no duplicate rows; the single home banner has an unambiguous target.</div>
+  <table>
+    <tr><th>Edge case</th><th>Handling</th></tr>
+    <tr><td>Which wrap does the one home banner open?</td><td>The primary programme’s (rule above). Others optional later via a “switch” affordance. <span class="pill d">O2</span></td></tr>
+    <tr><td>Student active in 2+ programmes almost equally</td><td>Tie-break deterministically: most active days → most study time → most recent enrolment. Reproducible across reruns.</td></tr>
+    <tr><td>Batch vs programme</td><td>Scope to <code>academic_program_id</code> (the programme), not batch. A student changing batch within a programme is still one programme.</td><td></td></tr>
+    <tr><td>How did last year pick for multi-programme?</td><td><b>Confirm with the ST-25781 owner</b> — the old review was per-programme, so match or deliberately improve. <span class="pill d">O2</span></td></tr>
+  </table>
+
+  <!-- 3 -->
+  <h2><span class="nn">3</span>Window, cut-off &amp; timezone</h2>
+  <p class="rule"><b>Rule:</b> 2026-01-01 00:00:00 → 2026-12-20 23:59:59 <b>Asia/Dhaka (UTC+6, no DST)</b>. The 20-Dec run is final.</p>
+  <table>
+    <tr><th>Edge case</th><th>Handling</th><th>Grounding</th></tr>
+    <tr><td>UTC vs BST day bucketing</td><td>Bucket every day/month/time-of-day in <b>Asia/Dhaka</b>; 00:00–06:00 BST activity otherwise lands on the wrong day and corrupts active-days/streak/night-owl. Confirm whether <code>activity_date</code> is already BST. <span class="pill d">O4</span></td><td class="src"><span class="pill v">VERIFIED</span> app-usage badge already computes month/day in UTC+6</td></tr>
+    <tr><td>Activity exactly at cut-off</td><td>Inclusive to <code>20 Dec 23:59:59 BST</code>. Define once, everywhere.</td><td class="src">—</td></tr>
+    <tr><td>Results that settle after the locked run</td><td>Not in v1 — the run reads only settled results (model tests gated by <code>result_publish_time</code> / NATS <code>…VALIDATED</code>).</td><td class="src"><span class="pill v">VERIFIED</span> event-gated publish</td></tr>
+    <tr><td>Mid-year joiner monthly arrays</td><td>Always 12 elements, zero-filled before enrolment. Never ragged.</td><td class="src">—</td></tr>
+  </table>
+
+  <!-- 4 -->
+  <h2><span class="nn">4</span>Per-metric scoping &amp; edge cases</h2>
+  <table>
+    <tr><th>Metric</th><th>Source · formula</th><th>Edge cases &amp; handling</th></tr>
+    <tr><td>Study time</td><td><code>Σ user_activity_duration_agg.*_duration</code> (seconds)</td><td>Null/negative rows dropped from sum; &gt;24h/day → QA-gate quarantine; 0&lt;h&lt;1 shows “&lt;১ ঘণ্টা” not 0. Confirm units are seconds not ms. <span class="pill d">O5</span></td></tr>
+    <tr><td>Active days · streak</td><td><code>COUNT(DISTINCT activity_date)</code>; gaps-and-islands for streak</td><td>AI/QR days are an additive union only (never load-bearing); 1-day student → streak hidden (&lt;3); mid-year → <code>avg_days_per_week = active_days ÷ weeks_since_first_activity</code>, not ÷50.</td></tr>
+    <tr><td>Attendance</td><td>joined = <code>student_attendees</code> stay ≥ min-stay; held = <code>lessons</code> LiveClass by <code>academic_program_id</code></td><td><b>Rejoins:</b> aggregate per class before the ≥min rule (a class can have multiple attendee rows — <code>join_count</code>/<code>session_count</code>). Pre-system classes may be missing from <code>lessons</code> → <code>held</code> under-counts → clamp rate ≤1 and flag. Empty <code>content_id</code>+<code>room_id</code> → drop the row. <span class="pill d">O6</span></td></tr>
+    <tr><td>Quizzes</td><td><code>mcq_user_quiz_daily.quiz_completed</code>; questions/correct/hard from <code>mcq_user_chapter_daily</code></td><td>Two sources disagree → <code>mcq_user_quiz_daily</code> authoritative. Invariants: <code>correct ≤ questions</code>, <code>hard_correct ≤ correct</code>.</td></tr>
+    <tr><td>Video</td><td><code>(recorded+animated)_duration/60</code>; movies = min/120</td><td>Below <code>min_show</code> → hide slide. Must agree with video seconds in study-by-type.</td></tr>
+    <tr><td>Best subject</td><td>max accuracy in <code>mcq_user_chapter_daily</code> by <code>subject_name</code>, ≥ <code>min_questions</code></td><td>Filter <code>orientation</code>; none clears → <code>top_subject=null</code> → marksheet drops the row. Dirty <code>subject_name</code> (casing / EN-BN dupes) → normalise to canonical. <span class="pill d">O10</span></td></tr>
+    <tr><td>Favourite teacher</td><td>most-attended via <code>teacher_attendees ⋈ Teachers</code></td><td>Tie → longest total duration; missing teacher record → hide slide. Live classes only.</td></tr>
+    <tr><td>Years with Shikho</td><td>distinct programme years in <code>Transactions</code></td><td>Warehouse tables start 2024 → pre-2024 loyalty under-counts; cap “since 2024” or confirm history. Never 0 for a paid student. <span class="pill d">O13</span></td></tr>
+  </table>
+
+  <!-- 5 -->
+  <h2><span class="nn">5</span>Rank &amp; score reuse — and the bugs NOT to inherit</h2>
+  <p class="rule"><b>Reuse</b> the analytics <code>results-reporting</code> scoring so the wrap matches the app: overall = <code>classPct*0.5 + examPct*0.5</code>, both clamped ≤100; grade A+/A/A-/B/C/D/F at 80/70/60/50/40/33; level good≥80 / moderate≥60 / else. Rank/toppers come from the leaderboard Redis ZSET (per phase/subject).</p>
+  <div class="note"><b>WATCH — do NOT inherit these verified known bugs from results-reporting:</b>
+    <table style="margin:8px 0 0">
+      <tr><th>Known bug</th><th>What to do instead</th></tr>
+      <tr><td><b>Last-week rank == current rank</b> (fake week-over-week delta)</td><td>Don’t show a rank “delta” unless we compute a real one. <span class="pill w">WATCH</span></td></tr>
+      <tr><td><b>Dummy data</b> in <code>GetQuarterData</code>/<code>GetSubjectData</code></td><td>Never call the placeholder paths; read real aggregates only. <span class="pill w">WATCH</span></td></tr>
+      <tr><td><b>Hardcoded 0</b>: <code>AnimatedLessonsWatched</code>, <code>PracticeQuizzesParticipated</code></td><td>Compute these from the warehouse for the wrap; don’t reuse the 0 fields. <span class="pill w">WATCH</span></td></tr>
+      <tr><td><b>Three divergent performance-level scales</b></td><td>Pick one scale for the wrap and apply it consistently.</td></tr>
+    </table>
+    <span class="src"><span class="pill v">VERIFIED</span> all four are documented limitations in the results-reporting spec (status “partial”).</span>
+  </div>
+
+  <!-- 6 -->
+  <h2><span class="nn">6</span>Learner-type stamp</h2>
+  <p class="rule"><b>Rule:</b> one stamp per full-wrap student, cohort-relative (z-score arg-max) over real axes (rhythm, intensity, method, accuracy, pace, attendance, focus, clock). Grounded in real signals; no model to reuse (<code>m1_baseline_model</code> is lead-scoring, not segmentation).</p>
+  <table>
+    <tr><th>Edge case</th><th>Handling</th></tr>
+    <tr><td>Zero-variance axis (σ=0)</td><td><code>NULLIF(σ,0)</code> → axis drops out of arg-max. No divide-by-zero.</td></tr>
+    <tr><td>Student with no graded questions</td><td>Accuracy/Pace/Focus NULL → excluded from their arg-max; stamp still resolves from rhythm/intensity/method/attendance.</td></tr>
+    <tr><td>No reliable hour band</td><td>Drop the Clock axis (raw <code>user_activities.date</code> is noisy — silent now()-fallback). <span class="pill d">O8</span></td></tr>
+    <tr><td>Fresh-Start students in the baseline</td><td>Excluded from μ/σ so sparse users don’t skew the cohort. They get no stamp (2-slide deck).</td></tr>
+    <tr><td>One axis dominates for most students</td><td>Config can drop/down-weight it — no app release. Monitor the stamp histogram post-run.</td></tr>
+  </table>
+
+  <!-- 7 -->
+  <h2><span class="nn">7</span>Badges — two systems + the low-activity floor</h2>
+  <p class="rule"><b>A · Wrap tier badges</b> (we compute): metric clears a threshold in <code>wrap_tier_config</code>; DAG <code>t7</code> assigns the highest rung. Built as <b>ladders with a low starter rung</b> + universal badges so <b>every student earns ≥1</b> and nobody sees an empty shelf. <b>B · Learning badges</b> (gamification already awards; wrap only reads from <code>StudentBadges</code>).</p>
+  <table>
+    <tr><th>Edge case</th><th>Handling</th></tr>
+    <tr><td>Low-activity student → empty badge shelf?</td><td>No. Starter rungs (<span class="bn">যাত্রা শুরু</span> ≥1 day, Quiz/Video/Class starters ≥1) + loyalty (<span class="bn">শিখোর সাথী</span>) guarantee ≥1 badge. Never render “0 badges”.</td></tr>
+    <tr><td>Too many badges</td><td>Show the highest rung per ladder, 3–4 max, achievement-first.</td></tr>
+    <tr><td>Learning-badge calculation</td><td>Not recomputed — gamification service owns it (percent-of-completion buckets, speed/accuracy, app-usage). Wrap needs only the <code>StudentBadges → datafuse</code> pipe. <span class="pill d">O7</span></td><td class="src"><span class="pill v">VERIFIED</span> gamification badge specs</td></tr>
+    <tr><td>Thresholds wrong / lopsided</td><td>All config — retune with no release. Guardrail: no tier swallows &gt;60% of students (check distribution once).</td></tr>
+  </table>
+
+  <!-- 8 -->
+  <h2><span class="nn">8</span>Pipeline, reliability &amp; QA gate</h2>
+  <table>
+    <tr><th>Concern</th><th>Requirement</th></tr>
+    <tr><td>Idempotency</td><td><b>UPSERT</b> on <code>(user_id, program_id)</code> — never append. Reruns safe.</td></tr>
+    <tr><td>Retries &amp; partial upstream</td><td>Airflow <code>retries ≥ 2</code>; <code>ExternalTaskSensor</code> waits for each source; missing source day → <b>fail fast</b>, never ship a half cohort.</td></tr>
+    <tr><td>QA gate <code>t10</code></td><td>Row stays <code>is_available=false</code> until: no NULL headline stat · study ≤24h/day · <code>0 ≤ rate ≤ 1</code> · <code>streak ≤ active_days</code> · no negatives · stamp present. Failures quarantined with a reason.</td></tr>
+    <tr><td>Enrolment events can be missed</td><td>Enrolment NATS publishes are best-effort (no retry/saga) — so build the cohort from the <b>enrolment tables</b>, not by replaying events. <span class="pill w">WATCH</span></td><td class="src"><span class="pill v">VERIFIED</span> enrollment spec §11/§14</td></tr>
+    <tr><td>Final run fallback</td><td>If the 20-Dec run fails, serve the last good run; re-run before 26 Dec. Go-live gated by <code>is_available</code>, not the timestamp. <span class="pill d">O12</span></td></tr>
+  </table>
+
+  <!-- 9 -->
+  <h2><span class="nn">9</span>Read API &amp; client contract</h2>
+  <table>
+    <tr><th>Case</th><th>Contract</th></tr>
+    <tr><td>Not paid</td><td><code>NOT_ELIGIBLE</code> (403); banner hidden.</td></tr>
+    <tr><td>No row / not ready</td><td><code>yearWrap=null</code> + <code>exists=false</code> → hidden; row not built → <code>is_available=false</code> → “coming soon”.</td></tr>
+    <tr><td>Multi-programme</td><td>API resolves the primary-programme row (§2); optional param to fetch a specific <code>program_id</code>.</td></tr>
+    <tr><td>Null vs missing field</td><td>Server always sends the key; <code>null</code> = hide. Client treats null/absent identically.</td></tr>
+    <tr><td>Unknown slide type / reorder</td><td>Client renders <code>slides[]</code> in server order, ignores unknown types → add/reorder/drop a slide with no release.</td></tr>
+    <tr><td>Old app version</td><td>Gate the banner on a <b>min supported version</b> + <code>is_available</code>. <span class="pill d">O11</span></td></tr>
+    <tr><td>Caching</td><td>Reuse the report-card public cache (24h) + rate-limit (100/min). <span class="pill v">VERIFIED</span> existing config.</td></tr>
+  </table>
+
+  <!-- 10 -->
+  <h2><span class="nn">10</span>Share &amp; privacy</h2>
+  <table>
+    <tr><th>Case</th><th>Handling</th></tr>
+    <tr><td>Public share card</td><td>Reuse <code>public-report-card</code> + Mask short-link. Default <b>name-hidden</b> (no school/rank) — many are minors.</td></tr>
+    <tr><td>Scraping</td><td><code>report_id</code> is a <b>non-enumerable random id</b>, never sequential/user id.</td></tr>
+    <tr><td>Mask (shortener) down</td><td>Return the card without <code>short_url</code>; app shares PNG + full URL — never block the share.</td></tr>
+    <tr><td>Takedown</td><td>A shared card is revocable (serve 404) on request.</td></tr>
+  </table>
+
+  <!-- 11 -->
+  <h2><span class="nn">11</span>Launch &amp; rollback</h2>
+  <table>
+    <tr><th>Concern</th><th>Plan</th></tr>
+    <tr><td>Go-live control</td><td>Submit to Play Store ~18 Dec; the server <code>is_available</code> flag controls go-live 26–31 Dec (not the binary).</td></tr>
+    <tr><td>Post-launch bug</td><td>Flip <code>is_available=false</code> (globally or per cohort) = instant hide, no release.</td></tr>
+    <tr><td>Phased rollout</td><td>Enable for a small % first, watch crash/finish, then ramp. <span class="pill d">O12</span></td></tr>
+  </table>
+
+  <!-- 12 -->
+  <h2><span class="nn">12</span>Open decisions — owned &amp; dated</h2>
+  <table>
+    <tr><th>#</th><th>Decision</th><th>Owner · by</th></tr>
+    <tr><td>O1</td><td>“Paid” predicate = enrolment-overlap, not payment-in-window</td><td>BE · Product — pre-build</td></tr>
+    <tr><td>O2</td><td>One wrap per student + primary-programme rule (confirm vs last year)</td><td>BE · Product — pre-build</td></tr>
+    <tr><td>O3</td><td>Refund/chargeback after cut-off</td><td>BE — pre-launch</td></tr>
+    <tr><td>O4</td><td><code>activity_date</code> timezone (BST vs UTC)</td><td>DAG · BI — pre-build</td></tr>
+    <tr><td>O5</td><td>Duration units (seconds vs ms)</td><td>BI — pre-build</td></tr>
+    <tr><td>O6</td><td>Rejoin aggregation · <code>lessons</code> coverage</td><td>DAG · BI — pre-build</td></tr>
+    <tr><td>O7</td><td>Gamification badge pipe (<code>StudentBadges → datafuse</code>)</td><td>BE — 10 Dec</td></tr>
+    <tr><td>O8</td><td>Night-owl hour band (or drop Clock axis)</td><td>DAG · BI — pre-build</td></tr>
+    <tr><td>O9</td><td>Learner-tag Bengali labels + optional low-side tags</td><td>Product · Design — pre-build</td></tr>
+    <tr><td>O10</td><td><code>subject_name</code> canonicalisation + best-subject fallback</td><td>BI · Product — pre-build</td></tr>
+    <tr><td>O11</td><td>Min supported app version for the banner</td><td>Android — pre-release</td></tr>
+    <tr><td>O12</td><td>Failed-run fallback + rollout ramp</td><td>DAG · Product — pre-launch</td></tr>
+    <tr><td>O13</td><td><code>class</code> updated yearly? · pre-2024 loyalty history</td><td>BI — pre-build</td></tr>
+  </table>
+  <p class="rec"><b>Bottom line:</b> the feature is decision-complete on design. What’s left is these <b>13 data decisions</b> — each owned and dated. Resolve them and the nightly build is lockable. Everything marked <span class="pill v">VERIFIED</span> is confirmed from the actual services, so tech can trust it without re-deriving.</p>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard ✓</div>
+<script>
+  function toast(){var t=document.getElementById('toast');t.classList.add('show');setTimeout(function(){t.classList.remove('show');},1500);}
+  var btn=document.getElementById('copyBtn');
+  btn.addEventListener('click',function(){
+    var txt=document.getElementById('doc').innerText;
+    function done(){btn.textContent='Copied ✓';btn.classList.add('ok');toast();setTimeout(function(){btn.textContent='Copy whole doc (text)';btn.classList.remove('ok');},1600);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,done);}
+    else{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);done();}
+  });
+</script>
+</body>
+</html>

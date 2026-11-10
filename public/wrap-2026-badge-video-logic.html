@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrap 2026 — Badge &amp; Eligibility Business Logic</title>
+<style>
+:root{
+  color-scheme: light;
+  --ground:#F9F8F5; --paper:#FFFFFF; --sunken:#F1EFEA;
+  --ink:#1A1D26; --ink-2:#4B5060; --ink-3:#7C8090;
+  --line:#E3E0D8; --line-2:#EEECE6;
+  --navy:#354894; --magenta:#C2257F;
+  --red:#B8304B; --red-bg:#FAE3E8;
+  --green:#2C7A4B; --green-bg:#E3F1E8;
+  --amber:#9A6A06; --amber-bg:#FAEFD3;
+  --blue:#2563A8; --blue-bg:#E7ECFB;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font:15.5px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:900px;margin:0 auto;padding:26px 20px 90px}
+.kick{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:700}
+h1{font-size:26px;margin:6px 0 4px;letter-spacing:-.01em}
+.sub{color:var(--ink-2);font-size:14.5px;margin:0;max-width:76ch}
+.src{font-size:12.5px;color:var(--ink-3)}
+h2{font-size:19px;margin:34px 0 2px;color:var(--navy);border-top:2px solid var(--line);padding-top:18px}
+h2 .nn{color:var(--magenta);font-weight:800;margin-right:9px}
+h3{font-size:16px;margin:22px 0 2px;color:var(--ink)}
+h4{font-size:12px;margin:14px 0 2px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+p{margin:8px 0}.lead{color:var(--ink-2);max-width:78ch}
+strong,b{color:var(--ink)}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13.2px;background:var(--paper);
+  border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line-2);vertical-align:top}
+th{background:#EEF0F7;color:var(--navy);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em}
+tr:last-child td{border-bottom:0}
+ul{margin:8px 0;padding-left:22px}li{margin:5px 0}
+.pill{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.y{color:var(--green);font-weight:800}.n{color:var(--ink-3);font-weight:700}
+.tl{font-size:16px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--magenta);border-radius:10px;padding:16px 18px;margin:16px 0;line-height:1.6}
+.tl b{color:var(--magenta)}
+.badge{background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:10px;padding:14px 16px;margin:14px 0}
+.badge .bt{font-size:15.5px;font-weight:800;color:var(--navy);margin:0 0 2px}
+.badge .def{font-size:13.6px;margin:6px 0}
+.badge .def b{color:var(--magenta)}
+.badge h4{margin-top:10px}
+.badge ul{margin:4px 0 0}
+.badge li{font-size:13.4px}
+.warnbox{font-size:13.5px;background:var(--red-bg);border:1px solid #e9b9c4;border-left:3px solid var(--red);border-radius:7px;padding:13px 15px;margin:14px 0}
+.warnbox b{color:var(--red)}
+.rec{font-size:13.5px;background:var(--green-bg);border:1px solid #bfe0cc;border-left:3px solid var(--green);border-radius:7px;padding:13px 15px;margin:14px 0}
+.rec b{color:var(--green)}
+.note{font-size:13.5px;background:var(--sunken);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:7px;padding:12px 15px;margin:14px 0}
+.note b{color:var(--amber)}
+.done{list-style:none;padding-left:0}
+.done li{padding:7px 0 7px 26px;position:relative;font-size:13.8px;border-bottom:1px solid var(--line-2)}
+.done li:last-child{border-bottom:0}
+.done li::before{content:"✓";position:absolute;left:4px;top:6px;color:var(--green);font-weight:800}
+.toc{font-size:12.8px;color:var(--ink-2);background:var(--sunken);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:14px 0;columns:2;column-gap:28px}
+.toc b{color:var(--navy)}
+@media(max-width:620px){.toc{columns:1}}
+dl{margin:10px 0}dt{font-weight:800;color:var(--navy);font-size:13.5px;margin-top:10px}
+dd{margin:2px 0 0;font-size:13.5px;color:var(--ink-2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="kick">Shikho Year-End Wrap 2026 · Business logic — complete &amp; decided</div>
+<h1>Badge &amp; Eligibility — Business Logic</h1>
+<p class="sub">Business rules for Wrap 2026 badges and eligibility: who gets a wrap, how each badge is earned (with corner cases), who sees what, and how after-launch changes are handled.</p>
+<p class="src">2026-11-04 · Companion to the Wrap PRD. Supersedes the earlier plan to read badges from the gamification service (now discontinued).</p>
+
+<div class="tl"><b>Summary.</b> Every student (paid, trial, free) gets the same full wrap. Each badge is earned from that student’s own recorded activity by the rules in Section 5. Earned badges appear together in the collection and on the marksheet; students with little activity see encouraging copy instead of empty charts.</div>
+
+<div class="toc">
+<b>1.</b> Who gets a wrap (everyone) &nbsp;·&nbsp;
+<b>2.</b> Definitions — every term &nbsp;·&nbsp;
+<b>3.</b> One wrap for all — thin data &nbsp;·&nbsp;
+<b>4.</b> Where badges come from &nbsp;·&nbsp;
+<b>5.</b> The badge roster (11 badges) &nbsp;·&nbsp;
+<b>6.</b> The badge collection (তোমার অর্জন) &nbsp;·&nbsp;
+<b>7.</b> The learner-type stamp &nbsp;·&nbsp;
+<b>8.</b> Who sees which badges (no-shame) &nbsp;·&nbsp;
+<b>9.</b> Cross-cutting fairness guards &nbsp;·&nbsp;
+<b>10.</b> After launch — events &nbsp;·&nbsp;
+<b>11.</b> Shared card &amp; non-users &nbsp;·&nbsp;
+<b>12.</b> All settings
+</div>
+
+<!-- 1 -->
+<h2><span class="nn">1</span>Who gets a wrap — everyone</h2>
+<p class="lead"><b>Every student account gets the full wrap</b>, paid or not — no paid gate, no qualifying window. The wrap uses whatever activity each student has; busy students see fuller sections, quiet ones see encouraging copy (Section 3).</p>
+<table>
+  <tr><th>Account type</th><th>Gets the full wrap?</th><th>Note</th></tr>
+  <tr><td><b>Paid</b> — active, expired, lapsed, or refunded</td><td class="y">Yes</td><td>The richest wraps; refund/expiry does not remove it</td></tr>
+  <tr><td><b>Trial</b></td><td class="y">Yes</td><td>Uses whatever they did; thin sections show encouraging copy</td></tr>
+  <tr><td><b>Free</b> (never paid)</td><td class="y">Yes</td><td>Same template; a reason to return and a card to share</td></tr>
+  <tr><td><b>Staff / teacher / test / internal</b></td><td class="n">No</td><td>Not students — excluded, and kept out of all peer comparisons</td></tr>
+  <tr><td><b>Deleted / banned</b></td><td class="n">No</td><td>No account to show a wrap for</td></tr>
+  <tr><td><b>Account created after 20 Dec</b> (during/after launch week)</td><td class="n">No 2026 wrap</td><td>No activity in the 2026 window to reflect; they start fresh for 2027 — no banner until they have window activity</td></tr>
+</table>
+<p class="note"><b>Duplicate accounts</b> for one student merge to a single wrap (else the most-active account gets it). <b>⚠ This reverses the PRD’s locked “paid-only” + “Fresh Start” decisions</b> — the PRD’s eligibility section (Section 8.2 / state matrix) must be updated to match.</p>
+
+<!-- 2 -->
+<h2><span class="nn">2</span>Definitions — every term used here</h2>
+<dl>
+  <dt>The window</dt><dd>1 Jan – 20 Dec 2026, counted in <b>Bangladesh time</b>. Only activity inside it counts; activity after 20 Dec is not included this year.</dd>
+  <dt>Active day</dt><dd>A calendar day with <b>any real learning activity</b> — video, live class, quiz, notes, or Shikho AI. Merely opening the app does not count. Counted once per day, in Bangladesh time.</dd>
+  <dt>Quiz completed</dt><dd>A quiz the student <b>finished/submitted</b> — not opened-and-abandoned. Counted per <b>distinct quiz</b> (retakes don’t multiply).</dd>
+  <dt>Questions (for accuracy)</dt><dd>Distinct MCQ questions the student <b>answered</b> in the window (excluding orientation), counting the <b>first attempt</b> at each.</dd>
+  <dt>Video watch time</dt><dd>Content actually watched — recorded + animated combined — measured by <b>content position reached</b> (so 1.5×/2× speed isn’t penalised), counted <b>once per video up to its length</b> (rewatching doesn’t inflate).</dd>
+  <dt>Live attendance</dt><dd>Joining a class <b>live</b> and staying <b>≥ 10 minutes or 30% of the class</b>. Watching the recording later is <i>video</i>, not attendance.</dd>
+  <dt>Video pool</dt><dd>All students with <b>30+ minutes</b> of video, all grades nationally. The ranking pool for the video badge, so near-zero students don’t distort it.</dd>
+  <dt>Years with Shikho</dt><dd>Distinct calendar years with an active <b>paid</b> enrolment, from the earliest reliable record. Records exist from <b>2024</b> (max 3 this year). Trial/free = 0 → no loyalty badge.</dd>
+  <dt>Primary course</dt><dd>For a multi-course student, the one they were <b>most active</b> in (tie → most recent). The banner opens this one; attendance is measured here.</dd>
+</dl>
+
+<!-- 3 -->
+<h2><span class="nn">3</span>One wrap for all — thin data handled gracefully</h2>
+<p class="lead">One wrap template, everyone gets it — no shortened version. The difference between a busy and a quiet student is handled <b>inside</b> the same wrap, section by section: solid data → the full visual; a little data (below a section’s show-floor) → a short encouraging line, never an empty chart; no data → the section is skipped. We never show “0” or a blank grid; we show “--” or warmth.</p>
+<div class="tl"><b>No student ever sees “nothing.”</b> There is a guaranteed floor every wrap always shows, no matter how little the student did: the <b>cover with their name</b>, a <b>warm personal message</b>, their <b>learner-type stamp</b> (always assigned — Section 7), a <b>welcome marker</b> (loyalty if returning, else “নতুন শুরু”), and an <b>invitation to build their 2027</b> — ending on a shareable marksheet. A quiet student simply sees fewer data sections and more encouragement; they never reach a blank screen.</div>
+<p class="lead">So a student with little video (or little of anything) doesn’t lose the wrap — they lose only <i>that</i> section’s chart, which is replaced by an encouraging line, while the guaranteed floor above always carries the experience.</p>
+
+<!-- 4 -->
+<h2><span class="nn">4</span>Where badges come from</h2>
+<div class="warnbox"><b>The old badge service is dead.</b> We had planned to read badges from the gamification service; review confirmed it (and the Textpack reference) has been unused ~3 years, with no list of what’s still live. We rely on none of it. <b>Every badge is calculated from the student’s own recorded activity.</b> If a badge’s source data is unreliable for a given student, that badge simply isn’t shown for them (no error); if a whole source is down, that badge is withdrawn for everyone (never partially awarded) and the rest still ship.</div>
+
+<!-- 5 -->
+<h2><span class="nn">5</span>The badge roster</h2>
+<p class="lead"><b>Eleven badges</b>, across everything the wrap already measures — so there are many ways to be recognised and almost every active student earns at least one. Each is earned purely from the student’s own activity in the window, at its <b>highest reached tier only</b>. Earning none is still fine: the badge area hides and nothing reads as failure.</p>
+<table>
+  <tr><th>Badge (top · second tier)</th><th>What earns it</th><th>Top tier</th><th>Second tier</th><th>Basis</th></tr>
+  <tr><td><b>ভিডিও ম্যারাথনার</b> · নিয়মিত দর্শক</td><td>Video watched (recorded + animated, by time)</td><td>Top 15% of the video pool</td><td>Top 50%</td><td>Relative</td></tr>
+  <tr><td><b>অধ্যবসায়ী</b> · অধ্যয়নপ্রিয়</td><td>Total study time (all learning, by time)</td><td>Top 15%</td><td>Top 50%</td><td>Relative</td></tr>
+  <tr><td><b>কুইজ যোদ্ধা</b> · কুইজ প্রেমী</td><td>Distinct quizzes completed</td><td>100+</td><td>50–99</td><td>Milestone</td></tr>
+  <tr><td><b>প্রশ্নবীর</b> · প্রশ্নপ্রেমী</td><td>Questions answered</td><td>1000+</td><td>500–999</td><td>Milestone</td></tr>
+  <tr><td><b>নির্ভুল পড়ুয়া</b> · মনোযোগী পড়ুয়া</td><td>Answer accuracy</td><td>85%+ correct</td><td>70–84%</td><td>Rate</td></tr>
+  <tr><td><b>ফার্স্ট বেঞ্চার</b> · নিয়মিত উপস্থিতি</td><td>Live-class attendance</td><td>85%+ attended</td><td>60–84%</td><td>Rate</td></tr>
+  <tr><td><b>সক্রিয় তারকা</b> · সক্রিয় পড়ুয়া</td><td>Total active days in the year</td><td>150+ days</td><td>75–149</td><td>Milestone</td></tr>
+  <tr><td><b>স্ট্রিক মাস্টার</b> · ধারাবাহিক পড়ুয়া</td><td>Longest run of consecutive active days</td><td>21+ days</td><td>7–20</td><td>Milestone</td></tr>
+  <tr><td><b>উন্নতির তারকা</b></td><td>Did clearly better in the 2nd half of the year than the 1st</td><td>Measurable improvement</td><td>—</td><td>Personal</td></tr>
+  <tr><td><b>বিষয় সেরা</b></td><td>High accuracy in their strongest subject</td><td>85%+ in top subject</td><td>—</td><td>Personal</td></tr>
+  <tr><td><b>শিখোর সাথে N বছর</b></td><td>Returning paid student (loyalty)</td><td>N years (from 2024)</td><td>—</td><td>Factual</td></tr>
+</table>
+<p class="note"><b>The four “bases” — how each bar is set.</b> <b>Relative:</b> raw time is unbounded and drifts year to year, so we rank against peers (study time, video). <b>Milestone:</b> a round, chase-able number, sanity-checked against the real spread (quizzes, questions, active days, streak, loyalty years). <b>Rate:</b> already a percentage, so an absolute cut is meaningful (accuracy, attendance). <b>Personal:</b> measured against the student’s own year or subjects, never peers (improvement, best subject). Thresholds live in config and retune with no app release. Final Bangla names are a brand pass — the <i>rules</i> are what’s fixed here.</p>
+
+<h3>Qualifying rules &amp; corner cases</h3>
+<table>
+  <tr><th>Badge</th><th>Must also meet</th><th>Key corner cases</th></tr>
+  <tr><td><b>Video</b></td><td>30+ min of video</td><td>Watch time = content watched (1.5×/2× not penalised), counted once per video (no rewatch farming); a class <i>recording</i> ≠ attendance; units must be seconds <span class="pill" style="background:var(--amber-bg);color:var(--amber)">data check</span></td></tr>
+  <tr><td><b>Study time</b></td><td>Some study time</td><td>All learning time combined, content-time not wall-clock; ranked among students with activity; units must be seconds <span class="pill" style="background:var(--amber-bg);color:var(--amber)">data check</span></td></tr>
+  <tr><td><b>Quiz</b></td><td>—</td><td>Only submitted quizzes; distinct quizzes (retakes count once); practice + chapter MCQs, not model/board exams; auto-submit on timeout still counts</td></tr>
+  <tr><td><b>Questions</b></td><td>—</td><td>Distinct questions, first attempt each; orientation excluded; retries don’t inflate</td></tr>
+  <tr><td><b>Accuracy</b></td><td>50+ questions answered</td><td>First attempt per question; only answered questions in the denominator; orientation excluded</td></tr>
+  <tr><td><b>Attendance</b></td><td>5+ live classes held</td><td>Attended = joined live, stayed ≥10 min or 30%; recording ≠ attendance; rejoin/co-teach count once; cancelled classes excluded; counted from join date; recorded-only course → not applicable</td></tr>
+  <tr><td><b>Active days</b></td><td>—</td><td>A day = any real learning activity (not just an app-open), Bangladesh time; union across courses</td></tr>
+  <tr><td><b>Streak</b></td><td>—</td><td>Consecutive active days, Dhaka-dated; one missed day breaks it</td></tr>
+  <tr><td><b>Improvement</b></td><td>Enough data in both halves</td><td>Compares the student to their own 1st half; shown <b>only positively</b> — we never say “you got worse”; not awarded if either half is too thin</td></tr>
+  <tr><td><b>Best subject</b></td><td>50+ questions in that subject</td><td>Strongest subject by accuracy; orientation excluded; not awarded if no subject clears the floor</td></tr>
+  <tr><td><b>Loyalty</b></td><td>Paid in an earlier year</td><td>Distinct paid years from 2024 (may undercount longer tenure <span class="pill" style="background:var(--amber-bg);color:var(--amber)">data check</span>); non-consecutive years count; a fully-refunded year doesn’t; trial/free = none</td></tr>
+</table>
+
+<h3>Worked examples</h3>
+<table>
+  <tr><th>Student did…</th><th>→ Badge earned</th></tr>
+  <tr><td>48 h video, top 8% of the pool</td><td>ভিডিও ম্যারাথনার</td></tr>
+  <tr><td>142 h total study, top 12%</td><td>অধ্যবসায়ী</td></tr>
+  <tr><td>148 quizzes completed</td><td>কুইজ যোদ্ধা</td></tr>
+  <tr><td>1,240 questions answered</td><td>প্রশ্নবীর</td></tr>
+  <tr><td>612 of 720 correct (85%)</td><td>নির্ভুল পড়ুয়া</td></tr>
+  <tr><td>63 of 72 classes (87.5%)</td><td>ফার্স্ট বেঞ্চার</td></tr>
+  <tr><td>187 active days</td><td>সক্রিয় তারকা</td></tr>
+  <tr><td>23-day longest streak</td><td>স্ট্রিক মাস্টার</td></tr>
+  <tr><td>Accuracy rose 72% → 84% across the year</td><td>উন্নতির তারকা</td></tr>
+  <tr><td>88% in পদার্থবিজ্ঞান (their best subject)</td><td>বিষয় সেরা</td></tr>
+  <tr><td>Paid 2024 + 2025 + 2026</td><td>শিখোর সাথে ৩ বছর</td></tr>
+</table>
+<p class="note"><b>Across badges:</b> a student who earns several shows them all, <b>highest tier only</b> per badge, in prestige order (Section 6). More badges = more ways to be recognised — deliberate, so almost every active student earns at least one.</p>
+
+<!-- 6 -->
+<h2><span class="nn">6</span>The badge collection — “তোমার অর্জন” (all together)</h2>
+<p class="lead"><b>Every earned badge is shown together in one place</b>, not scattered one-per-slide. Two homes, always matching:</p>
+<table>
+  <tr><th>Element</th><th>Business rule</th></tr>
+  <tr><td><b>The collection screen</b> — a dedicated “তোমার অর্জন” section near the end of the story</td><td>All earned badges on one shelf, prestige order, with a count headline “তুমি <b>N</b>টি ব্যাজ জিতেছ! 🏅” (for exactly one → “তোমার প্রথম ব্যাজ!”). This is the canonical badge view.</td></tr>
+  <tr><td><b>The marksheet</b> — the shareable card</td><td>The same earned badges, listed together, so the shared card carries them too. The collection and the card never disagree.</td></tr>
+  <tr><td>Tap a badge</td><td>A one-line “how you earned it” with the student’s own number — e.g. “৬৩/৭২ ক্লাসে উপস্থিত” for ফার্স্ট বেঞ্চার.</td></tr>
+  <tr><td>Earned none</td><td><b>No empty shelf.</b> Replaced by warm forward-looking copy — “২০২৭-এ তোমার প্রথম ব্যাজ অপেক্ষা করছে” — plus the welcome/loyalty marker.</td></tr>
+  <tr><td>Near-miss line</td><td>Optional single positive nudge for the closest unearned badge, only if within <b>5 quizzes / 5 points attendance / 3 days streak / 5 percentile video</b>. Encouraging only.</td></tr>
+  <tr><td>On the slides</td><td>A badge may flash on its own story slide the moment it’s earned, but its <b>home is the collection</b> — the flash is just a reveal.</td></tr>
+</table>
+<p class="note"><b>Prestige order</b> (how they’re arranged on the shelf and card): ভিডিও ম্যারাথনার · অধ্যবসায়ী · ফার্স্ট বেঞ্চার · কুইজ যোদ্ধা · প্রশ্নবীর · নির্ভুল পড়ুয়া · বিষয় সেরা · সক্রিয় তারকা · স্ট্রিক মাস্টার · উন্নতির তারকা · শিখোর সাথে N বছর. The badge artworks are <b>fixed for this year</b> (they ship inside the app); config can retune thresholds and labels with no release, but a brand-new badge’s artwork needs an app update.</p>
+
+<!-- 7 -->
+<h2><span class="nn">7</span>The learner-type stamp — one personality per student</h2>
+<p class="lead"><b>Separate from badges.</b> The stamp is the signature “this is the kind of learner I was” moment — <b>exactly one per student, always present</b> (badges are 0–6; the stamp is always 1). It has its own slide; badges have the collection.</p>
+<table>
+  <tr><th>Stamp</th><th>Given to the student who most stands out on…</th></tr>
+  <tr><td><b>নিয়মিত পড়ুয়া</b> — Consistent</td><td>Studying across the most days/weeks (regularity)</td></tr>
+  <tr><td><b>পরিশ্রমী</b> — Hard worker</td><td>The most total study time (effort)</td></tr>
+  <tr><td><b>অনুশীলনকারী</b> — Practicer</td><td>Learning most by doing quizzes/practice vs watching</td></tr>
+  <tr><td><b>রাতজাগা পড়ুয়া</b> — Night owl</td><td>The largest share of study at night (needs time-of-day data — see note)</td></tr>
+  <tr><td><b>একনিষ্ঠ / অনুসন্ধানী</b> — Focused / Explorer</td><td>Concentrating on one subject · or spreading across many</td></tr>
+  <tr><td><b>ভারসাম্যপূর্ণ</b> — Balanced</td><td>No single trait stands out — the default, never a blank</td></tr>
+</table>
+<div class="rec"><b>How the stamp is chosen.</b> We look at each study dimension and give the student the stamp for the one where they <b>stand out most compared to other students</b> — not a fixed cut-off. Because it’s relative, the stamps <b>spread naturally across students</b> (not everyone becomes the same type), whatever the raw numbers look like. If nothing stands out → <b>ভারসাম্যপূর্ণ</b>.</div>
+<h4>Corner cases</h4>
+<ul>
+  <li><b>Always one, never empty</b> — every student gets a stamp.</li>
+  <li><b>Thin data:</b> a dimension we can’t measure for a student (e.g. no graded questions) is skipped for them — they still get a stamp from the rest.</li>
+  <li><b>Just-starting students</b> (almost no activity) get a gentle welcome stamp rather than a comparison-based one.</li>
+  <li>If two dimensions <b>tie</b> for most distinctive, a fixed priority order breaks the tie, so reruns are stable.</li>
+  <li><b>Night owl depends on time-of-day data.</b> If it isn’t reliably available this year, that one personality isn’t offered and the rest still work — but it’s the flagship example in Strategy, so securing it is a priority. <span class="pill" style="background:var(--amber-bg);color:var(--amber)">data check</span></li>
+</ul>
+
+<!-- 8 -->
+<h2><span class="nn">8</span>Who sees which badges — the no-shame display</h2>
+<p class="lead">Same badge engine, emphasised differently by how the year went. <b>Classification is computable</b>, and the groups are checked <b>top-down (Strong first) and are mutually exclusive</b> — so earning any badge lifts a student out of “Just starting”:</p>
+<table>
+  <tr><th>Group</th><th>How a student lands here</th><th>Lead with</th><th>Never show</th></tr>
+  <tr><td><b>Strong</b></td><td>Earned <b>3+ badges</b>, or top <b>20%</b> of the video pool by activity</td><td>All earned badges · a positive “top X%” · best subject</td><td>— (let them flex)</td></tr>
+  <tr><td><b>Middle</b></td><td>Earned <b>1–2 badges</b> (not Strong)</td><td>Earned effort badges · hours · active days</td><td>Rank · peer comparison</td></tr>
+  <tr><td><b>Low</b></td><td><b>0 badges</b> but some real activity</td><td>Effort stats + optional near-miss nudge</td><td>Rank · “weakest” anything · empty shelf</td></tr>
+  <tr><td><b>Just starting</b></td><td>Almost no activity</td><td>The warm welcome wrap + welcome/loyalty marker</td><td>Charts · totals · any comparison</td></tr>
+</table>
+<p class="note"><b>Standing is only ever a positive “top X%,”</b> shown only to Strong students — never a numeric class rank, never to the others.</p>
+
+<!-- 9 -->
+<h2><span class="nn">9</span>Cross-cutting fairness guards</h2>
+<p class="lead">The guards that apply across all badges (the per-badge ones live in Section 5).</p>
+<table>
+  <tr><th>Guard</th><th>Rule</th></tr>
+  <tr><td>Window &amp; timezone</td><td>Only activity in <b>1 Jan – 20 Dec 2026, Bangladesh time</b> counts toward any badge.</td></tr>
+  <tr><td>Non-students excluded from pools</td><td>Staff/test/internal accounts are removed before the video percentile and stamp comparisons, so they can’t skew the cuts.</td></tr>
+  <tr><td>No double counting</td><td>Repeated opens / rejoins of the same class or video are counted once.</td></tr>
+  <tr><td>Per-student missing data</td><td>If one badge’s source is unreliable for a student, that badge simply isn’t shown for them — never an error, never a guess.</td></tr>
+  <tr><td>Stable &amp; final</td><td>Badges are locked on the final data run; they don’t change under the student after launch.</td></tr>
+</table>
+
+<!-- 10 -->
+<h2><span class="nn">10</span>After launch — events</h2>
+<p class="lead">These are business rules, not implementation: they decide whether a student keeps a badge/card after something changes.</p>
+<table>
+  <tr><th>Event</th><th>What happens</th></tr>
+  <tr><td>Student refunds / lets a course expire after launch</td><td><b>No change</b> — the wrap isn’t payment-gated, so they keep it and their badges.</td></tr>
+  <tr><td>Account deleted after sharing</td><td>The public card is <b>revoked</b> — the shared link stops working.</td></tr>
+  <tr><td>A threshold/number is changed after some cards exist</td><td>The next data run recomputes everyone; cards already captured/shared are <b>pinned</b> to what they showed.</td></tr>
+  <tr><td>A data source breaks before the final run</td><td>That badge is withdrawn for everyone (never partial); the rest still ship; the wrap is never blocked.</td></tr>
+</table>
+
+<!-- 11 -->
+<h2><span class="nn">11</span>Shared card &amp; reaching non-users</h2>
+<ul>
+  <li><b>Every student can share their card.</b> Badges are safe to show publicly (positive, no private data); the card still defaults to <b>name hidden</b> (many are minors).</li>
+  <li><b>A true non-user</b> (no Shikho account) who opens a shared card sees the public marksheet + a clear <b>“তুমিও তোমার খাতা বানাও — Shikho-তে শুরু করো”</b> sign-up prompt — the acquisition edge.</li>
+</ul>
+
+<!-- 12 -->
+<h2><span class="nn">12</span>All settings, in one place</h2>
+<p class="lead">Set, and tunable later in config <b>without an app release</b>.</p>
+<table>
+  <tr><th>Setting</th><th>Launch value</th></tr>
+  <tr><td>Who gets a wrap</td><td><b>Everyone</b> — paid, trial, free; only staff/test/deleted excluded</td></tr>
+  <tr><td>Wrap versions</td><td><b>One</b> full wrap for all; thin sections show encouraging copy</td></tr>
+  <tr><td>Badge roster &amp; thresholds</td><td><b>11 badges</b> with all tiers and bars — see the roster in Section 5; every threshold tunable in config</td></tr>
+  <tr><td>Badge display</td><td>All earned badges <b>together</b> in the “তোমার অর্জন” collection + marksheet; only earned; prestige order</td></tr>
+  <tr><td>Learner-type stamp</td><td>Exactly one per student, by strongest relative trait; Balanced if none; Night-owl only if time-of-day data exists</td></tr>
+  <tr><td>Strong / Middle / Low / Just starting</td><td>3+ badges or top 20% · 1–2 badges · 0 badges w/ activity · almost none</td></tr>
+</table>
+
+</div>
+</body>
+</html>
